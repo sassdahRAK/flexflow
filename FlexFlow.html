@@ -2947,6 +2947,10 @@
         // title text changes with the active tab.
         const TAB_LABELS = { home: 'FlexFlow', info: 'Artists', note: 'Quick Note', clock: 'Calendar', settings: 'Settings' };
         let tasks = [];
+        // Set when the stored task JSON cannot be parsed. The raw string is
+        // left untouched and the boot-time persist is skipped so a corrupt
+        // (but possibly recoverable) payload is never silently overwritten.
+        let storageCorrupt = false;
         let drafts = Object.create(null);
         // UI-only (never persisted): edit rows whose date/time detail is open
         let expandedCheckDetails = new Set();
@@ -3623,13 +3627,29 @@
         // Safe Storage Loader
         function loadTasks() {
             let loaded = null;
+            let corrupt = false;
             try {
                 const stored = localStorage.getItem('cambodia_task_manager_v2');
-                loaded = stored ? JSON.parse(stored) : defaultData;
+                if (stored) {
+                    try {
+                        loaded = JSON.parse(stored);
+                        if (!Array.isArray(loaded)) corrupt = true;
+                    } catch (e) {
+                        corrupt = true;
+                    }
+                } else {
+                    loaded = defaultData;
+                }
             } catch (e) {
                 loaded = defaultData;
             }
-            if (!Array.isArray(loaded)) loaded = defaultData;
+            storageCorrupt = corrupt;
+            if (corrupt) {
+                // Do NOT write over the unreadable value: keep it so the user
+                // can still export/recover it, and warn visibly instead.
+                loaded = [];
+                setSettingsStatus('Saved tasks could not be read. The stored data was left untouched — restore from a backup or export before making changes.', true);
+            }
             // Repair ids from previously polluted storage before anything renders
             tasks = loaded.map(sanitizeImportedTask).filter(Boolean);
             const seenTaskIds = Object.create(null);
@@ -3657,6 +3677,14 @@
         function saveData() {
             syncInputsBeforeRender();
             persistData();
+        }
+
+        // Boot-time save: never write the default/empty set over task JSON we
+        // failed to parse.
+        function saveInitialData() {
+            if (storageCorrupt) return false;
+            saveData();
+            return true;
         }
 
         // Live Cambodia Time (Asia/Phnom_Penh GMT+7)
@@ -4131,7 +4159,9 @@
             if (!task) return;
             const item = task.checklist.find(c => c.id === itemId);
             if (!item) return;
-            const row = document.querySelector(`.checklist-item[data-item-id="${cssEscape(itemId)}"]`);
+            // Scope by card: item ids are only deduped per card, so a bare
+            // item-id selector can hit another card's row.
+            const row = document.querySelector(`.card[data-id="${cssEscape(cardId)}"] .checklist-item[data-item-id="${cssEscape(itemId)}"]`);
             const dateEl = row ? row.querySelector('.check-date-input') : null;
             const timeEl = row ? row.querySelector('.check-time-input') : null;
             const durEl = row ? row.querySelector('.check-duration-input') : null;
@@ -4157,6 +4187,12 @@
                 item.end = nextEnd;
                 item.time = formatTimeRangeLabel(item.start, item.end);
                 if (changed) {
+                    // Editing the schedule invalidates an earlier auto-miss;
+                    // clear an auto-set lock too so the row is not stuck red.
+                    if (item.autoMissed) {
+                        item.autoMissed = false;
+                        if (item.statusLocked && item.status === 'missed') item.statusLocked = false;
+                    }
                     touchEntity(item);
                     touchEntity(task);
                     logChange('item.update', {
@@ -4164,7 +4200,7 @@
                         data: { fields: { start: item.start, duration: item.duration, end: item.end, time: item.time } }
                     });
                 }
-                const row = document.querySelector(`.checklist-item[data-item-id="${cssEscape(itemId)}"]`);
+                const row = document.querySelector(`.card[data-id="${cssEscape(cardId)}"] .checklist-item[data-item-id="${cssEscape(itemId)}"]`);
                 const hint = row ? row.querySelector('.derived-end') : null;
                 if (hint) hint.innerText = '\u2192 ends ' + formatEndHint(item.start, item.duration);
                 // Re-sort on a time change; only redraw when the order moved
@@ -4670,6 +4706,11 @@
             }
             const actionsEl = document.getElementById('headerActions');
             if (actionsEl) actionsEl.hidden = currentTab !== 'home';
+            // The EDITING pill follows edit mode. Artist edit paths toggle
+            // body.edit-mode without re-rendering the task list, so the pill
+            // must be refreshed here as well as in renderApp.
+            const brandModeEl = document.getElementById('brandMode');
+            if (brandModeEl) brandModeEl.hidden = !isEditMode;
         }
 
         // Drive the app-container visibility from the current tab via body classes.
@@ -4694,6 +4735,7 @@
                 persistData();
                 isEditMode = false;
                 editSnapshot = null;
+                expandedCheckDetails.clear();
             }
             // Entering the Clock tab always starts on Cambodia today
             if (name === 'clock' && currentTab !== 'clock') {
@@ -4754,8 +4796,8 @@
             // Defensive ordering pass: never reorder mid-drag gesture, and skip
             // the full re-parse/sort pass when the content signature is equal.
             ensureSortOrder();
-            const brandModeEl = document.getElementById('brandMode');
-            if (brandModeEl) brandModeEl.hidden = !isEditMode;
+            // applyTabVisibility() above already refreshed the EDITING pill
+            // via updateHeaderTitle().
             const headerActions = document.getElementById('headerActions');
 
             if (!isEditMode) {
@@ -4894,14 +4936,14 @@
                                 </div>
                                 <div class="check-detail"${detailOpen ? '' : ' hidden'}>
                                     <div class="check-time-edit">
-                                        <input id="chk-date-${escapeHtml(item.id)}" type="date" class="input-pill check-date-input" value="${escapeHtml(splitWallClock(item.start).date)}" aria-label="Task date" onchange="handleCheckDateTimeChange(${escapeJsArg(task.id)}, ${escapeJsArg(item.id)})">
-                                        <input id="chk-time-${escapeHtml(item.id)}" type="time" class="input-pill check-time-input" value="${escapeHtml(splitWallClock(item.start).time)}" aria-label="Task time" onchange="handleCheckDateTimeChange(${escapeJsArg(task.id)}, ${escapeJsArg(item.id)})">
+                                        <input id="chk-date-${escapeHtml(task.id)}-${escapeHtml(item.id)}" type="date" class="input-pill check-date-input" value="${escapeHtml(splitWallClock(item.start).date)}" aria-label="Task date" onchange="handleCheckDateTimeChange(${escapeJsArg(task.id)}, ${escapeJsArg(item.id)})">
+                                        <input id="chk-time-${escapeHtml(task.id)}-${escapeHtml(item.id)}" type="time" class="input-pill check-time-input" value="${escapeHtml(splitWallClock(item.start).time)}" aria-label="Task time" onchange="handleCheckDateTimeChange(${escapeJsArg(task.id)}, ${escapeJsArg(item.id)})">
                                         <span class="duration-field">
-                                            <input id="chk-dur-${escapeHtml(item.id)}" type="number" min="5" step="5" inputmode="numeric" class="input-pill check-duration-input" value="${escapeHtml(safeDurationInput(item.duration))}" oninput="updateDurationPreview(this, ${escapeJsArg(task.id)}, ${escapeJsArg(item.id)})" onchange="handleCheckDateTimeChange(${escapeJsArg(task.id)}, ${escapeJsArg(item.id)})">
+                                            <input id="chk-dur-${escapeHtml(task.id)}-${escapeHtml(item.id)}" type="number" min="5" step="5" inputmode="numeric" class="input-pill check-duration-input" value="${escapeHtml(safeDurationInput(item.duration))}" oninput="updateDurationPreview(this, ${escapeJsArg(task.id)}, ${escapeJsArg(item.id)})" onchange="handleCheckDateTimeChange(${escapeJsArg(task.id)}, ${escapeJsArg(item.id)})">
                                             <span class="duration-unit">min</span>
                                         </span>
                                     </div>
-                                    <div class="derived-end" id="ends-${escapeHtml(item.id)}">\u2192 ends ${escapeHtml(formatEndHint(item.start, safeDurationInput(item.duration)))}</div>
+                                    <div class="derived-end" id="ends-${escapeHtml(task.id)}-${escapeHtml(item.id)}">\u2192 ends ${escapeHtml(formatEndHint(item.start, safeDurationInput(item.duration)))}</div>
                                 </div>
                             </div>
                         `;
@@ -5456,6 +5498,11 @@
         let dragCardMoved = false;
         let dragCardLastY = 0;
         let dragCardVisualY = 0;
+        // Cached per gesture: the dragged card node and its live array index.
+        // pointermove fires at 60-120 Hz, so querying the DOM and scanning
+        // `tasks` on every event is wasteful. Swaps keep the index in sync.
+        let dragCardEl = null;
+        let dragCardIndex = -1;
 
         function initPointerDrag(e, cardId) {
             if (!isEditMode) return;
@@ -5471,6 +5518,9 @@
                 originalIndex: tasks.findIndex(task => task.id === cardId)
             };
             dragCardId = cardId;
+            // Cache the node and index once at pointerdown.
+            dragCardEl = document.querySelector(`.card[data-id="${cssEscape(cardId)}"]`);
+            dragCardIndex = dragCardSnapshot.originalIndex;
             dragCardPointerId = e.pointerId;
             dragCardStartY = e.clientY;
             dragCardLastY = e.clientY;
@@ -5486,9 +5536,18 @@
         function handlePointerMove(e) {
             if (!dragCardId || e.pointerId !== dragCardPointerId) return;
             e.preventDefault();
-            const idx = tasks.findIndex(t => t.id === dragCardId);
-            const card = document.querySelector(`.card[data-id="${cssEscape(dragCardId)}"]`);
-            if (!card || idx === -1) return;
+            // Use the cached node/index; only re-resolve if the cache went
+            // stale (e.g. a defensive re-render detached the node).
+            if (!dragCardEl || dragCardEl.isConnected === false) {
+                dragCardEl = document.querySelector(`.card[data-id="${cssEscape(dragCardId)}"]`);
+            }
+            const card = dragCardEl;
+            if (!card) return;
+            if (!tasks[dragCardIndex] || tasks[dragCardIndex].id !== dragCardId) {
+                dragCardIndex = tasks.findIndex(t => t.id === dragCardId);
+            }
+            const idx = dragCardIndex;
+            if (idx === -1) return;
 
             dragCardVisualY += e.clientY - dragCardLastY;
             dragCardLastY = e.clientY;
@@ -5510,6 +5569,7 @@
                     const temp = tasks[idx];
                     tasks[idx] = tasks[idx + 1];
                     tasks[idx + 1] = temp;
+                    dragCardIndex = idx + 1;
                     card.parentNode.insertBefore(card, next.nextElementSibling);
                     dragCardVisualY += beforeTop - card.getBoundingClientRect().top;
                     dragCardStartY = e.clientY;
@@ -5525,6 +5585,7 @@
                     const temp = tasks[idx];
                     tasks[idx] = tasks[idx - 1];
                     tasks[idx - 1] = temp;
+                    dragCardIndex = idx - 1;
                     card.parentNode.insertBefore(card, prev);
                     dragCardVisualY += beforeTop - card.getBoundingClientRect().top;
                     dragCardStartY = e.clientY;
@@ -5539,7 +5600,8 @@
 
         function handlePointerUp(e) {
             if (dragCardPointerId !== null && e.pointerId !== dragCardPointerId) return;
-            const card = dragCardId ? document.querySelector(`.card[data-id="${cssEscape(dragCardId)}"]`) : null;
+            let card = dragCardEl;
+            if (!card && dragCardId) card = document.querySelector(`.card[data-id="${cssEscape(dragCardId)}"]`);
             const handle = card ? card.querySelector('.card-drag-handle') : null;
             if (handle && dragCardPointerId !== null) {
                 try {
@@ -5554,6 +5616,8 @@
             dragCardPointerId = null;
             dragCardSnapshot = null;
             dragCardMoved = false;
+            dragCardEl = null;
+            dragCardIndex = -1;
             document.removeEventListener('pointermove', handlePointerMove);
             document.removeEventListener('pointerup', handlePointerUp);
             document.removeEventListener('pointercancel', handlePointerUp);
@@ -5609,7 +5673,10 @@
                 visualY: 0,
                 moved: false,
                 draggedStart: draggedItem ? String(draggedItem.start || '') : '',
-                starts: task ? task.checklist.map(c => String(c.start || '')) : []
+                starts: task ? task.checklist.map(c => String(c.start || '')) : [],
+                // Cached once at pointerdown; swaps keep `index` in sync.
+                el: row,
+                index: task ? task.checklist.findIndex(c => c.id === itemId) : -1
             };
             try { e.currentTarget.setPointerCapture(e.pointerId); } catch (err) {}
             document.addEventListener('pointermove', handleCheckPointerMove);
@@ -5624,10 +5691,17 @@
             const { cardId, itemId } = dragItemInfo;
             const task = tasks.find(t => t.id === cardId);
             if (!task) return;
-            const idx = task.checklist.findIndex(c => c.id === itemId);
-            if (idx === -1) return;
-            const row = document.querySelector(`.card[data-id="${cssEscape(cardId)}"] .checklist-item[data-item-id="${cssEscape(itemId)}"]`);
+            // Cached node/index; re-resolve only when the cache is stale.
+            if (!dragItemInfo.el || dragItemInfo.el.isConnected === false) {
+                dragItemInfo.el = document.querySelector(`.card[data-id="${cssEscape(cardId)}"] .checklist-item[data-item-id="${cssEscape(itemId)}"]`);
+            }
+            const row = dragItemInfo.el;
             if (!row) return;
+            if (!task.checklist[dragItemInfo.index] || task.checklist[dragItemInfo.index].id !== itemId) {
+                dragItemInfo.index = task.checklist.findIndex(c => c.id === itemId);
+            }
+            const idx = dragItemInfo.index;
+            if (idx === -1) return;
 
             dragItemInfo.visualY += e.clientY - dragItemInfo.lastY;
             dragItemInfo.lastY = e.clientY;
@@ -5651,6 +5725,7 @@
                     const temp = task.checklist[idx];
                     task.checklist[idx] = task.checklist[idx + 1];
                     task.checklist[idx + 1] = temp;
+                    dragItemInfo.index = idx + 1;
                     row.parentNode.insertBefore(row, next.nextElementSibling);
                     dragItemInfo.visualY += beforeTop - row.getBoundingClientRect().top;
                     dragItemInfo.startY = e.clientY;
@@ -5666,6 +5741,7 @@
                     const temp = task.checklist[idx];
                     task.checklist[idx] = task.checklist[idx - 1];
                     task.checklist[idx - 1] = temp;
+                    dragItemInfo.index = idx - 1;
                     row.parentNode.insertBefore(row, prev);
                     dragItemInfo.visualY += beforeTop - row.getBoundingClientRect().top;
                     dragItemInfo.startY = e.clientY;
@@ -6296,6 +6372,9 @@
                 if (modal) modal.hidden = true;
                 const note = addQuickNote({ type: 'video', mediaId: id, mime: mime, durationMs: durationMs, text: '' });
                 if (note && note.id) qnScrollNoteIntoView(note.id);
+                // The note could not be persisted (localStorage quota): drop
+                // the blob we just wrote so IndexedDB does not keep an orphan.
+                else mediaDelete(id).catch(() => {});
             }).catch(err => {
                 qnVideoSetMsg(err && err.name === 'QuotaExceededError'
                     ? 'Not enough browser storage to save this video.'
@@ -6441,7 +6520,10 @@
             return `<div class="qn-replies">${items.join('')}</div>`;
         }
 
-        function qnBubbleHtml(note) {
+        // shareCaps is computed once per render by renderQuickNotes: probing
+        // allocates a File and calls navigator.canShare, which is far too
+        // expensive to repeat for every bubble.
+        function qnBubbleHtml(note, shareCaps) {
             const type = String(note.type || 'text');
             let body = '';
             let wide = false;
@@ -6511,8 +6593,8 @@
             const delLabel = pending ? 'Tap again' : 'Delete';
             const delClass = pending ? 'qn-del is-pending' : 'qn-del';
             const delAria = pending ? 'Tap again to delete note' : 'Delete note';
-            const shareCaps = qnShareCaps();
-            const shareDisabled = shareCaps.canShareText ? '' : ' disabled aria-disabled="true"';
+            const caps = shareCaps || qnShareCaps();
+            const shareDisabled = caps.canShareText ? '' : ' disabled aria-disabled="true"';
             const editBtn = canEdit && !editing
                 ? `<button type="button" class="qn-edit-btn" data-action="qn-edit" data-note-id="${escapeHtml(note.id)}">Edit</button>`
                 : '';
@@ -6549,7 +6631,9 @@
             const list = document.getElementById('quickNoteList');
             if (!list) return;
             qnRevokeObjectUrls();
-            const bubbles = quickNotes.map(qnBubbleHtml).filter(Boolean);
+            // One capability probe for the whole list, not one per bubble.
+            const shareCaps = qnShareCaps();
+            const bubbles = quickNotes.map(note => qnBubbleHtml(note, shareCaps)).filter(Boolean);
             if (!bubbles.length) {
                 list.innerHTML = '<div class="qn-empty">No quick notes yet. Write one below, or tap + for a photo, voice note, image link or location.</div>';
                 return;
@@ -6873,7 +6957,9 @@
                 };
                 qnRecorder.onstop = qnFinishRecording;
                 try {
-                    qnRecorder.start();
+                    // A timeslice flushes data regularly; iOS Safari can end a
+                    // recording with zero ondataavailable events otherwise.
+                    qnRecorder.start(1000);
                 } catch (e) {
                     qnStopRecStream();
                     qnSetStatus('Voice recording could not start.', true);
@@ -6949,7 +7035,12 @@
             qnRecCancelled = false;
             qnCleanupRecordingUi();
             qnStopRecStream();
-            if (cancelled || !chunks || !chunks.length) return;
+            if (cancelled) return;
+            if (!chunks || !chunks.length) {
+                // Never fail silently: same explicit phrasing as video capture.
+                qnSetStatus('No audio data was captured. Try recording again, or tap Stop before leaving the recorder.', true);
+                return;
+            }
             try {
                 const blob = new Blob(chunks, { type: mime });
                 const reader = new FileReader();
@@ -7210,15 +7301,40 @@
         }
 
         // ---------- Settings: backup / restore / erase ----------
-        function readStorageArray(key) {
+        // Distinguishes "nothing stored" from "stored but unreadable".
+        // Returns {state:'missing'|'ok'|'corrupt', value}.
+        function readStorage(key) {
+            let raw;
+            try { raw = localStorage.getItem(key); }
+            catch (e) { return { state: 'corrupt', value: null }; }
+            if (raw === null || raw === undefined) return { state: 'missing', value: null };
             try {
-                const raw = localStorage.getItem(key);
-                if (!raw) return [];
-                const parsed = JSON.parse(raw);
-                return Array.isArray(parsed) ? parsed : [];
+                return { state: 'ok', value: JSON.parse(raw) };
             } catch (e) {
-                return [];
+                return { state: 'corrupt', value: null };
             }
+        }
+
+        function readStorageArray(key) {
+            const res = readStorage(key);
+            if (res.state !== 'ok') return [];
+            return Array.isArray(res.value) ? res.value : [];
+        }
+
+        // A corrupt key must stop exports and merges: an empty array would
+        // produce a "successful" empty backup or wipe the live data.
+        function corruptStorageKeys(keys) {
+            const bad = [];
+            (keys || []).forEach(key => {
+                if (readStorage(key).state === 'corrupt') bad.push(key);
+            });
+            return bad;
+        }
+
+        function reportCorruptStorage(action, keys) {
+            const names = keys.map(k => k === TASKS_KEY ? 'tasks' : k === QUICK_NOTES_KEY ? 'quick notes' : 'data');
+            setSettingsStatus(action + ' refused: saved ' + names.join(' and ') +
+                ' could not be read. Restore a backup or repair storage first.', true);
         }
 
         const TASKS_KEY = 'cambodia_task_manager_v2';
@@ -7595,6 +7711,32 @@
             return { tasks: out, stats: stats, itemStats: itemStats, orderMode: orderMode };
         }
 
+        // An edit only bumps updatedAt, so "newest wins" must compare the
+        // effective stamp, not the immutable createdAt.
+        function noteMergeStamp(note) {
+            if (!note || typeof note !== 'object') return 0;
+            // updatedAt || createdAt: an edited note must beat a newer copy
+            // that only differs by its immutable creation time.
+            const updated = Date.parse(note.updatedAt || '') || 0;
+            if (updated) return updated;
+            return Date.parse(note.createdAt || '') || 0;
+        }
+
+        // Union replies by id; the newer copy of each reply wins. Ordering is
+        // local-first so unrelated rows keep their current position.
+        function mergeNoteReplies(localReplies, remoteReplies) {
+            const out = (Array.isArray(localReplies) ? localReplies : [])
+                .filter(r => r && typeof r === 'object')
+                .map(r => Object.assign({}, r));
+            (Array.isArray(remoteReplies) ? remoteReplies : []).forEach(rr => {
+                if (!rr || typeof rr !== 'object' || !rr.id) return;
+                const idx = out.findIndex(r => r.id === rr.id);
+                if (idx < 0) { out.push(Object.assign({}, rr)); return; }
+                if (noteMergeStamp(rr) > noteMergeStamp(out[idx])) out[idx] = Object.assign({}, rr);
+            });
+            return out;
+        }
+
         function mergeQuickNotes(localNotes, remoteNotes) {
             const stats = { added: 0, updated: 0, skipped: 0 };
             const local = Array.isArray(localNotes) ? localNotes : [];
@@ -7604,14 +7746,22 @@
                 if (!rn || !rn.id) return;
                 const idx = out.findIndex(n => n.id === rn.id);
                 if (idx < 0) { out.push(Object.assign({}, rn)); stats.added++; return; }
-                const localTime = Date.parse(out[idx].createdAt || '') || 0;
-                const remoteTime = Date.parse(rn.createdAt || '') || 0;
-                if (remoteTime > localTime) { out[idx] = Object.assign({}, rn); stats.updated++; }
-                else {
+                const localTime = noteMergeStamp(out[idx]);
+                const remoteTime = noteMergeStamp(rn);
+                if (remoteTime > localTime) {
+                    // Remote fields win, but keep every local reply (an edit on
+                    // this device must not drop another device's thread).
+                    const mergedRemote = Object.assign({}, rn);
+                    mergedRemote.replies = mergeNoteReplies(out[idx].replies, rn.replies);
+                    out[idx] = mergedRemote;
+                    stats.updated++;
+                } else {
                     // Local record wins, but fill any media the local copy lacks
+                    // and union the reply threads.
                     const merged = Object.assign({}, out[idx]);
                     if (!merged.imageUrl && rn.imageUrl) merged.imageUrl = rn.imageUrl;
                     if (!merged.audioDataUrl && rn.audioDataUrl) { merged.audioDataUrl = rn.audioDataUrl; merged.audioMime = rn.audioMime || merged.audioMime; }
+                    merged.replies = mergeNoteReplies(merged.replies, rn.replies);
                     out[idx] = merged;
                     stats.skipped++;
                 }
@@ -7848,6 +7998,8 @@
 
         function exportChangesBackup() {
             try {
+                const bad = corruptStorageKeys([TASKS_KEY, QUICK_NOTES_KEY]);
+                if (bad.length) { reportCorruptStorage('Changes export', bad); return; }
                 const entries = [{ name: 'changes.json', bytes: utf8Encode(JSON.stringify(buildChangesJson(), null, 2)) }];
                 const blob = buildZipBlob(entries);
                 const filename = `task-manager-backup-changes-${backupStamp()}.zip`;
@@ -7861,6 +8013,8 @@
         // media.json + raw image/voice bytes only — no task data at all
         async function exportMediaBackup() {
             try {
+                const badMedia = corruptStorageKeys([QUICK_NOTES_KEY]);
+                if (badMedia.length) { reportCorruptStorage('Media export', badMedia); return; }
                 const notes = readStorageArray(QUICK_NOTES_KEY);
                 const videoRows = await mediaAll().catch(() => []);
                 const videoById = Object.create(null);
@@ -7940,6 +8094,8 @@
         // Full: backup.json + changes.json + raw media
         async function exportFullBackup() {
             try {
+                const bad = corruptStorageKeys([TASKS_KEY, QUICK_NOTES_KEY]);
+                if (bad.length) { reportCorruptStorage('Full export', bad); return; }
                 const built = await buildZipBackupEntries();
                 const prepared = await Promise.all(built.files.map(async f => {
                     if (f.blob) {
@@ -8156,6 +8312,10 @@
         }
 
         function stageImport(result) {
+            // Starting an import cancels any armed erase. Without this the
+            // Confirm button still points at applyEraseAll() and a Replace
+            // would erase everything instead of restoring the backup.
+            settingsConfirmAction = null;
             settingsPendingImport = result;
             const kindLabel = result.kind === 'full' ? 'Full' : result.kind === 'media' ? 'Media' : 'Changes';
             const canReplace = result.kind === 'full';
@@ -8243,15 +8403,17 @@
         }
 
         // Writes imported video bytes into IndexedDB and swaps the refs for
-        // {type:'video', mediaId}. Runs before localStorage is touched.
-        async function materializeVideos(result) {
-            if (!result || !result.quickNotes) return result;
-            const files = result.videoFiles || {};
-            const notes = [];
-            for (let i = 0; i < result.quickNotes.length; i++) {
-                const note = Object.assign({}, result.quickNotes[i]);
+        // {type:'video', mediaId}. Only notes that survived the merge are
+        // materialised, so a backup video that loses to the local copy is
+        // never written to the media store.
+        async function materializeVideoNotes(notes, files) {
+            if (!Array.isArray(notes)) return [];
+            const src = files && typeof files === 'object' ? files : {};
+            const out = [];
+            for (let i = 0; i < notes.length; i++) {
+                const note = Object.assign({}, notes[i]);
                 if (note.type === 'video' && note.videoRef) {
-                    const bytes = files[note.videoRef];
+                    const bytes = src[note.videoRef];
                     if (!bytes) { continue; } // missing media: drop the note ref
                     const mime = note.mime || 'video/webm';
                     try {
@@ -8269,10 +8431,9 @@
                         continue;
                     }
                 }
-                notes.push(note);
+                out.push(note);
             }
-            result.quickNotes = notes;
-            return result;
+            return out;
         }
 
         function mergeArtists(localRaw, remoteRaw) {
@@ -8332,26 +8493,33 @@
         async function applyMergeImport() {
             const pending = settingsPendingImport;
             if (!pending) return;
+            // Never merge into (and rewrite) a local key we cannot read.
+            settingsConfirmAction = null;
             const summary = {};
             try {
-                await materializeVideos(pending);
+                const needed = pending.kind === 'media' ? [QUICK_NOTES_KEY] : [TASKS_KEY, QUICK_NOTES_KEY];
+                const bad = corruptStorageKeys(needed);
+                if (bad.length) { reportCorruptStorage('Merge', bad); return; }
                 if (pending.kind === 'changes') {
                     const replay = replayChangeOps(pending.changes, readStorageArray(TASKS_KEY), readStorageArray(QUICK_NOTES_KEY));
                     const tasksOut = replay.tasks.map(sanitizeImportedTask).filter(Boolean);
                     summary.applied = replay.summary.applied;
                     summary.skipped = replay.summary.skipped;
                     summary.cards = { added: replay.summary.added, updated: replay.summary.updated, skipped: 0 };
-                    applyImport({ tasks: tasksOut, quickNotes: sanitizeImportedNotes(readStorageArray(QUICK_NOTES_KEY)) }, true);
+                    if (!applyImport({ tasks: tasksOut, quickNotes: sanitizeImportedNotes(readStorageArray(QUICK_NOTES_KEY)) }, true)) return;
                 } else if (pending.kind === 'media') {
                     const merged = mergeQuickNotes(sanitizeImportedNotes(readStorageArray(QUICK_NOTES_KEY)), sanitizeImportedNotes(pending.quickNotes));
-                    applyImport({ tasks: readStorageArray(TASKS_KEY), quickNotes: merged.notes }, true);
+                    const notesOut = await materializeVideoNotes(merged.notes, pending.videoFiles);
+                    if (!applyImport({ tasks: readStorageArray(TASKS_KEY), quickNotes: notesOut }, true)) return;
                     summary.notes = merged.stats;
                     applyArtistsPayload(null, true);
                 } else {
                     const merged = mergeTasks(readStorageArray(TASKS_KEY), pending.tasks);
                     const mergedNotes = mergeQuickNotes(readStorageArray(QUICK_NOTES_KEY), sanitizeImportedNotes(pending.quickNotes || []));
                     const tasksOut = merged.tasks.map(sanitizeImportedTask).filter(Boolean);
-                    applyImport({ tasks: tasksOut, quickNotes: mergedNotes.notes }, true);
+                    // Materialise only the videos that actually won the merge.
+                    const notesOut = await materializeVideoNotes(mergedNotes.notes, pending.videoFiles);
+                    if (!applyImport({ tasks: tasksOut, quickNotes: notesOut }, true)) return;
                     summary.cards = merged.stats;
                     summary.items = merged.itemStats;
                     summary.notes = mergedNotes.stats;
@@ -8370,13 +8538,21 @@
         async function applyReplaceImport() {
             const pending = settingsPendingImport;
             if (!pending || pending.kind !== 'full') return;
-            await materializeVideos(pending);
-            applyArtistsPayload(pending.artists, false);
-            const tasksOut = (Array.isArray(pending.tasks) ? pending.tasks : []).map(sanitizeImportedTask).filter(Boolean);
-            const notesOut = sanitizeImportedNotes(pending.quickNotes || []);
-            applyImport({ tasks: tasksOut, quickNotes: notesOut }, false);
-            settingsPendingImport = null;
-            hideSettingsConfirm();
+            // Clearing here guarantees a stale erase action can never run once
+            // a replace has been armed.
+            settingsConfirmAction = null;
+            try {
+                const tasksOut = (Array.isArray(pending.tasks) ? pending.tasks : []).map(sanitizeImportedTask).filter(Boolean);
+                const notesOut = await materializeVideoNotes(sanitizeImportedNotes(pending.quickNotes || []), pending.videoFiles);
+                // Commit tasks/notes first; artists only after that succeeds so
+                // a failed replace cannot leave re-pointed artist slots.
+                if (!applyImport({ tasks: tasksOut, quickNotes: notesOut }, false)) return;
+                applyArtistsPayload(pending.artists, false);
+                settingsPendingImport = null;
+                hideSettingsConfirm();
+            } catch (e) {
+                setSettingsStatus('Replace failed. Nothing was changed.', true);
+            }
         }
 
         function hideSettingsConfirm() {
@@ -8460,13 +8636,10 @@
             const action = settingsConfirmAction;
             const pending = settingsPendingImport;
             const btn = document.getElementById('settingsConfirmBtn');
-            if (action && action.type === 'erase') {
-                settingsConfirmAction = null;
-                hideSettingsConfirm();
-                applyEraseAll();
-                return;
-            }
             if (pending) {
+                // A pending import always owns the button: a stale erase action
+                // must never fall through to applyEraseAll().
+                settingsConfirmAction = null;
                 if (pending.kind === 'full' && !settingsConfirmArmed) {
                     // Two-step: first press arms, second overwrites
                     settingsConfirmArmed = true;
@@ -8475,6 +8648,12 @@
                 }
                 if (pending.kind === 'full') { applyReplaceImport(); return; }
                 applyMergeImport();
+                return;
+            }
+            if (action && action.type === 'erase') {
+                settingsConfirmAction = null;
+                hideSettingsConfirm();
+                applyEraseAll();
                 return;
             }
             hideSettingsConfirm();
@@ -8741,7 +8920,14 @@
 
         function saveArtists() {
             try { localStorage.setItem(ARTISTS_KEY, JSON.stringify(artistsData)); return true; }
-            catch (e) { return false; }
+            catch (e) {
+                // Never swallow a failed write: surface it in the artist area
+                // so quota loss is visible instead of vanishing silently.
+                artistMsg = e && (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED')
+                    ? 'Artist changes could not be saved: browser storage is full. Remove a photo or free space, then try again.'
+                    : 'Artist changes could not be saved in this browser.';
+                return false;
+            }
         }
 
         function slotFor(artistId) {
@@ -8823,8 +9009,10 @@
             }
             const total = artistsData.artists.length;
             if (count) count.textContent = total ? total + (total === 1 ? ' artist' : ' artists') + ' · staff only' : '';
+            // Save failures must be visible here too (add/delete happen on the list)
+            const msgHtml = artistMsg ? '<div class="ar-count" role="status">' + escapeHtml(artistMsg) + '</div>' : '';
             if (!total) {
-                rows.innerHTML = '<div class="ar-empty">No artists yet — add your first act.</div>';
+                rows.innerHTML = msgHtml + '<div class="ar-empty">No artists yet — add your first act.</div>';
                 return;
             }
             const html = sortedArtists().map(a => {
@@ -8842,7 +9030,7 @@
                     '</span>' +
                 '</button>';
             }).join('');
-            rows.innerHTML = '<div class="ar-group">' + html + '</div>';
+            rows.innerHTML = msgHtml + '<div class="ar-group">' + html + '</div>';
         }
 
         function artistTime(v) { return v ? v : '--:--'; }
@@ -9085,13 +9273,16 @@
         }
 
         function toggleArtistEdit() {
+            let saved = true;
             if (isEditMode) {
                 syncArtistInputs();
-                saveArtists();
+                saved = saveArtists();
             }
             isEditMode = !isEditMode;
             document.body.classList.toggle('edit-mode', isEditMode);
-            artistMsg = '';
+            // Keep a save-failure message visible; clear only on success.
+            if (saved) artistMsg = '';
+            updateHeaderTitle();
             renderArtists();
         }
 
@@ -9127,6 +9318,7 @@
             saveArtists();
             artistDetailId = artist.id;
             if (!isEditMode) { isEditMode = true; document.body.classList.add('edit-mode'); }
+            updateHeaderTitle();
             renderArtists();
         }
 
@@ -9264,7 +9456,7 @@
             sl.status = ARTIST_STATUSES[(ARTIST_STATUSES.indexOf(sl.status) + 1) % ARTIST_STATUSES.length];
             sl.updatedAt = nowIso();
             logChange('artist.status', { cardId: id, data: { status: sl.status } });
-            saveArtists();
+            if (!saveArtists()) { renderArtists(); return; }
             const btn = document.querySelector('#artistDetailView .ar-pill-btn');
             if (btn) {
                 btn.dataset.status = sl.status;
@@ -9279,7 +9471,14 @@
             if (input) return;
             document.addEventListener('change', e => {
                 const t = e.target;
-                if (!t || t.id !== 'arPhotoInput') return;
+                if (!t) return;
+                // A manual Minor choice must beat the age-based guess. Mark the
+                // checkbox as touched so syncArtistInputs stops overriding it.
+                if (/^arMemMinor\d+$/.test(String(t.id || ''))) {
+                    t.dataset.touched = '1';
+                    return;
+                }
+                if (t.id !== 'arPhotoInput') return;
                 const file = t.files && t.files[0];
                 if (!file) return;
                 qnHandleArtistPhoto(file);
@@ -9305,7 +9504,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadTasks();
             loadChangeLog();
-            saveData();
+            saveInitialData();
             loadQuickNotes();
             loadArtists();
             renderQuickNotes();
