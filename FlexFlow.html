@@ -86,40 +86,6 @@
             gap: 12px;
         }
 
-        /* Cambodia Clock Banner */
-        .clock-banner {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 12px;
-            font-weight: 600;
-            color: #6C6C70;
-            padding: 4px 2px;
-        }
-
-        .clock-badge {
-            background: #FFFFFF;
-            padding: 5px 12px;
-            border-radius: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .clock-time {
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-            background: #FFFFFF;
-            padding: 5px 12px;
-            border-radius: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            color: #1C1C1E;
-            font-weight: 700;
-            display: inline-block;
-            min-width: 104px;
-            text-align: center;
-        }
-
         /* App Header */
         .header {
             display: flex;
@@ -1534,7 +1500,6 @@
             }
             .app-container { gap: 8px; }
             .header h1 { font-size: 22px; }
-            .clock-banner { padding: 2px; }
             .card { padding: 12px; }
             .card.has-cover { padding: 0; }
             .card.has-cover .card-content { padding: 12px; }
@@ -2388,15 +2353,6 @@
 <body>
 
     <div class="app-container">
-        <!-- Live Cambodia Clock (GMT+7) Header -->
-        <div class="clock-banner">
-            <div class="clock-badge">
-                <svg class="icon" style="width:14px; height:14px; stroke:#007AFF;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
-                <span>Phnom Penh (GMT+7)</span>
-            </div>
-            <div id="cambodiaClock" class="clock-time">--:--:-- --</div>
-        </div>
-
         <!-- Brand header: logo + wordmark (+ EDITING pill in edit mode) -->
         <div class="header">
             <div class="brand">
@@ -3329,22 +3285,25 @@
         }
 
         // Live Cambodia Time (Asia/Phnom_Penh GMT+7)
+        // The 1-second tick. The Home clock banner is gone, so the display
+        // write is optional; the rest of the tick (auto-miss, live status
+        // colours, handle colours, artist countdown) must always run.
         function updateClock() {
-            try {
-                const now = new Date();
-                const options = {
-                    timeZone: 'Asia/Phnom_Penh',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit',
-                    hour12: true
-                };
-                const clockStr = new Intl.DateTimeFormat('en-US', options).format(now);
-                const clockEl = document.getElementById('cambodiaClock');
-                if (clockEl) clockEl.innerText = clockStr;
-            } catch (e) {
-                const clockEl = document.getElementById('cambodiaClock');
-                if (clockEl) clockEl.innerText = new Date().toLocaleTimeString();
+            const clockEl = document.getElementById('cambodiaClock');
+            if (clockEl) {
+                try {
+                    const now = new Date();
+                    const options = {
+                        timeZone: 'Asia/Phnom_Penh',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: true
+                    };
+                    clockEl.innerText = new Intl.DateTimeFormat('en-US', options).format(now);
+                } catch (e) {
+                    clockEl.innerText = new Date().toLocaleTimeString();
+                }
             }
             refreshStatuses();
             updateArtistCountdown();
