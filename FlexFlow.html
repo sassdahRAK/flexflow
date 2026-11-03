@@ -3423,7 +3423,6 @@
             letter-spacing: 0.06em;
         }
 
-        .tf-pill.is-demo { background: #FFF4E5; color: #8A4B00; }
         .tf-pill.is-paired { background: #E8F8EC; color: #15803D; }
 
         .tf-scanning {
@@ -3735,6 +3734,16 @@
         body.pen-composer-open #penFab {
             opacity: 0;
             pointer-events: none;
+        }
+
+        /* The Quick Note tab has its own full note UI and fixed input bar, so
+           the pen is redundant there. display:none takes it out of layout,
+           hit-testing and the tab order in one rule; opacity:0 keeps the
+           computed resting state hidden even though display:none still
+           reports an opacity. Every other tab is untouched. */
+        body.tab-note #penFab {
+            display: none;
+            opacity: 0;
         }
 
         /* Free positioning while/after a drag, with a short settle animation
@@ -4323,13 +4332,12 @@
                 <section class="tf-step" id="tfStepDevices" data-tf-step="devices" hidden>
                     <div class="tf-step-body">
                         <div class="tf-step-title">Choose a device</div>
-                        <p class="tf-text">Demo devices run the whole flow in this browser. A real Bluetooth send needs HTTPS and a paired FlexFlow bridge.</p>
+                        <p class="tf-text">Scan for a nearby FlexFlow peer. Bluetooth scanning needs HTTPS or localhost, and the other device must advertise the FlexFlow bridge.</p>
                         <div class="tf-scan-row">
                             <button type="button" class="tf-btn tf-btn-secondary" id="tfScanBtn" data-tf="scan">Scan for devices</button>
-                            <button type="button" class="tf-btn tf-btn-secondary" id="tfDemoBtn" data-tf="demo">Preview with demo devices</button>
                         </div>
                         <div class="tf-device-list" id="tfDeviceList" role="list" aria-label="Nearby devices"></div>
-                        <div class="tf-note" id="tfDeviceHint">Demo devices are labelled DEMO. Nothing leaves this browser in demo mode.</div>
+                        <div class="tf-note" id="tfDeviceHint">Devices appear here only after your browser finds them. Nothing is sent until you match the code and confirm.</div>
                     </div>
                     <div class="tf-step-actions">
                         <button type="button" class="tf-btn tf-btn-secondary" data-tf="close">Cancel</button>
@@ -4341,7 +4349,7 @@
                         <div class="tf-step-title">Match the code</div>
                         <p class="tf-text">Confirm this 6-digit code matches on the other device before sending.</p>
                         <div class="tf-code" id="tfCode" aria-live="polite">000 000</div>
-                        <div class="tf-code-label" id="tfHandshakeDevice">Demo device</div>
+                        <div class="tf-code-label" id="tfHandshakeDevice">Selected device</div>
                         <p class="tf-note">If the code does not match, cancel and scan again.</p>
                     </div>
                     <div class="tf-step-actions">
@@ -4407,13 +4415,12 @@
                         </div>
                         <div class="tf-code" id="tfReceiveCode">000 000</div>
                         <div class="tf-code-label">Local code · <span id="tfLocalName">This device</span></div>
-                        <p class="tf-text" id="tfBridgeNote">Import a transfer file, or preview the receive flow with demo data.</p>
+                        <p class="tf-text" id="tfBridgeNote">This browser cannot host a Bluetooth receive connection. Import a transfer file to review and apply it here.</p>
                         <button type="button" class="tf-btn tf-btn-primary" id="tfImportFileBtn" data-tf="import-file" style="width:100%; margin-top:12px;">Import backup file</button>
                         <input type="file" id="tfFileInput" accept=".zip,.json,application/zip,application/json" hidden>
                         <p class="tf-note">Accepts a FlexFlow transfer file or a Settings → Backup archive. Nothing is applied until you confirm.</p>
                     </div>
                     <div class="tf-step-actions">
-                        <button type="button" class="tf-btn tf-btn-secondary" id="tfDemoIncomingBtn" data-tf="receive-demo">Preview an incoming transfer</button>
                         <button type="button" class="tf-btn tf-btn-secondary" data-tf="close">Close</button>
                     </div>
                 </section>
@@ -4422,7 +4429,7 @@
                     <div class="tf-step-body">
                         <div class="tf-step-title">Incoming transfer</div>
                         <div class="tf-incoming">
-                            <div class="tf-device-name" id="tfIncomingName">Demo transfer</div>
+                            <div class="tf-device-name" id="tfIncomingName">Incoming transfer</div>
                             <div class="tf-meta" id="tfIncomingMeta">Waiting for details.</div>
                             <div class="tf-warning" id="tfIncomingWarn" hidden></div>
                         </div>
@@ -6627,12 +6634,21 @@
                 homeView = 'active';
                 achievedFilter = 'all';
             }
+            // Entering the Quick Note tab while the pen composer is open: the
+            // pen is display:none on that tab, so settle the composer through
+            // the instant close path instead of morphing toward a hidden pen.
+            // This returns #quickNoteBar/#qnRecording to the tab and puts the
+            // pen's aria-expanded back to false.
+            if (name === 'note' && prevTab !== 'note' &&
+                document.body.classList.contains('pen-composer-open')) {
+                cancelPenMorph();
+                finalizePenComposerClose();
+            }
             currentTab = name;
             applyActiveNav(name);
             applyTabVisibility();
             if (wasEditing || leavingAchieved) renderApp({ skipSync: true });
-            // Opening the Quick Note tab from the nav plays the zoom-in. The
-            // composer (if open) is deliberately left untouched.
+            // Opening the Quick Note tab from the nav plays the zoom-in.
             if (name === 'note' && prevTab !== 'note') playQuickNoteZoom();
         }
 
@@ -8816,6 +8832,10 @@
             if (!penHasCustomPos) return;
             const fab = document.getElementById('penFab');
             if (!fab) return;
+            // Hidden (display:none) on the Quick Note tab: it has no box to
+            // measure, so re-clamping now would overwrite the saved position
+            // with the top-left corner. Leave the stored spot untouched.
+            if (!fab.getClientRects().length) return;
             const r = fab.getBoundingClientRect();
             penApplyPosition(r.left, r.top, false);
             if (document.body.classList.contains('pen-composer-open')) placePenComposer();
@@ -12598,12 +12618,6 @@
         const TF_CHUNK_BYTES = 180;
         const TF_CONNECT_TIMEOUT_MS = 8000;
 
-        const TF_DEMO_DEVICES = [
-            { id: 'demo-sokha', name: "Sokha's iPhone", meta: 'Demo · nearby', kind: 'demo', glyph: 'phone', pill: 'DEMO' },
-            { id: 'demo-stage', name: 'Stage iPad', meta: 'Demo · backstage', kind: 'demo', glyph: 'phone', pill: 'DEMO' },
-            { id: 'demo-foh', name: 'FOH MacBook', meta: 'Demo · front of house', kind: 'demo', glyph: 'laptop', pill: 'DEMO' }
-        ];
-
         function tfBluetoothCapability() {
             const nav = (typeof navigator !== 'undefined' && navigator) ? navigator : {};
             const hasApi = !!(nav.bluetooth && typeof nav.bluetooth.requestDevice === 'function');
@@ -12615,12 +12629,12 @@
         function tfCapabilityCopy() {
             const caps = tfBluetoothCapability();
             if (caps.available) {
-                return 'Bluetooth ready. FlexFlow can request a paired device, but browsers cannot host a receive connection — demo and file transfer always work.';
+                return 'Bluetooth ready. FlexFlow can request a paired device, but browsers cannot host a receive connection — send by Bluetooth or save a transfer file.';
             }
             if (caps.hasApi) {
-                return 'Bluetooth needs https:// or localhost. Demo and file transfer work anywhere.';
+                return 'Bluetooth needs https:// or localhost. You can still save or import a transfer file.';
             }
-            return 'This browser has no Web Bluetooth. Demo and file transfer work everywhere.';
+            return 'This browser has no Web Bluetooth. Use a transfer file instead.';
         }
 
         function tfDelay(ms) {
@@ -12682,7 +12696,7 @@
             const name = err && err.name ? String(err.name) : '';
             const msg = err && err.message ? String(err.message) : '';
             if (name === 'NotFoundError') {
-                return 'No device was chosen. Press Scan again, or use a demo device.';
+                return 'No device was chosen. Press Scan again and pick the FlexFlow peer.';
             }
             if (name === 'NotAllowedError' || msg === 'timeout' || /permission|denied/i.test(msg)) {
                 return 'Bluetooth permission was denied or timed out. Allow access, keep the device nearby, then try again.';
@@ -12697,8 +12711,8 @@
             const caps = tfBluetoothCapability();
             if (!caps.available) {
                 tfShowAlert(caps.hasApi
-                    ? 'Bluetooth needs https:// or localhost. Demo devices are ready below.'
-                    : 'This browser has no Web Bluetooth. Use demo devices or save a transfer file.');
+                    ? 'Bluetooth needs https:// or localhost. Serve FlexFlow over localhost to scan.'
+                    : 'This browser has no Web Bluetooth. Save a transfer file and import it on the other device.');
                 tfRenderDevices();
                 return;
             }
@@ -12815,83 +12829,6 @@
                 warnings: warnings,
                 staged: staged
             };
-        }
-
-        function tfBuildDemoNotes() {
-            const now = nowIso();
-            return [
-                {
-                    id: 'demo-note-1',
-                    type: 'text',
-                    text: 'Demo transfer: load-in moves to 14:00.',
-                    imageUrl: '', audioDataUrl: '', audioMime: '',
-                    lat: null, lng: null, createdAt: now
-                },
-                {
-                    id: 'demo-note-2',
-                    type: 'image',
-                    text: 'Stage plot photo',
-                    imageUrl: 'data:image/gif;base64,R0lGODlhAQABAAAAACw=',
-                    audioDataUrl: '', audioMime: '',
-                    lat: null, lng: null, createdAt: now
-                },
-                {
-                    id: 'demo-note-video',
-                    type: 'video',
-                    text: 'Soundcheck clip (stays on the sender)',
-                    imageUrl: '', audioDataUrl: '', audioMime: '',
-                    lat: null, lng: null, mediaId: 'demo-video-1', createdAt: now
-                }
-            ];
-        }
-
-        function tfBuildDemoEnvelope() {
-            const tasks = defaultData.map(t => JSON.parse(JSON.stringify(t)));
-            const quickNotes = tfBuildDemoNotes();
-            const data = {
-                tasks: tasks,
-                quickNotes: quickNotes.filter(n => !transferNoteIsVideo(n)),
-                artists: transferBlankArtists(),
-                changeLog: [],
-                meta: { app: 'FlexFlow', payload: 'demo-transfer', schema: 1, exportedAt: nowIso(), device: 'Demo' }
-            };
-            const counts = {
-                cards: tasks.length,
-                items: tasks.reduce((n, t) => n + (Array.isArray(t.checklist) ? t.checklist.length : 0), 0),
-                notes: quickNotes.length,
-                media: quickNotes.filter(transferNoteIsMedia).length,
-                artists: 0,
-                changes: 0,
-                videos: quickNotes.filter(transferNoteIsVideo).length
-            };
-            return {
-                kind: 'flexflow-transfer',
-                version: 1,
-                scope: 'all',
-                createdAt: nowIso(),
-                sender: { name: "Sokha's iPhone", platform: 'Demo' },
-                summary: {
-                    scope: 'all',
-                    label: 'Everything',
-                    desc: transferScopeMeta('all').desc,
-                    counts: counts,
-                    bytes: utf8Encode(JSON.stringify(data)).length,
-                    empty: false
-                },
-                data: data,
-                checksum: transferChecksum(JSON.stringify([1, 'all', data]))
-            };
-        }
-
-        function tfSessionFromDemo() {
-            const envelope = tfBuildDemoEnvelope();
-            const session = tfSessionFromEnvelope(envelope, 'Demo transfer', envelope.summary.bytes);
-            session.source = 'demo';
-            session.kindLabel = 'Everything (demo)';
-            session.warnings = session.counts.videos
-                ? [session.counts.videos + ' video note(s) stay on the sending device.']
-                : [];
-            return session;
         }
 
         async function tfParseTransferFile(file) {
@@ -13060,7 +12997,7 @@
             'send-confirm': { eyebrow: 'Send data', title: 'Review and send', subtitle: 'Check the destination and what will leave this device.' },
             'sending': { eyebrow: 'Send data', title: 'Sending', subtitle: 'Keep both devices nearby.' },
             'send-done': { eyebrow: 'Send data', title: 'Transfer complete', subtitle: 'The other device can now review the transfer.' },
-            'receive-wait': { eyebrow: 'Receive data', title: 'Ready to receive', subtitle: 'Import a transfer file or preview the flow.' },
+            'receive-wait': { eyebrow: 'Receive data', title: 'Ready to receive', subtitle: 'Import a transfer file to continue.' },
             'receive-incoming': { eyebrow: 'Receive data', title: 'Incoming transfer', subtitle: 'Review before anything changes.' },
             'backup': { eyebrow: 'Receive data', title: 'Back up this device', subtitle: 'Required before applying a transfer.' },
             'mode': { eyebrow: 'Receive data', title: 'Choose how to apply', subtitle: 'Merge keeps local data; replace does not.' },
@@ -13320,7 +13257,7 @@
                 html.push('<div class="tf-scanning"><span class="tf-spinner" aria-hidden="true"></span><span>Scanning for nearby devices…</span></div>');
             }
             devices.forEach(device => {
-                const pillClass = device.pill === 'DEMO' ? ' is-demo' : device.pill === 'PAIRED' ? ' is-paired' : '';
+                const pillClass = device.pill === 'PAIRED' ? ' is-paired' : '';
                 html.push(
                     '<button type="button" class="tf-device" role="listitem" data-tf="connect" data-device-id="' + escapeHtml(device.id) + '">' +
                         '<span class="tf-device-puck" aria-hidden="true">' + tfDeviceIcon(device) + '</span>' +
@@ -13333,7 +13270,7 @@
                 );
             });
             if (!scanning && !devices.length) {
-                html.push('<div class="tf-meta">No devices yet. Press Scan for devices, or use a demo device.</div>');
+                html.push('<div class="tf-meta">No devices yet. Press Scan for devices.</div>');
             }
             list.innerHTML = html.join('');
         }
@@ -13346,7 +13283,7 @@
             tfState.scope = scope;
             tfState.envelope = buildTransferEnvelope(scope);
             tfState.device = null;
-            tfState.devices = TF_DEMO_DEVICES.slice();
+            tfState.devices = [];
             tfState.scanning = false;
             tfState.backupDone = false;
             tfState.incoming = null;
@@ -13376,8 +13313,8 @@
             if (bridgeEl) {
                 const caps = tfBluetoothCapability();
                 bridgeEl.textContent = caps.available
-                    ? 'This browser can only act as a Bluetooth client, so it cannot host a receive connection. Import a transfer file, or preview the flow with demo data.'
-                    : 'Bluetooth receive needs a FlexFlow bridge. Import a transfer file, or preview the flow with demo data.';
+                    ? 'This browser can only act as a Bluetooth client, so it cannot host a receive connection. Import a transfer file to review and apply it here.'
+                    : 'Bluetooth receive needs a FlexFlow bridge. Import a transfer file to review and apply it here.';
             }
             const statusEl = tfEl('tfBackupStatus');
             if (statusEl) { statusEl.textContent = ''; statusEl.classList.remove('is-error'); }
@@ -13477,7 +13414,7 @@
             const codeEl = tfEl('tfCode');
             if (codeEl) codeEl.textContent = tfFormatCode(tfState.code);
             const nameEl = tfEl('tfHandshakeDevice');
-            if (nameEl) nameEl.textContent = device.name + (device.kind === 'demo' ? ' · demo' : '');
+            if (nameEl) nameEl.textContent = device.name;
             tfShowStep('handshake');
             tfSetRail(18, { waiting: true });
             tfAnnounce('Confirm the code ' + tfState.code + ' on ' + device.name + '.');
@@ -13633,7 +13570,7 @@
             const nameEl = tfEl('tfIncomingName');
             const metaEl = tfEl('tfIncomingMeta');
             const warnEl = tfEl('tfIncomingWarn');
-            if (nameEl) nameEl.textContent = session.source === 'demo' ? 'Demo transfer from ‘Sokha\'s iPhone’' : session.filename;
+            if (nameEl) nameEl.textContent = session.filename;
             if (metaEl) {
                 const bits = [session.kindLabel, tfScopeCountsText({ counts: session.counts }), formatBytes(session.bytes), 'checksum ' + session.checksum];
                 metaEl.textContent = bits.filter(Boolean).join(' · ');
@@ -13748,7 +13685,7 @@
             const mode = tfState.applyMode;
             const backup = tfState.backupRecord;
             const rows = [
-                ['Source', inc.source === 'demo' ? 'Demo transfer' : inc.filename],
+                ['Source', inc.filename],
                 ['Kind', inc.kindLabel],
                 ['Cards', String(inc.counts.cards)],
                 ['Quick notes', String(inc.counts.notes)],
@@ -14061,11 +13998,6 @@
                 case 'scan':
                     if (tfState.step === 'scope') { tfShowStep('devices'); tfRenderDevices(); return; }
                     tfRealScan(); return;
-                case 'demo':
-                    tfState.devices = TF_DEMO_DEVICES.slice();
-                    tfRenderDevices();
-                    tfAnnounce('Demo devices ready.');
-                    return;
                 case 'connect':
                     tfChooseSendDevice(el.getAttribute('data-device-id'));
                     return;
@@ -14098,13 +14030,6 @@
                 case 'back-handshake':
                     tfShowStep('handshake');
                     tfSetRail(18, { waiting: true });
-                    return;
-                case 'receive-demo':
-                    tfState.incoming = tfSessionFromDemo();
-                    tfRenderIncoming(tfState.incoming);
-                    tfShowStep('receive-incoming');
-                    tfSetRail(35, {});
-                    tfAnnounce('Demo transfer ready to review.');
                     return;
                 case 'import-file': {
                     const input = tfEl('tfFileInput');
