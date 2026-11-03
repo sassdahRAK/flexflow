@@ -1968,6 +1968,34 @@
 
         .ar-count { font-size: 11px; color: #6B6B70; padding: 0 2px 4px; }
 
+        /* Informational lock banner: the Artists page is a placeholder for now.
+           Static and in-flow, so it never covers the add control or the rows. */
+        .ar-lock {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin: 4px 0 10px;
+            padding: 14px 16px;
+            box-sizing: border-box;
+            max-width: 100%;
+            background: #FFFFFF;
+            border: 1px solid #D8D8DC;
+            border-radius: 14px;
+            pointer-events: none;
+        }
+        .ar-lock-icon {
+            width: 40px; height: 40px; min-width: 40px;
+            border-radius: 50%;
+            background: #F2F2F7;
+            color: #6B6B70;
+            display: flex; align-items: center; justify-content: center;
+            flex: 0 0 auto;
+        }
+        .ar-lock-icon .icon { width: 24px; height: 24px; }
+        .ar-lock-copy { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+        .ar-lock-title { font-size: 13px; font-weight: 700; color: #1C1C1E; line-height: 1.3; }
+        .ar-lock-sub { font-size: 11px; color: #6B6B70; line-height: 1.4; }
+
         .ar-btn {
             min-height: 44px; padding: 0 14px; border-radius: 10px;
             display: inline-flex; align-items: center; justify-content: center; gap: 6px;
@@ -2753,6 +2781,10 @@
 
         #settingsView .set-btn:active { opacity: 0.6; }
 
+        /* `hidden` must win over .set-btn's display: inline-flex; otherwise the
+           import-only Merge button renders inside the erase confirmation. */
+        #settingsView .set-btn[hidden] { display: none !important; }
+
         /* 36px visual keeps a 44px effective tap area */
         #settingsView .set-btn { position: relative; }
         #settingsView .set-btn::after { content: ''; position: absolute; inset: -4px 0; }
@@ -2928,6 +2960,14 @@
         #settingsView #settingsConfirmPanel .set-row .set-btn {
             flex: 1 1 auto;
             min-width: 96px;
+        }
+
+        /* Erase is destructive: give its two choices a real 44px target
+           (the 36px visual + ::after overlay is too easy to mis-tap). The
+           import choice keeps its existing look. */
+        #settingsView #settingsConfirmPanel.is-erase #settingsConfirmRow .set-btn {
+            height: 44px;
+            min-height: 44px;
         }
 
         /* Armed replace: danger colours the label only, never a red fill */
@@ -3658,6 +3698,300 @@
             .tf-radar-sweep,
             .tf-spinner { animation: none !important; }
         }
+
+        /* ---------- Floating pen quick-note composer ----------
+           One global pen button sits above the bottom nav on every tab. Its
+           position is constant, and it clears the note tab's own fixed input
+           bar (which tops out at 84px + 56px tall) by 12px. The composer opens
+           directly above the button, so neither can cover the nav. */
+        #penFab {
+            position: fixed;
+            right: calc(16px + env(safe-area-inset-right));
+            bottom: calc(156px + env(safe-area-inset-bottom));
+            width: 56px;
+            height: 56px;
+            min-width: 56px;
+            min-height: 56px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #1C1C1E;
+            color: #FFFFFF;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 50%;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+            z-index: 1003;
+            /* The pen is dragged with Pointer Events; without this the touch
+               browser would claim the gesture for page scrolling. */
+            touch-action: none;
+        }
+
+        /* While the composer is open the pen has become the input box, so the
+           icon is hidden and inert at rest: invisible, not a tap target, and
+           out of the tab order (tabindex=-1 in JS). The fade itself rides the
+           same WAAPI morph as the composer, so the pen is still visible in the
+           opening frames and fades back in during the close. */
+        body.pen-composer-open #penFab {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Free positioning while/after a drag, with a short settle animation
+           when the pen is parked. Dragging disables it for 1:1 tracking. */
+        #penFab.pen-parked {
+            transition: left 160ms cubic-bezier(0.2, 0.8, 0.2, 1),
+                        top 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        #penFab.pen-dragging {
+            transition: none;
+            cursor: grabbing;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            #penFab.pen-parked { transition: none !important; }
+        }
+
+        #penFab .icon {
+            width: 24px;
+            height: 24px;
+            stroke: currentColor;
+        }
+
+        #penFab:focus-visible {
+            outline: 2px solid #000000;
+            outline-offset: 2px;
+        }
+
+        /* While the recorder strip is showing under the note-tab bar, lift the
+           button above it. (The strip is inside the composer when open.) */
+        body:not(.pen-composer-open):has(#qnRecording:not([hidden])) #penFab {
+            bottom: calc(212px + env(safe-area-inset-bottom));
+        }
+
+        #penComposer {
+            position: fixed;
+            right: calc(16px + env(safe-area-inset-right));
+            bottom: calc(220px + env(safe-area-inset-bottom));
+            width: 420px;
+            max-width: calc(100vw - 32px);
+            max-height: calc(100dvh - 260px);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 10px 12px 12px;
+            background: #FFFFFF;
+            border: 1px solid #D8D8DC;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+            z-index: 1004;
+            overflow: auto;
+            overscroll-behavior: contain;
+        }
+
+        #penComposer[hidden] { display: none; }
+
+        .pen-composer-head {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-height: 30px;
+        }
+
+        .pen-composer-close {
+            position: relative;
+            width: 34px;
+            height: 34px;
+            min-width: 34px;
+            min-height: 34px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            color: #6B6B70;
+            border-radius: 50%;
+            font-size: 16px;
+            line-height: 1;
+            touch-action: manipulation;
+        }
+
+        /* 44px effective target without a 44px visual. */
+        .pen-composer-close::after {
+            content: '';
+            position: absolute;
+            inset: -5px;
+            border-radius: 50%;
+        }
+
+        .pen-composer-close:focus-visible {
+            outline: 2px solid #000000;
+            outline-offset: 2px;
+        }
+
+        .pen-composer-body {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 0;
+        }
+
+        .pen-composer-status {
+            font-size: 11.5px;
+            line-height: 1.3;
+            color: #6B6B70;
+            min-width: 0;
+            overflow-wrap: anywhere;
+        }
+
+        .pen-composer-status.is-success { color: #15803D; }
+        .pen-composer-status.is-error { color: #B91C1C; }
+
+        /* The existing quick-note bar becomes the composer body while open:
+           no second form, same controls, same save path. */
+        body.pen-composer-open #penComposer .qn-input-bar {
+            position: static;
+            left: auto;
+            right: auto;
+            bottom: auto;
+            transform: none;
+            width: 100%;
+            max-width: none;
+            padding: 0;
+            background: transparent;
+            border: 0;
+            border-radius: 0;
+            box-shadow: none;
+            z-index: auto;
+        }
+
+        body.pen-composer-open #penComposer .qn-recording {
+            position: static;
+            left: auto;
+            right: auto;
+            bottom: auto;
+            transform: none;
+            width: 100%;
+            max-width: none;
+        }
+
+        @media (max-width: 599px) {
+            #penComposer {
+                left: calc(12px + env(safe-area-inset-left));
+                right: calc(12px + env(safe-area-inset-right));
+                width: auto;
+                max-width: none;
+            }
+        }
+
+        /* Desktop/tablet: anchor the FAB and composer to the centred app
+           column (520px at 600-899, 540px at >=900) instead of the viewport
+           corner, so they read as part of the column. 12px inset from the
+           column's right edge; only the horizontal anchoring changes. */
+        @media (min-width: 600px) {
+            #penFab {
+                left: calc(50% + 260px - 68px); /* column right - 12 - 56 */
+                right: auto;
+            }
+            #penComposer {
+                left: calc(50% + 260px - 12px - 420px);
+                right: auto;
+                width: 420px;
+                max-width: calc(100vw - 32px);
+            }
+        }
+
+        @media (min-width: 900px) {
+            #penFab { left: calc(50% + 270px - 68px); }
+            #penComposer {
+                left: calc(50% + 270px - 12px - 460px);
+                width: 460px;
+            }
+        }
+
+        /* Quick Note nav zoom: 220ms scale-in when the tab opens from the nav.
+           The animation lives on an inner layer so #quickNoteView never gets a
+           transform (a transformed ancestor would re-anchor the fixed input
+           bar to itself and skew layout measurements mid-animation). */
+        #quickNoteView .qn-zoom-layer {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+
+        #quickNoteView.qn-zoom .qn-zoom-layer {
+            transform-origin: 50% 35%;
+            animation: qnPanelZoom 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+        }
+
+        @keyframes qnPanelZoom {
+            from { transform: scale(0.96); opacity: 0.6; }
+            to { transform: none; opacity: 1; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            #quickNoteView.qn-zoom .qn-zoom-layer { animation: none !important; }
+        }
+
+        /* ---------- iOS focus-zoom guard ----------
+           iOS Safari zooms the page whenever a focused text-entry control
+           computes below 16px, and does not zoom back out on blur. Keep every
+           text input/textarea at the 16px floor on touch-width viewports
+           (the app's widest mobile breakpoint is 820px); desktop keeps the
+           compact design. Selects never trigger the zoom, so they are left
+           alone. The extra class selectors outrank the component rules on
+           source order (and the :not() chain adds specificity where needed). */
+        @media (max-width: 820px) {
+            input:not(.card-title-input):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="image"]):not([type="range"]):not([type="color"]),
+            textarea,
+            .input-pill,
+            .card-desc-textarea,
+            .check-note-input,
+            .check-date-input,
+            .check-time-input,
+            .check-duration-input,
+            .cover-url-input,
+            .ar-input,
+            .ar-textarea,
+            .qn-text-input,
+            .qn-edit-input,
+            .qn-reply-input,
+            .qn-link-input {
+                font-size: 16px;
+            }
+        }
+
+        /* The 16px floor makes the native date control wider than the old
+           11px one. Give date/time/duration the same stacked layout at 390
+           that the <=360 block already uses, and stop the detail flex item
+           from taking its min-content width (which overflowed at 390). */
+        @media (max-width: 430px) {
+            .check-detail {
+                min-width: 0;
+            }
+            .check-time-edit {
+                flex-wrap: wrap;
+            }
+            .check-date-input {
+                flex: 1 1 100%;
+            }
+            .check-time-input {
+                flex: 1 1 auto;
+                width: auto;
+                min-width: 92px;
+            }
+        }
+
+        /* Neutralise iOS text inflation on rotation without disabling zoom. */
+        html,
+        body {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
     </style>
 </head>
 <body>
@@ -3713,6 +4047,15 @@
                     <span>Add artist</span>
                 </button>
             </div>
+            <div class="ar-lock" id="artistLockBanner" role="note" aria-label="Artists page status">
+                <span class="ar-lock-icon" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </span>
+                <span class="ar-lock-copy">
+                    <span class="ar-lock-title">Artists isn't designed yet</span>
+                    <span class="ar-lock-sub">This page is a placeholder. Your artist data is safe — editing arrives in a later update.</span>
+                </span>
+            </div>
             <div class="ar-count" id="artistCount"></div>
             <div id="artistRows"></div>
         </div>
@@ -3747,14 +4090,16 @@
 
     <!-- Quick Note (middle nav) -->
     <section id="quickNoteView" aria-label="Quick note">
-        <div class="qn-header">
-            <div class="qn-title-wrap">
-                <div class="qn-sub">Private to this device</div>
+        <div class="qn-zoom-layer">
+            <div class="qn-header">
+                <div class="qn-title-wrap">
+                    <div class="qn-sub">Private to this device</div>
+                </div>
             </div>
+            <div id="quickNoteList" class="qn-list" aria-live="polite"></div>
+            <div id="qnSecureNote" class="qn-fallback" hidden>Camera, microphone and location need the app served over https:// or localhost.</div>
+            <div id="qnStatus" class="qn-status" role="status" aria-live="polite"></div>
         </div>
-        <div id="quickNoteList" class="qn-list" aria-live="polite"></div>
-        <div id="qnSecureNote" class="qn-fallback" hidden>Camera, microphone and location need the app served over https:// or localhost.</div>
-        <div id="qnStatus" class="qn-status" role="status" aria-live="polite"></div>
         <form id="quickNoteBar" class="qn-input-bar" autocomplete="off">
             <button type="button" id="qnAttachBtn" class="qn-round" aria-label="Add attachment" onclick="qnOpenSheet()">+</button>
             <button type="button" id="qnCameraBtn" class="qn-round" aria-label="Open camera" onclick="qnOpenCamera()">
@@ -4203,6 +4548,18 @@
         </button>
     </nav>
 
+    <!-- Floating pen quick-note composer (available on every tab) -->
+    <button type="button" id="penFab" aria-label="Open quick note composer" aria-expanded="false" aria-controls="penComposer" onclick="togglePenComposer()">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+    </button>
+    <section id="penComposer" aria-label="Quick note composer" hidden>
+        <div class="pen-composer-head">
+            <button type="button" id="penComposerClose" class="pen-composer-close" aria-label="Close quick note composer" onclick="penComposerClose()">&times;</button>
+            <span id="penComposerStatus" class="pen-composer-status" role="status" aria-live="polite"></span>
+        </div>
+        <div id="penComposerBody" class="pen-composer-body"></div>
+    </section>
+
     <script>
         // Default Sample Data (Matches exact layout of Image 1 and Image 2)
         const defaultData = [
@@ -4258,6 +4615,26 @@
         // Which bottom-nav view is showing. Only 'home' has content; the
         // others (info, clock, settings) intentionally render blank.
         let currentTab = 'home';
+        // Pen composer state. The composer re-hosts the single quick-note bar,
+        // so these remember where to put it back on close.
+        let penBarHome = null;
+        let penStatusTimer = null;
+        let penStatusToken = 0;
+        let qnZoomTimer = null;
+        // Draggable pen state. `penHasCustomPos` means the button is using
+        // explicit left/top (dragged or restored from storage) rather than the
+        // responsive stylesheet anchoring.
+        let penHasCustomPos = false;
+        let penDragState = null;
+        let penSuppressClick = false;
+        // Pen -> composer morph. A rect-based FLIP (Web Animations API) grows
+        // the composer out of the pen on open and shrinks it back on close.
+        // `penComposerPhase` makes open/close interruptions deterministic;
+        // the token invalidates callbacks from a cancelled run.
+        let penMorphAnimations = [];
+        let penMorphTimer = null;
+        let penMorphToken = 0;
+        let penComposerPhase = 'closed'; // 'closed' | 'opening' | 'open' | 'closing'
         // Home shows active cards by default; the achieved view is a UI-only
         // mode (never persisted) so a reload always returns to active cards.
         let homeView = 'active'; // 'active' | 'achieved'
@@ -4721,8 +5098,16 @@
         function computeStatus(item, now) {
             const start = parseWallClock(item.start);
             const end = parseWallClock(item.end);
-            // Incomplete window: stay neutral gray until Save fills the critical times
-            if (!start || !end) return 'scheduled';
+            // Incomplete window: honour an explicit user choice, otherwise stay
+            // neutral gray until Save fills the critical times. Never report
+            // 'pending' without a window.
+            if (!start || !end) {
+                if (item.statusLocked === true &&
+                    ['unchecked', 'checked', 'missed', 'warning'].includes(item.status)) {
+                    return item.status;
+                }
+                return 'scheduled';
+            }
             // Auto-missed stays missed until the user taps the box
             if (item.autoMissed) return 'missed';
             if (item.statusLocked) {
@@ -6219,6 +6604,7 @@
         }
 
         function switchTab(name) {
+            const prevTab = currentTab;
             // Leaving a blank tab must not discard live edit-mode input.
             // Tapping any tab while editing behaves like Close: sync, persist,
             // then leave edit mode before showing the requested tab.
@@ -6245,6 +6631,30 @@
             applyActiveNav(name);
             applyTabVisibility();
             if (wasEditing || leavingAchieved) renderApp({ skipSync: true });
+            // Opening the Quick Note tab from the nav plays the zoom-in. The
+            // composer (if open) is deliberately left untouched.
+            if (name === 'note' && prevTab !== 'note') playQuickNoteZoom();
+        }
+
+        // ~220ms scale-in for the Quick Note tab; the class is removed when the
+        // animation ends. Reduced-motion users get no animation at all.
+        function playQuickNoteZoom() {
+            const view = document.getElementById('quickNoteView');
+            if (!view) return;
+            if (qnZoomTimer) { clearTimeout(qnZoomTimer); qnZoomTimer = null; }
+            view.classList.remove('qn-zoom');
+            // Force a style flush so re-adding the class restarts the keyframes.
+            void view.offsetWidth;
+            let reduced = false;
+            try {
+                reduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+            } catch (e) {}
+            if (reduced) return;
+            view.classList.add('qn-zoom');
+            qnZoomTimer = setTimeout(() => {
+                qnZoomTimer = null;
+                view.classList.remove('qn-zoom');
+            }, 260);
         }
 
         // Remember the focused field so a re-render does not interrupt typing
@@ -7380,6 +7790,8 @@
 
         // ---------- Quick notes (middle nav) ----------
         const QUICK_NOTES_KEY = 'cambodia_quick_notes_v1';
+        // Persisted draggable-pen position (viewport top-left, clamped).
+        const PEER_PEN_POS_KEY = 'cambodia_pen_position_v1';
         const LAST_EXPORT_KEY = 'cambodia_last_export_v1';
         const QN_MAX_EDGE = 1280;
         const QN_JPEG_QUALITY = 0.8;
@@ -8241,21 +8653,584 @@
 
         function qnSetStatus(message, isError) {
             const el = document.getElementById('qnStatus');
-            if (!el) return;
-            el.textContent = message || '';
-            el.classList.toggle('is-error', !!isError);
+            if (el) {
+                el.textContent = message || '';
+                el.classList.toggle('is-error', !!isError);
+            }
+            // Mirror camera/mic/storage feedback into the composer while open.
+            const pen = document.getElementById('penComposerStatus');
+            if (pen && document.body.classList.contains('pen-composer-open')) {
+                pen.textContent = message || '';
+                pen.classList.toggle('is-error', !!isError);
+                pen.classList.remove('is-success');
+            }
         }
 
-        function qnSubmitText() {
+        function setPenComposerStatus(message, kind) {
+            const el = document.getElementById('penComposerStatus');
+            if (!el) return;
+            el.textContent = message || '';
+            el.classList.remove('is-error', 'is-success');
+            if (kind === 'error') el.classList.add('is-error');
+            else if (kind === 'success') el.classList.add('is-success');
+        }
+
+        // The single "create a note from text" path. The note-tab bar and the
+        // pen composer both funnel through here (addQuickNote persists and
+        // re-renders), so storage and the Quick Note list stay in sync.
+        function qnSaveNoteText(text, source) {
+            const value = String(text == null ? '' : text).trim();
+            if (!value) return false;
+            const isPen = source === 'pen' || document.body.classList.contains('pen-composer-open');
+            if (isPen) {
+                penStatusToken++;
+                setPenComposerStatus('processing…');
+            }
+            const saved = addQuickNote({ type: 'text', text: value });
+            if (!saved) {
+                // persistQuickNotes() has already written the reason to #qnStatus.
+                if (isPen) {
+                    const errEl = document.getElementById('qnStatus');
+                    const reason = (errEl && errEl.textContent) || 'This note could not be saved in this browser.';
+                    setPenComposerStatus(reason, 'error');
+                }
+                return false;
+            }
+            if (isPen) {
+                // Keep "processing…" on screen for at least one poll/paint
+                // before reporting success.
+                const token = penStatusToken;
+                if (penStatusTimer) clearTimeout(penStatusTimer);
+                penStatusTimer = setTimeout(() => {
+                    penStatusTimer = null;
+                    if (token !== penStatusToken) return;
+                    setPenComposerStatus('success', 'success');
+                }, 160);
+            }
+            return true;
+        }
+
+        function qnSubmitText(source) {
             const input = document.getElementById('qnTextInput');
             if (!input) return;
-            const text = input.value.trim();
+            const text = String(input.value == null ? '' : input.value).trim();
             if (!text) return;
-            const saved = addQuickNote({ type: 'text', text: text });
+            const isPen = source === 'pen' || document.body.classList.contains('pen-composer-open');
+            const saved = qnSaveNoteText(text, isPen ? 'pen' : '');
+            // On failure keep the typed text so it can be retried.
+            if (!saved) return;
             input.value = '';
             input.style.height = '';
-            // Keep a storage-error message from persistQuickNotes visible
-            if (saved) qnSetStatus('');
+            if (!isPen) qnSetStatus('');
+        }
+
+        // ---------- Pen composer open/close ----------
+        // Move the one existing quick-note bar (and its recorder strip) into
+        // the composer, then put them back exactly where they were.
+        function restorePenChild(el, parent, next) {
+            if (!el || !parent) return;
+            const anchor = next && next.parentNode === parent ? next : null;
+            parent.insertBefore(el, anchor);
+        }
+
+        // ---------- Draggable pen (Pointer Events) ----------
+        // The pen keeps a 44px target, survives a tap (click still toggles) and
+        // becomes a free-floating button once the pointer moves past 8px.
+        const PEN_DRAG_THRESHOLD = 8;
+        const PEN_EDGE_GUTTER = 8;
+        const PEN_NAV_CLEARANCE = 12;
+
+        function penNavTop() {
+            const nav = document.querySelector('.bottom-nav');
+            if (nav) {
+                const cs = getComputedStyle(nav);
+                const r = nav.getBoundingClientRect();
+                if (cs.display !== 'none' && r.height > 0) return r.top;
+            }
+            return window.innerHeight;
+        }
+
+        function penSafeArea() {
+            const fab = document.getElementById('penFab');
+            const w = (fab && fab.offsetWidth) || 56;
+            const h = (fab && fab.offsetHeight) || 56;
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            // Stay above the nav (at least 12px) and 8px from every edge.
+            const maxY = Math.min(vh - h - PEN_EDGE_GUTTER, penNavTop() - PEN_NAV_CLEARANCE - h);
+            return {
+                w: w,
+                h: h,
+                minX: PEN_EDGE_GUTTER,
+                minY: PEN_EDGE_GUTTER,
+                maxX: Math.max(PEN_EDGE_GUTTER, vw - w - PEN_EDGE_GUTTER),
+                maxY: Math.max(PEN_EDGE_GUTTER, maxY)
+            };
+        }
+
+        function penClamp(x, y) {
+            const area = penSafeArea();
+            return {
+                x: Math.min(Math.max(Number(x) || 0, area.minX), area.maxX),
+                y: Math.min(Math.max(Number(y) || 0, area.minY), area.maxY)
+            };
+        }
+
+        function penApplyPosition(x, y, animate) {
+            const fab = document.getElementById('penFab');
+            if (!fab) return null;
+            const p = penClamp(x, y);
+            fab.classList.toggle('pen-parked', !!animate);
+            fab.style.left = p.x + 'px';
+            fab.style.top = p.y + 'px';
+            fab.style.right = 'auto';
+            fab.style.bottom = 'auto';
+            penHasCustomPos = true;
+            return p;
+        }
+
+        function penStorePosition(x, y) {
+            try {
+                localStorage.setItem(PEER_PEN_POS_KEY, JSON.stringify({
+                    x: Math.round(x), y: Math.round(y)
+                }));
+            } catch (e) {}
+        }
+
+        // Restore a saved position and clamp it into the current viewport, so a
+        // spot saved on a wide screen stays valid on a phone.
+        function loadPenPosition() {
+            let raw = null;
+            try { raw = localStorage.getItem(PEER_PEN_POS_KEY); } catch (e) { return; }
+            if (!raw) return;
+            let pos = null;
+            try { pos = JSON.parse(raw); } catch (e) { return; }
+            if (!pos) return;
+            const x = Number(pos.x);
+            const y = Number(pos.y);
+            if (!isFinite(x) || !isFinite(y)) return;
+            penApplyPosition(x, y, true);
+        }
+
+        function penHandleResize() {
+            if (!penHasCustomPos) return;
+            const fab = document.getElementById('penFab');
+            if (!fab) return;
+            const r = fab.getBoundingClientRect();
+            penApplyPosition(r.left, r.top, false);
+            if (document.body.classList.contains('pen-composer-open')) placePenComposer();
+        }
+
+        function penPointerDown(e) {
+            if (e.isPrimary === false) return;
+            if (e.pointerType === 'mouse' && e.button !== 0) return;
+            // A drag during the morph must not inherit a scaled/offset pen:
+            // settle the run before capturing the pointer.
+            if (penMorphAnimations.length) {
+                const wasOpening = penComposerPhase === 'opening';
+                const wasClosing = penComposerPhase === 'closing';
+                cancelPenMorph();
+                if (wasOpening) {
+                    penComposerPhase = 'open';
+                    focusPenComposerInput();
+                } else if (wasClosing) {
+                    finalizePenComposerClose();
+                }
+            }
+            const fab = e.currentTarget;
+            const r = fab.getBoundingClientRect();
+            penDragState = {
+                id: e.pointerId,
+                startX: e.clientX,
+                startY: e.clientY,
+                originLeft: r.left,
+                originTop: r.top,
+                dragging: false
+            };
+            try { fab.setPointerCapture(e.pointerId); } catch (err) {}
+        }
+
+        function penPointerMove(e) {
+            const st = penDragState;
+            if (!st || st.id !== e.pointerId) return;
+            const dx = e.clientX - st.startX;
+            const dy = e.clientY - st.startY;
+            if (!st.dragging) {
+                if (Math.sqrt(dx * dx + dy * dy) <= PEN_DRAG_THRESHOLD) return;
+                st.dragging = true;
+                const fab = e.currentTarget;
+                fab.classList.remove('pen-parked');
+                fab.classList.add('pen-dragging');
+                // Freeze the stylesheet-anchored position into explicit coords.
+                fab.style.left = st.originLeft + 'px';
+                fab.style.top = st.originTop + 'px';
+                fab.style.right = 'auto';
+                fab.style.bottom = 'auto';
+                penHasCustomPos = true;
+            }
+            // Keep the page from scrolling/panning under the drag.
+            if (e.cancelable) e.preventDefault();
+            penApplyPosition(st.originLeft + dx, st.originTop + dy, false);
+        }
+
+        function penPointerUp(e) {
+            const st = penDragState;
+            if (!st || st.id !== e.pointerId) return;
+            penDragState = null;
+            const fab = e.currentTarget;
+            try { fab.releasePointerCapture(e.pointerId); } catch (err) {}
+            if (!st.dragging) return; // a tap: let the click toggle the composer
+            fab.classList.remove('pen-dragging');
+            if (e.cancelable) e.preventDefault();
+            // Swallow the click that follows this drag.
+            penSuppressClick = true;
+            setTimeout(() => { penSuppressClick = false; }, 0);
+            const r = fab.getBoundingClientRect();
+            const p = penApplyPosition(r.left, r.top, true);
+            if (p) penStorePosition(p.x, p.y);
+        }
+
+        function cancelPenDrag() {
+            const st = penDragState;
+            if (!st) return;
+            penDragState = null;
+            const fab = document.getElementById('penFab');
+            if (fab) fab.classList.remove('pen-dragging');
+            if (st.dragging) {
+                const r = fab ? fab.getBoundingClientRect() : null;
+                if (r) {
+                    const p = penApplyPosition(r.left, r.top, true);
+                    if (p) penStorePosition(p.x, p.y);
+                }
+            }
+        }
+
+        function bindPenDrag() {
+            const fab = document.getElementById('penFab');
+            if (!fab) return;
+            fab.addEventListener('pointerdown', penPointerDown);
+            fab.addEventListener('pointermove', penPointerMove);
+            fab.addEventListener('pointerup', penPointerUp);
+            fab.addEventListener('pointercancel', cancelPenDrag);
+            // Keep the browser from starting a native drag/selection.
+            fab.addEventListener('dragstart', e => e.preventDefault());
+            window.addEventListener('resize', penHandleResize);
+        }
+
+        // ---------- Composer placement while the pen is free-floating ----------
+        // Opens above the pen when there is room, otherwise below, clamped to the
+        // viewport. With no custom pen position the stylesheet anchoring wins.
+        function clearPenComposerPlacement(composer) {
+            if (!composer || !composer.style) return;
+            composer.style.left = '';
+            composer.style.top = '';
+            composer.style.right = '';
+            composer.style.bottom = '';
+            composer.style.width = '';
+            composer.style.maxWidth = '';
+        }
+
+        function placePenComposer() {
+            const composer = document.getElementById('penComposer');
+            const fab = document.getElementById('penFab');
+            if (!composer || !fab || composer.hidden) return;
+            if (!penHasCustomPos) { clearPenComposerPlacement(composer); return; }
+            const f = fab.getBoundingClientRect();
+            const cw = composer.offsetWidth;
+            const ch = composer.offsetHeight;
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            const gutter = 12;
+            // Horizontal: align the panel's right edge with the pen, clamped.
+            let left = f.right - cw;
+            left = Math.min(Math.max(left, gutter), Math.max(gutter, vw - cw - gutter));
+            // Vertical: prefer above the pen; flip below when space is tight.
+            const gap = 8;
+            const spaceAbove = f.top - gap - gutter;
+            const spaceBelow = vh - gutter - (f.bottom + gap);
+            let top;
+            if (spaceAbove >= ch || spaceAbove >= spaceBelow) top = f.top - gap - ch;
+            else top = f.bottom + gap;
+            top = Math.min(Math.max(top, gutter), Math.max(gutter, vh - ch - gutter));
+            composer.style.left = Math.round(left) + 'px';
+            composer.style.top = Math.round(top) + 'px';
+            composer.style.right = 'auto';
+            composer.style.bottom = 'auto';
+            composer.style.width = cw + 'px';
+            composer.style.maxWidth = 'calc(100vw - 24px)';
+        }
+
+        // ---------- Pen -> composer morph (rect-based FLIP) ----------
+        // The composer's resting layout is never animated: only transform and
+        // opacity change, so open/close end pixel-identical to the static
+        // rendering. Every inline style is removed when a run settles, and a
+        // token + timeout fallback make interruption deterministic.
+        const PEN_MORPH_MS = 220;
+        const PEN_MORPH_EASE = 'cubic-bezier(0.2, 0.8, 0.2, 1)';
+        // Opening: the pen shrinks and fades out as the composer takes over.
+        // Closing: it fades back to full size and opacity. Both end at the
+        // class-driven rest state, which also hides the icon while open.
+        const PEN_MORPH_PEN_OPEN_FRAMES = [
+            { transform: 'scale(1)', opacity: 1 },
+            { transform: 'scale(0.84)', opacity: 0.4, offset: 0.55 },
+            { transform: 'scale(0.9)', opacity: 0 }
+        ];
+        const PEN_MORPH_PEN_CLOSE_FRAMES = [
+            { transform: 'scale(0.9)', opacity: 0 },
+            { transform: 'scale(1)', opacity: 1 }
+        ];
+
+        function penMorphReduced() {
+            try {
+                return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function clearPenMorphStyles() {
+            [document.getElementById('penComposer'), document.getElementById('penFab')].forEach(el => {
+                if (!el || !el.style) return;
+                el.style.transform = '';
+                el.style.transformOrigin = '';
+                el.style.transition = '';
+                el.style.opacity = '';
+                el.style.willChange = '';
+            });
+        }
+
+        function cancelPenMorph() {
+            penMorphToken++;
+            if (penMorphTimer) { clearTimeout(penMorphTimer); penMorphTimer = null; }
+            const anims = penMorphAnimations;
+            penMorphAnimations = [];
+            anims.forEach(a => { try { a.cancel(); } catch (e) {} });
+            clearPenMorphStyles();
+        }
+
+        // The origin sits on the composer corner nearest the pen, so the scale
+        // reads as the pen swelling into the panel rather than a slide.
+        function penMorphOrigin(baseRect, penRect) {
+            if (!penRect || !baseRect.width || !baseRect.height) return { x: 0, y: 0 };
+            const pcx = penRect.left + penRect.width / 2;
+            const pcy = penRect.top + penRect.height / 2;
+            return {
+                x: pcx < baseRect.left + baseRect.width / 2 ? 0 : baseRect.width,
+                y: pcy < baseRect.top + baseRect.height / 2 ? 0 : baseRect.height
+            };
+        }
+
+        // With transform-origin at (origin.x, origin.y), this transform maps the
+        // composer's resting border box exactly onto targetRect.
+        function penMorphTransform(baseRect, targetRect, origin) {
+            const sx = targetRect.width / Math.max(1, baseRect.width);
+            const sy = targetRect.height / Math.max(1, baseRect.height);
+            const tx = (targetRect.left - baseRect.left) - origin.x * (1 - sx);
+            const ty = (targetRect.top - baseRect.top) - origin.y * (1 - sy);
+            return 'translate(' + tx.toFixed(3) + 'px, ' + ty.toFixed(3) + 'px) scale(' +
+                sx.toFixed(4) + ', ' + sy.toFixed(4) + ')';
+        }
+
+        function focusPenComposerInput() {
+            const input = document.getElementById('qnTextInput');
+            if (input && typeof input.focus === 'function') {
+                try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); }
+            }
+        }
+
+        // Runs both element animations and settles exactly once, on finish or
+        // on the timeout fallback. A newer run invalidates this one by token.
+        function startPenMorph(composerFrames, penFrames, onDone) {
+            const composer = document.getElementById('penComposer');
+            const fab = document.getElementById('penFab');
+            if (!composer || !fab || typeof composer.animate !== 'function') {
+                onDone();
+                return;
+            }
+            const token = ++penMorphToken;
+            let done = false;
+            composer.style.willChange = 'transform, opacity';
+            fab.style.willChange = 'transform, opacity';
+            const finish = () => {
+                if (done) return;
+                done = true;
+                if (token !== penMorphToken) return;
+                if (penMorphTimer) { clearTimeout(penMorphTimer); penMorphTimer = null; }
+                const anims = penMorphAnimations;
+                penMorphAnimations = [];
+                anims.forEach(a => { try { a.cancel(); } catch (e) {} });
+                clearPenMorphStyles();
+                onDone();
+            };
+            const opts = { duration: PEN_MORPH_MS, easing: PEN_MORPH_EASE, fill: 'both' };
+            try {
+                const ca = composer.animate(composerFrames, opts);
+                const fa = fab.animate(penFrames, opts);
+                penMorphAnimations = [ca, fa];
+                ca.onfinish = finish;
+                fa.onfinish = finish;
+            } catch (e) {
+                finish();
+                return;
+            }
+            // Never rely on onfinish alone (background tabs, interrupted paint).
+            penMorphTimer = setTimeout(finish, PEN_MORPH_MS + 120);
+        }
+
+        function finalizePenComposerClose() {
+            const composer = document.getElementById('penComposer');
+            if (!composer) return;
+            if (penComposerPhase === 'closed' && composer.hidden) return;
+            penComposerPhase = 'closed';
+            const bar = document.getElementById('quickNoteBar');
+            const rec = document.getElementById('qnRecording');
+            if (penBarHome) {
+                restorePenChild(bar, penBarHome.barParent, penBarHome.barNext);
+                restorePenChild(rec, penBarHome.recParent, penBarHome.recNext);
+            }
+            penBarHome = null;
+            composer.hidden = true;
+            clearPenComposerPlacement(composer);
+            clearPenMorphStyles();
+            document.body.classList.remove('pen-composer-open');
+            if (penStatusTimer) { clearTimeout(penStatusTimer); penStatusTimer = null; }
+            penStatusToken++;
+            setPenComposerStatus('');
+            const input = document.getElementById('qnTextInput');
+            if (input) input.style.height = '';
+            const fab = document.getElementById('penFab');
+            if (fab) {
+                fab.setAttribute('aria-expanded', 'false');
+                // Visible and focusable again: back into the normal tab order.
+                fab.removeAttribute('tabindex');
+                try { fab.focus({ preventScroll: true }); } catch (e) { fab.focus(); }
+            }
+        }
+
+        function penComposerOpen() {
+            const composer = document.getElementById('penComposer');
+            const bodyEl = document.getElementById('penComposerBody');
+            if (!composer || !bodyEl) return;
+            // Re-opening while the close animation runs: settle that run first
+            // so the composer re-enters from the pen in a known state.
+            if (penComposerPhase === 'closing') {
+                cancelPenMorph();
+                finalizePenComposerClose();
+            }
+            if (!composer.hidden) return;
+            cancelPenMorph();
+            const bar = document.getElementById('quickNoteBar');
+            const rec = document.getElementById('qnRecording');
+            penBarHome = {
+                barParent: bar ? bar.parentNode : null,
+                barNext: bar ? bar.nextSibling : null,
+                recParent: rec ? rec.parentNode : null,
+                recNext: rec ? rec.nextSibling : null
+            };
+            if (bar) bodyEl.appendChild(bar);
+            if (rec) bodyEl.appendChild(rec);
+            composer.hidden = false;
+            // The open state class turns the re-hosted bar from fixed to flow,
+            // which is what gives the composer its real height for placement.
+            document.body.classList.add('pen-composer-open');
+            placePenComposer();
+            const fab = document.getElementById('penFab');
+            if (fab) {
+                fab.setAttribute('aria-expanded', 'true');
+                // Hidden at rest while open: keep the icon out of the tab order.
+                fab.setAttribute('tabindex', '-1');
+            }
+            if (penStatusTimer) { clearTimeout(penStatusTimer); penStatusTimer = null; }
+            penStatusToken++;
+            setPenComposerStatus('');
+
+            if (penMorphReduced() || !fab) {
+                penComposerPhase = 'open';
+                focusPenComposerInput();
+                return;
+            }
+
+            penComposerPhase = 'opening';
+            const cRect = composer.getBoundingClientRect();
+            const fRect = fab.getBoundingClientRect();
+            if (!cRect.width || !cRect.height) {
+                penComposerPhase = 'open';
+                focusPenComposerInput();
+                return;
+            }
+            const origin = penMorphOrigin(cRect, fRect);
+            const fromTransform = penMorphTransform(cRect, fRect, origin);
+            composer.style.transformOrigin = origin.x + 'px ' + origin.y + 'px';
+            startPenMorph(
+                [
+                    { transform: fromTransform, opacity: 0.35 },
+                    { transform: 'translate(0px, 0px) scale(1, 1)', opacity: 1 }
+                ],
+                PEN_MORPH_PEN_OPEN_FRAMES,
+                () => {
+                    penComposerPhase = 'open';
+                    focusPenComposerInput();
+                }
+            );
+        }
+
+        function penComposerClose() {
+            const composer = document.getElementById('penComposer');
+            if (!composer || composer.hidden) return;
+            if (penComposerPhase === 'closing') return;
+            const fab = document.getElementById('penFab');
+            // If the open run is still in flight, start the reverse from the
+            // composer's current *visual* rect (not the resting one) so there
+            // is no jump when the open animation is cancelled.
+            const midOpen = penComposerPhase === 'opening' && penMorphAnimations.length > 0;
+            const visualRect = midOpen ? composer.getBoundingClientRect() : null;
+
+            cancelPenMorph();
+            penComposerPhase = 'closing';
+            if (fab) fab.setAttribute('aria-expanded', 'false');
+            if (penStatusTimer) { clearTimeout(penStatusTimer); penStatusTimer = null; }
+            penStatusToken++;
+
+            if (penMorphReduced() || !fab || !composer.animate) {
+                finalizePenComposerClose();
+                return;
+            }
+
+            const cRect = composer.getBoundingClientRect();
+            const fRect = fab.getBoundingClientRect();
+            if (!cRect.width || !cRect.height) {
+                finalizePenComposerClose();
+                return;
+            }
+            const origin = penMorphOrigin(cRect, fRect);
+            const fromTransform = visualRect
+                ? penMorphTransform(cRect, visualRect, origin)
+                : 'translate(0px, 0px) scale(1, 1)';
+            const toTransform = penMorphTransform(cRect, fRect, origin);
+            composer.style.transformOrigin = origin.x + 'px ' + origin.y + 'px';
+            startPenMorph(
+                [
+                    { transform: fromTransform, opacity: visualRect ? 0.7 : 1 },
+                    { transform: toTransform, opacity: 0.3 }
+                ],
+                PEN_MORPH_PEN_CLOSE_FRAMES,
+                finalizePenComposerClose
+            );
+        }
+
+        function togglePenComposer() {
+            // A click synthesized at the end of a drag must not toggle anything.
+            if (penSuppressClick) {
+                penSuppressClick = false;
+                return;
+            }
+            // While the composer is open the pen is hidden and inert; it is not
+            // a close affordance (X, Escape and the keyboard toggle close it).
+            if (document.body.classList.contains('pen-composer-open')) return;
+            const composer = document.getElementById('penComposer');
+            if (penComposerPhase === 'closing') penComposerOpen();
+            else if (composer && !composer.hidden) penComposerClose();
+            else penComposerOpen();
         }
 
         function qnAutoGrow(el) {
@@ -10294,6 +11269,16 @@
             order.forEach(node => row.appendChild(node));
         }
 
+        // The panel is shared by imports (Restore group) and erase (Danger
+        // zone). Move it next to the control that armed it so the prompt is
+        // never shown in a different card from the button the user pressed.
+        function placeSettingsConfirm(hostId) {
+            const panel = document.getElementById('settingsConfirmPanel');
+            const host = document.getElementById(hostId);
+            if (!panel || !host) return;
+            if (panel.parentNode !== host) host.appendChild(panel);
+        }
+
         function showSettingsConfirm(title, message, label, opts) {
             const options = opts || {};
             const panel = document.getElementById('settingsConfirmPanel');
@@ -10301,6 +11286,16 @@
             const msgEl = document.getElementById('settingsConfirmMsg');
             const btn = document.getElementById('settingsConfirmBtn');
             const mergeBtn = document.getElementById('settingsMergeBtn');
+            // Reset erase-only dialog semantics; eraseAllData re-applies them.
+            if (panel) {
+                panel.classList.remove('is-erase');
+                panel.removeAttribute('role');
+                panel.removeAttribute('aria-modal');
+                panel.removeAttribute('aria-labelledby');
+                panel.removeAttribute('aria-describedby');
+                panel.removeAttribute('aria-live');
+            }
+            if (msgEl) msgEl.removeAttribute('aria-live');
             if (titleEl) titleEl.textContent = title;
             if (msgEl) msgEl.textContent = message;
             if (btn) {
@@ -10309,17 +11304,28 @@
             }
             if (mergeBtn) mergeBtn.hidden = !options.showMerge;
             if (panel) panel.classList.toggle('is-import', !!options.showMerge);
+            // Imports keep the choice in the Restore group; erase sits with
+            // the Danger zone control that opened it.
+            placeSettingsConfirm(options.showMerge ? 'settingsRestoreGroup' : 'settingsDangerGroup');
             layoutSettingsConfirm();
             settingsConfirmArmed = false;
             if (panel) panel.hidden = false;
         }
 
         function cancelSettingsConfirm() {
+            const wasErase = !!(settingsConfirmAction && settingsConfirmAction.type === 'erase');
             settingsConfirmAction = null;
             settingsPendingImport = null;
             settingsConfirmArmed = false;
             const panel = document.getElementById('settingsConfirmPanel');
             if (panel) panel.hidden = true;
+            // Erase is armed from the Danger zone: put focus back there.
+            if (wasErase) {
+                const erase = document.getElementById('eraseAllBtn');
+                if (erase && typeof erase.focus === 'function') {
+                    try { erase.focus({ preventScroll: true }); } catch (e) {}
+                }
+            }
         }
 
         function mergeConfirmAction() {
@@ -10359,11 +11365,32 @@
             settingsConfirmAction = { type: 'erase' };
             settingsPendingImport = null;
             showSettingsConfirm(
-                'Erase all data?',
+                'Are you sure you want to erase your data?',
                 'This deletes every task and quick note stored in this browser. This cannot be undone.',
                 'Erase everything',
                 { showReplace: true, showMerge: false }
             );
+            // The panel now sits under the Danger zone control; make sure the
+            // question is on screen immediately after the press.
+            const panel = document.getElementById('settingsConfirmPanel');
+            const msgEl = document.getElementById('settingsConfirmMsg');
+            if (panel) {
+                panel.classList.add('is-erase');
+                panel.setAttribute('role', 'alertdialog');
+                panel.setAttribute('aria-modal', 'false');
+                panel.setAttribute('aria-labelledby', 'settingsConfirmTitle');
+                panel.setAttribute('aria-describedby', 'settingsConfirmMsg');
+                panel.setAttribute('aria-live', 'assertive');
+                if (typeof panel.scrollIntoView === 'function') {
+                    try { panel.scrollIntoView({ block: 'center', behavior: 'auto' }); } catch (e) {}
+                }
+            }
+            // Announce assertively, then land on the safe choice.
+            if (msgEl) msgEl.setAttribute('aria-live', 'assertive');
+            const cancel = document.getElementById('settingsConfirmCancel');
+            if (cancel && typeof cancel.focus === 'function') {
+                try { cancel.focus({ preventScroll: true }); } catch (e) {}
+            }
         }
 
         function applyEraseAll() {
@@ -13194,6 +14221,8 @@
                 });
             } catch (e) {}
             bindQuickNoteEvents();
+            bindPenDrag();
+            loadPenPosition();
             updateClock();
             setInterval(updateClock, 1000);
             initReorderHint();
@@ -13246,7 +14275,11 @@
                 if (camera && !camera.hidden) { qnCloseCamera(); return; }
                 if (link && !link.hidden) { qnCloseLink(); return; }
                 if (sheet && !sheet.hidden) { qnCloseSheet(); return; }
-                if (confirm && !confirm.hidden) cancelSettingsConfirm();
+                if (confirm && !confirm.hidden) { cancelSettingsConfirm(); return; }
+                // The transfer modal's handler runs first; if it consumed this
+                // Escape (or is guarding a live transfer) leave the composer be.
+                if (e.defaultPrevented) return;
+                if (document.body.classList.contains('pen-composer-open')) penComposerClose();
             });
             // Always open on the designed Home page, never on a blank tab.
             switchTab('home');
