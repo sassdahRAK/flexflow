@@ -112,6 +112,12 @@
         }
 
         #headerActions[hidden] { display: none; }
+        #headerActions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+        }
 
         .header h1 {
             font-size: 28px;
@@ -1031,6 +1037,233 @@
             inset: 0;
         }
 
+        /* ---------- Achieved cards ---------- */
+        /* Header achieved toggle: icon-only, 44x44, filled when the achieved
+           view is active (aria-pressed carries the same state). */
+        .achieved-toggle {
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+            min-height: 44px;
+            flex: 0 0 auto;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #FFFFFF;
+            border: 1px solid #D8D8DC;
+            color: #1C1C1E;
+            cursor: pointer;
+            transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+        }
+
+        .achieved-toggle::after { inset: 0; }
+
+        .achieved-toggle[aria-pressed="true"] {
+            background: #000000;
+            border-color: #000000;
+            color: #FFFFFF;
+        }
+
+        .achieved-toggle:focus-visible {
+            outline: 2px solid #0062CC;
+            outline-offset: 2px;
+        }
+
+        /* Filter chips replacing Add New Card while the achieved view is on */
+        .achieved-filters {
+            display: none;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        body.home-achieved .add-card-btn { display: none; }
+        body.home-achieved .achieved-filters { display: flex; }
+        /* Editing never offers the outcome chips (or Add New Card) */
+        body.home-achieved.edit-mode .achieved-filters { display: none; }
+
+        .achieved-filter {
+            min-height: 44px;
+            padding: 0 16px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #FFFFFF;
+            border: 1px solid #D8D8DC;
+            color: #1C1C1E;
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1;
+            cursor: pointer;
+            transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+        }
+
+        .achieved-filter::after { inset: 0; }
+
+        .achieved-filter[aria-pressed="true"] {
+            background: #000000;
+            border-color: #000000;
+            color: #FFFFFF;
+        }
+
+        .achieved-filter-count {
+            font-variant-numeric: tabular-nums;
+            opacity: 0.72;
+        }
+
+        .achieved-filter:focus-visible {
+            outline: 2px solid #0062CC;
+            outline-offset: 2px;
+        }
+
+        /* Footer now groups archive + star so they stay one tap cluster */
+        .card-footer-actions {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            flex: 0 0 auto;
+        }
+
+        .card-footer-actions .card-star-btn { margin-left: 0; }
+
+        .card-archive-btn {
+            flex: 0 0 auto;
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+            min-height: 44px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #6B6B70;
+            background: transparent;
+            cursor: pointer;
+            transition: background-color 0.15s ease, color 0.15s ease;
+        }
+
+        .card-archive-btn .icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .card-archive-btn.is-achieved { color: #1C1C1E; }
+
+        .card-archive-btn:hover { background: #F2F2F7; }
+        .card-archive-btn::after { inset: 0; }
+
+        .card-archive-btn:focus-visible {
+            outline: 2px solid #0062CC;
+            outline-offset: 2px;
+        }
+
+        /* Compact two-segment outcome pill, subordinate to the card title */
+        .card-outcome-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .card-outcome-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #6B6B70;
+        }
+
+        .card-outcome {
+            display: inline-flex;
+            align-items: stretch;
+            flex: 0 0 auto;
+        }
+
+        .card-outcome-btn {
+            min-height: 44px;
+            min-width: 44px;
+            padding: 0 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            background: #FFFFFF;
+            border: 1px solid #D8D8DC;
+            color: #6B6B70;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1;
+            cursor: pointer;
+            transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+        }
+
+        .card-outcome-btn::after { inset: 0; }
+        .card-outcome-succeeded { border-radius: 999px 0 0 999px; }
+        .card-outcome-failed { border-radius: 0 999px 999px 0; }
+
+        .card-outcome-succeeded[aria-pressed="true"] {
+            background: #E8F8EC;
+            border-color: currentColor;
+            color: #15803D;
+        }
+
+        .card-outcome-failed[aria-pressed="true"] {
+            background: #FDECEC;
+            border-color: currentColor;
+            color: #B91C1C;
+        }
+
+        .card-outcome-btn:focus-visible {
+            position: relative;
+            z-index: 1;
+            outline: 2px solid #0062CC;
+            outline-offset: 2px;
+        }
+
+        /* Achieved empty states: specific to the selected outcome filter */
+        .empty-state.card-list-empty {
+            background: #FFFFFF;
+            border: 1px solid #E5E5EA;
+            border-radius: 20px;
+            padding: 28px 20px;
+            text-align: center;
+            color: #6B6B70;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Inline "Achieved" jump inside the empty-state sentence: a real
+           button with a 44px touch target, underlined so the cue is not
+           colour-only. */
+        .empty-state-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            min-width: 44px;
+            padding: 0 6px;
+            margin: -12px 0;
+            background: transparent;
+            color: #1C1C1E;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            cursor: pointer;
+        }
+
+        .empty-state-link::after { inset: 0; }
+
+        .empty-state-link:focus-visible {
+            outline: 2px solid #0062CC;
+            outline-offset: 2px;
+            border-radius: 6px;
+        }
+
         /* Bottom Fixed Navigation Bar */
         .bottom-nav {
             position: fixed;
@@ -1081,8 +1314,6 @@
             max-width: 420px;
             flex-direction: column;
             gap: 12px;
-            /* Never let the body flex row clip/stretch the scroll extent */
-            align-self: flex-start;
         }
 
         body.tab-clock #calendarView {
@@ -1668,7 +1899,11 @@
             .btn,
             .bottom-nav,
             .nav-item,
-            .reorder-hint {
+            .reorder-hint,
+            .achieved-toggle,
+            .achieved-filter,
+            .card-archive-btn,
+            .card-outcome-btn {
                 transition-duration: 0.01ms !important;
                 transition-delay: 0ms !important;
                 animation-duration: 0.01ms !important;
@@ -2617,6 +2852,812 @@
             .qn-recording { width: calc(100% - 16px); }
             .set-btn { flex: 1 1 100%; }
         }
+
+        /* These views are declared after the shared 600px/900px width steps
+           above, so repeat the step here to keep every tab column exactly as
+           wide as .page-header (the cascade would otherwise keep 420px). */
+        @media (min-width: 600px) {
+            #calendarView,
+            #infoView,
+            #quickNoteView,
+            #settingsView,
+            .qn-input-bar,
+            .qn-recording,
+            .qn-sheet { max-width: 520px; }
+        }
+
+        @media (min-width: 900px) {
+            #calendarView,
+            #infoView,
+            #quickNoteView,
+            #settingsView,
+            .qn-input-bar,
+            .qn-recording,
+            .qn-sheet { max-width: 540px; }
+        }
+
+        /* ---------- Peer transfer: Settings entry ---------- */
+        body.tf-open { overflow: hidden; }
+
+        #settingsView #peerTransferPanel .peer-scope-block {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 12px 16px;
+            box-sizing: border-box;
+        }
+
+        /* Keep the native select's look but give it a full 44px target */
+        #settingsView #peerScopeSelect {
+            width: 100%;
+            height: 44px;
+            font-size: 13px;
+        }
+
+        #settingsView .peer-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 10px 16px 12px;
+            box-sizing: border-box;
+        }
+
+        #settingsView .peer-actions .set-btn {
+            width: 100%;
+            height: 44px;
+            min-height: 44px;
+        }
+
+        #settingsView #peerScopeError[hidden],
+        #settingsView #peerScopeDesc[hidden] { display: none; }
+
+        #settingsView #peerScopeDesc { min-height: 34px; }
+        #settingsView #peerCapability { border-top: 1px solid #D8D8DC; }
+
+        /* Import row: Browse is the only control; the choice happens later */
+        #settingsView .import-row { align-items: center; }
+        #settingsView .import-hint {
+            flex: 1 1 0;
+            min-width: 0;
+            font-size: 11px;
+            line-height: 1.4;
+            color: #6B6B70;
+        }
+
+        /* Choice buttons share the row; the destructive one is never filled */
+        #settingsView #settingsConfirmPanel .set-row .set-btn {
+            flex: 1 1 auto;
+            min-width: 96px;
+        }
+
+        /* Armed replace: danger colours the label only, never a red fill */
+        #settingsView #settingsConfirmBtn.set-danger {
+            background: #FFFFFF;
+            color: #B91C1C;
+            border-color: #B91C1C;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        #settingsView #settingsConfirmBtn.set-danger:active { background: #FDECEC; opacity: 1; }
+
+        /* Mobile: Merge (primary) · Replace (danger) · Cancel (quiet) last.
+           DOM order is rewritten in JS (not CSS order) so Tab follows the
+           visual order on every width. */
+        @media (max-width: 520px) {
+            #settingsView #settingsConfirmPanel.is-import #settingsConfirmRow {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            #settingsView #settingsConfirmPanel.is-import #settingsConfirmRow .set-btn {
+                flex: 1 1 auto;
+                width: 100%;
+                min-width: 0;
+                justify-content: center;
+            }
+        }
+
+        /* Brief arrival tint when the import choice panel appears */
+        #settingsView #settingsConfirmPanel.is-arrived {
+            animation: setPanelArrive 600ms ease-out 1;
+        }
+
+        @keyframes setPanelArrive {
+            from { background-color: #E9EFF8; }
+            to { background-color: #F7F7FA; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            #settingsView #settingsConfirmPanel.is-arrived { animation: none !important; }
+        }
+
+        /* ---------- Peer transfer: modal ---------- */
+        .tf-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 2100;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .tf-modal[hidden] { display: none; }
+
+        .tf-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.38);
+            -webkit-backdrop-filter: blur(3px);
+            backdrop-filter: blur(3px);
+        }
+
+        .tf-sheet {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 540px;
+            max-height: 92vh;
+            max-height: 92dvh;
+            background: #FFFFFF;
+            color: #1C1C1E;
+            border-radius: 24px 24px 0 0;
+            box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.22);
+            overflow: hidden;
+        }
+
+        .tf-head {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            flex: 0 0 auto;
+            padding: 20px 20px 12px;
+            background: #FFFFFF;
+            border-bottom: 1px solid #EDEDF0;
+        }
+
+        .tf-head-text { flex: 1 1 auto; min-width: 0; }
+
+        .tf-eyebrow {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #6B6B70;
+        }
+
+        .tf-title {
+            margin-top: 4px;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.4px;
+            line-height: 1.15;
+            color: #1C1C1E;
+        }
+
+        .tf-subtitle {
+            margin-top: 4px;
+            font-size: 13px;
+            line-height: 1.45;
+            color: #6B6B70;
+        }
+
+        .tf-close {
+            flex: 0 0 auto;
+            width: 44px;
+            height: 44px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #F2F2F7;
+            color: #1C1C1E;
+            border: 1px solid #D8D8DC;
+        }
+
+        .tf-close .icon { width: 18px; height: 18px; }
+        .tf-close[disabled] { opacity: 0.4; cursor: not-allowed; }
+
+        .tf-body {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            display: flex;
+            flex-direction: column;
+            background: #FFFFFF;
+        }
+
+        .tf-step { display: flex; flex-direction: column; flex: 1 0 auto; }
+        .tf-step[hidden] { display: none; }
+
+        .tf-step-body { padding: 12px 20px 8px; }
+
+        .tf-step-title {
+            font-size: 15px;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 6px;
+            color: #1C1C1E;
+        }
+
+        .tf-text {
+            font-size: 13px;
+            line-height: 1.45;
+            color: #3A3A3C;
+        }
+
+        .tf-text + .tf-text { margin-top: 8px; }
+        .tf-text strong { font-weight: 700; color: #1C1C1E; }
+
+        .tf-meta {
+            font-size: 11px;
+            font-weight: 600;
+            line-height: 1.4;
+            color: #6B6B70;
+        }
+
+        .tf-note {
+            margin-top: 10px;
+            font-size: 12px;
+            line-height: 1.45;
+            color: #6B6B70;
+        }
+
+        .tf-step-actions {
+            position: sticky;
+            bottom: 0;
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 12px 20px calc(16px + env(safe-area-inset-bottom));
+            background: #FFFFFF;
+            border-top: 1px solid #EDEDF0;
+        }
+
+        @media (min-width: 520px) {
+            .tf-step-actions { flex-direction: row; }
+            .tf-step-actions .tf-btn { flex: 1 1 0; }
+        }
+
+        /* Buttons */
+        .tf-btn {
+            min-height: 44px;
+            border-radius: 12px;
+            padding: 0 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            text-align: center;
+            border: 1px solid transparent;
+            touch-action: manipulation;
+            transition: opacity 120ms ease, background-color 120ms ease;
+        }
+
+        .tf-btn-primary { background: #000000; color: #FFFFFF; border-color: #000000; }
+        .tf-btn-secondary { background: #FFFFFF; color: #1C1C1E; border-color: #D8D8DC; }
+        .tf-btn-danger { background: #FFFFFF; color: #B91C1C; border-color: #B91C1C; }
+        .tf-btn[disabled] { opacity: 0.42; cursor: not-allowed; }
+        .tf-btn:active:not([disabled]) { opacity: 0.72; }
+        .tf-btn .icon { width: 17px; height: 17px; }
+
+        /* Focus ring: global blue, inset slightly so the rounded sheet never clips it */
+        #transferModal :is(button, input, select, a, [tabindex]):focus-visible {
+            outline: 2px solid #007AFF;
+            outline-offset: 1px;
+        }
+
+        /* Signature link rail */
+        .tf-link-rail {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 20px 6px;
+        }
+
+        .tf-puck {
+            position: relative;
+            flex: 0 0 auto;
+            width: 44px;
+            height: 44px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #F2F2F7;
+            color: #1C1C1E;
+            border: 1px solid #D8D8DC;
+        }
+
+        .tf-puck .icon { width: 20px; height: 20px; }
+        .tf-puck.is-target { border-style: dashed; background: #FFFFFF; }
+
+        .tf-puck.is-waiting::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 999px;
+            border: 2px solid rgba(0, 122, 255, 0.26);
+            animation: tfPulse 1.8s ease-out infinite;
+        }
+
+        .tf-puck.is-done {
+            background: #E8F8EC;
+            border-color: #15803D;
+            color: #15803D;
+        }
+
+        .tf-rail {
+            position: relative;
+            flex: 1 1 auto;
+            height: 4px;
+            border-radius: 999px;
+            overflow: hidden;
+            background: repeating-linear-gradient(90deg, #C9C9CE 0 5px, transparent 5px 10px);
+        }
+
+        .tf-rail-fill {
+            position: absolute;
+            inset: 0 auto 0 0;
+            width: var(--tf-progress, 0%);
+            border-radius: 999px;
+            background: #000000;
+            transition: width 350ms ease;
+        }
+
+        @keyframes tfPulse {
+            0% { transform: scale(0.92); opacity: 0.9; }
+            70% { transform: scale(1.28); opacity: 0; }
+            100% { opacity: 0; }
+        }
+
+        /* Alerts + live region */
+        .tf-alert {
+            margin: 8px 20px 0;
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: #FDECEC;
+            color: #B91C1C;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .tf-alert[hidden] { display: none; }
+
+        .tf-announce {
+            position: absolute !important;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0 0 0 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Radar (receive waiting) */
+        .tf-radar {
+            position: relative;
+            width: 148px;
+            height: 148px;
+            margin: 14px auto 8px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle, #FFFFFF 0 34%, #F7F7FA 35% 100%);
+            border: 1px solid #E1E1E6;
+            overflow: hidden;
+        }
+
+        .tf-radar::before,
+        .tf-radar::after {
+            content: '';
+            position: absolute;
+            border-radius: 999px;
+            border: 1px solid #D8D8DC;
+        }
+
+        .tf-radar::before { inset: 18px; }
+        .tf-radar::after { inset: 38px; }
+
+        .tf-radar-sweep {
+            position: absolute;
+            inset: 0;
+            border-radius: 999px;
+            background: conic-gradient(from 0deg, rgba(0, 122, 255, 0.16), transparent 28%);
+            animation: tfSweep 2.6s linear infinite;
+        }
+
+        .tf-radar-core {
+            position: relative;
+            z-index: 1;
+            width: 54px;
+            height: 54px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000000;
+            color: #FFFFFF;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        @keyframes tfSweep { to { transform: rotate(360deg); } }
+
+        /* Device list */
+        .tf-scan-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .tf-scan-row .tf-btn { flex: 1 1 0; }
+
+        @media (min-width: 520px) {
+            .tf-scan-row { flex-direction: row; }
+        }
+
+        .tf-device-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .tf-device {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            min-height: 64px;
+            padding: 10px 12px;
+            border-radius: 16px;
+            border: 1px solid #E1E1E6;
+            background: #FFFFFF;
+            color: #1C1C1E;
+            text-align: left;
+        }
+
+        .tf-device:active { background: #F7F7FA; }
+
+        .tf-device-puck {
+            flex: 0 0 auto;
+            width: 40px;
+            height: 40px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #F2F2F7;
+        }
+
+        .tf-device-puck .icon { width: 20px; height: 20px; }
+
+        .tf-device-text {
+            flex: 1 1 auto;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tf-device-name {
+            font-size: 15px;
+            font-weight: 600;
+            line-height: 1.2;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .tf-device-meta {
+            margin-top: 3px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #6B6B70;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .tf-pill {
+            flex: 0 0 auto;
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: #F2F2F7;
+            color: #6B6B70;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+        }
+
+        .tf-pill.is-demo { background: #FFF4E5; color: #8A4B00; }
+        .tf-pill.is-paired { background: #E8F8EC; color: #15803D; }
+
+        .tf-scanning {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 64px;
+            padding: 10px 12px;
+            border-radius: 16px;
+            background: #F7F7FA;
+            color: #6B6B70;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .tf-spinner {
+            width: 18px;
+            height: 18px;
+            border-radius: 999px;
+            border: 2px solid #D8D8DC;
+            border-top-color: #000000;
+            animation: tfSpin 0.8s linear infinite;
+        }
+
+        @keyframes tfSpin { to { transform: rotate(360deg); } }
+
+        /* Handshake code */
+        .tf-code {
+            margin: 16px 0 4px;
+            text-align: center;
+            font-size: 34px;
+            font-weight: 800;
+            letter-spacing: 0.18em;
+            font-variant-numeric: tabular-nums;
+            color: #1C1C1E;
+        }
+
+        .tf-code-label {
+            text-align: center;
+            font-size: 11px;
+            font-weight: 600;
+            color: #6B6B70;
+        }
+
+        /* Receipt rows */
+        .tf-receipt {
+            margin-top: 12px;
+            border: 1px solid #E1E1E6;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #FFFFFF;
+        }
+
+        .tf-receipt-row {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 10px 14px;
+            border-bottom: 1px solid #EDEDF0;
+            font-size: 13px;
+        }
+
+        .tf-receipt-row:last-child { border-bottom: 0; }
+
+        .tf-receipt-key {
+            flex: 0 0 auto;
+            font-size: 11px;
+            font-weight: 600;
+            color: #6B6B70;
+        }
+
+        .tf-receipt-val {
+            font-weight: 600;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            overflow-wrap: anywhere;
+        }
+
+        /* Radio option cards */
+        .tf-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .tf-option {
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            min-height: 64px;
+            padding: 12px 14px;
+            border-radius: 16px;
+            border: 1px solid #D8D8DC;
+            background: #FFFFFF;
+            cursor: pointer;
+        }
+
+        .tf-option input {
+            position: absolute;
+            opacity: 0;
+            width: 1px;
+            height: 1px;
+            pointer-events: none;
+        }
+
+        .tf-option-dot {
+            position: relative;
+            flex: 0 0 auto;
+            width: 22px;
+            height: 22px;
+            margin-top: 1px;
+            border-radius: 999px;
+            border: 2px solid #C9C9CE;
+            background: #FFFFFF;
+        }
+
+        .tf-option.is-selected {
+            border-color: #000000;
+            box-shadow: inset 0 0 0 1px #000000;
+        }
+
+        .tf-option.is-selected .tf-option-dot { border-color: #000000; }
+
+        .tf-option.is-selected .tf-option-dot::after {
+            content: '';
+            position: absolute;
+            inset: 4px;
+            border-radius: 999px;
+            background: #000000;
+        }
+
+        .tf-option:has(input:focus-visible) {
+            outline: 2px solid #007AFF;
+            outline-offset: 1px;
+        }
+
+        .tf-option.is-disabled { opacity: 0.55; cursor: not-allowed; }
+
+        .tf-option-text {
+            flex: 1 1 auto;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tf-option-title {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            color: #1C1C1E;
+        }
+
+        .tf-option-desc {
+            display: block;
+            margin-top: 3px;
+            font-size: 11px;
+            line-height: 1.4;
+            color: #6B6B70;
+        }
+
+        .tf-option.is-danger.is-selected .tf-option-desc { color: #B91C1C; }
+
+        .tf-warning {
+            margin-top: 10px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: #FDECEC;
+            color: #B91C1C;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .tf-warning[hidden] { display: none; }
+
+        /* Progress */
+        .tf-progress {
+            height: 10px;
+            margin-top: 14px;
+            border-radius: 999px;
+            background: #EDEDF0;
+            overflow: hidden;
+        }
+
+        .tf-progress-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 999px;
+            background: #000000;
+            transition: width 180ms linear;
+        }
+
+        .tf-progress-meta {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #6B6B70;
+        }
+
+        .tf-progress-pct {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1C1C1E;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Success */
+        .tf-success { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+
+        .tf-success-puck {
+            width: 52px;
+            height: 52px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #E8F8EC;
+            color: #15803D;
+        }
+
+        .tf-success-puck .icon { width: 26px; height: 26px; }
+        .tf-success-title { font-size: 17px; font-weight: 800; letter-spacing: -0.2px; }
+        .tf-success-sub { font-size: 13px; line-height: 1.45; color: #6B6B70; }
+
+        .tf-verify {
+            margin-top: 10px;
+            min-height: 18px;
+            font-size: 12px;
+            font-weight: 700;
+            line-height: 1.4;
+            color: #15803D;
+        }
+
+        .tf-verify.is-error { color: #B91C1C; }
+
+        /* While a transfer is live a stray backdrop tap must do nothing;
+           deliberate aborts use the step's Cancel control. */
+        .tf-modal.is-busy .tf-backdrop { pointer-events: none; }
+
+
+        @media (max-width: 360px) {
+            .tf-head { padding: 16px 14px 10px; }
+            .tf-step-body { padding: 10px 14px 6px; }
+            .tf-step-actions { padding: 10px 14px calc(14px + env(safe-area-inset-bottom)); }
+            .tf-alert { margin-left: 14px; margin-right: 14px; }
+            .tf-link-rail { padding-left: 14px; padding-right: 14px; }
+            .tf-code { font-size: 30px; }
+        }
+
+        @media (min-width: 600px) {
+            .tf-modal { align-items: center; padding: 24px; }
+            .tf-sheet {
+                border-radius: 24px;
+                max-height: min(88vh, 760px);
+                max-height: min(88dvh, 760px);
+                box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .tf-rail-fill,
+            .tf-progress-fill,
+            .tf-btn { transition-duration: 0.01ms !important; }
+            .tf-puck.is-waiting::after,
+            .tf-radar-sweep,
+            .tf-spinner { animation: none !important; }
+        }
     </style>
 </head>
 <body>
@@ -2642,12 +3683,19 @@
         <div id="reorderHint" class="reorder-hint" hidden>Long-press a card to reorder</div>
 
         <!-- Top Add New Card Button -->
-        <button class="add-card-btn" onclick="createNewCard()">
+        <button id="addCardBtn" class="add-card-btn" onclick="createNewCard()">
             <div style="width:24px; height:24px; border-radius:50%; background:#E5F1FF; color:#007AFF; display:flex; align-items:center; justify-content:center;">
                 <svg class="icon" style="width:14px; height:14px;" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
             </div>
             <span>Add New Card</span>
         </button>
+
+        <!-- Achieved view: outcome filter chips replace Add New Card -->
+        <div id="achievedFilters" class="achieved-filters" role="group" aria-label="Filter achieved cards">
+            <button type="button" id="achievedFilterAll" class="achieved-filter" data-filter="all" aria-pressed="true" onclick="setAchievedFilter('all')">All <span class="achieved-filter-count">0</span></button>
+            <button type="button" id="achievedFilterSucceeded" class="achieved-filter" data-filter="succeeded" aria-pressed="false" onclick="setAchievedFilter('succeeded')">Succeeded <span class="achieved-filter-count">0</span></button>
+            <button type="button" id="achievedFilterFailed" class="achieved-filter" data-filter="failed" aria-pressed="false" onclick="setAchievedFilter('failed')">Failed <span class="achieved-filter-count">0</span></button>
+        </div>
 
         <!-- Dynamic Card Container -->
         <div id="taskList" class="card-list"></div>
@@ -2733,6 +3781,26 @@
 
     <!-- Settings / backup panel -->
     <section id="settingsView" aria-label="Settings and backup">
+        <div class="set-group-label" id="settingsPeerLabel">Peer transfer</div>
+        <div class="set-panel" id="peerTransferPanel">
+            <div class="peer-scope-block">
+                <label class="set-row-label" for="peerScopeSelect">Share scope</label>
+                <select id="peerScopeSelect" class="set-select" aria-label="What to share with the other device">
+                    <option value="">Choose scope…</option>
+                    <option value="all">Everything</option>
+                    <option value="media">Media &amp; quick notes</option>
+                    <option value="metadata">System &amp; metadata</option>
+                </select>
+            </div>
+            <div id="peerScopeDesc" class="set-sub">Choose what should leave this device. Nothing is sent until you review and confirm.</div>
+            <div id="peerScopeError" class="set-status err" role="alert" hidden></div>
+            <div class="peer-actions">
+                <button type="button" class="set-btn set-primary" id="peerTransferBtn">Transfer data</button>
+                <button type="button" class="set-btn" id="peerReceiveBtn">Open to receive</button>
+            </div>
+            <div id="peerCapability" class="set-sub" aria-live="polite">Checking Bluetooth…</div>
+        </div>
+
         <div class="set-group-label" id="settingsBackupLabel">Backup</div>
         <div class="set-panel" id="settingsBackupGroup">
             <div class="set-block">
@@ -2754,13 +3822,12 @@
         <div class="set-panel" id="settingsRestoreGroup">
             <div class="set-block">
                 <span class="set-row-label" id="backupModeLabel">Import</span>
-                <div class="set-row set-row-inline">
-                    <label class="set-select-wrap" id="backupModeWrap">
-                        <select id="backupModeSelect" class="set-select" aria-label="Import mode">
-                            <option value="merge" selected>Merge into current</option>
-                            <option value="replace">Replace everything</option>
-                        </select>
-                    </label>
+                <div class="set-row set-row-inline import-row">
+                    <span class="import-hint" id="importModeHint">Choose Merge or Replace after picking a file.</span>
+                    <select id="backupModeSelect" class="set-select" aria-label="Import mode" hidden>
+                        <option value="merge" selected>Merge into current</option>
+                        <option value="replace">Replace everything</option>
+                    </select>
                     <button type="button" class="set-btn" id="backupBrowseBtn" onclick="document.getElementById('backupImportInput').click()">Browse…</button>
                 </div>
             </div>
@@ -2774,10 +3841,10 @@
             <div class="set-panel" id="settingsConfirmPanel" hidden>
                 <div class="set-title" id="settingsConfirmTitle">Confirm</div>
                 <div class="set-sub" id="settingsConfirmMsg"></div>
-                <div class="set-row">
-                    <button type="button" class="set-btn" onclick="cancelSettingsConfirm()">Cancel</button>
+                <div class="set-row" id="settingsConfirmRow">
+                    <button type="button" class="set-btn" id="settingsConfirmCancel" onclick="cancelSettingsConfirm()">Cancel</button>
                     <button type="button" class="set-btn set-primary" id="settingsMergeBtn" onclick="mergeConfirmAction()" hidden>Merge into current</button>
-                    <button type="button" class="set-btn set-primary" id="settingsConfirmBtn" onclick="confirmSettingsAction()" hidden>Confirm</button>
+                    <button type="button" class="set-btn set-danger" id="settingsConfirmBtn" onclick="confirmSettingsAction()" hidden>Confirm</button>
                 </div>
             </div>
         </div>
@@ -2869,6 +3936,254 @@
         </div>
     </div>
 
+    <!-- Peer transfer modal -->
+    <div id="transferModal" class="tf-modal" hidden>
+        <div class="tf-backdrop" data-tf="close"></div>
+        <div class="tf-sheet" role="dialog" aria-modal="true" aria-labelledby="tfTitle">
+            <div class="tf-head">
+                <div class="tf-head-text">
+                    <div class="tf-eyebrow" id="tfEyebrow">Peer transfer</div>
+                    <h2 class="tf-title" id="tfTitle">Send data</h2>
+                    <div class="tf-subtitle" id="tfSubtitle">Choose a nearby device.</div>
+                </div>
+                <button type="button" class="tf-close" id="tfClose" data-tf="close" aria-label="Close transfer">
+                    <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="tf-body">
+                <div class="tf-link-rail" id="tfLinkRail" style="--tf-progress:0%">
+                    <div class="tf-puck" id="tfPuckA" aria-hidden="true">
+                        <svg class="icon" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="10" y1="18" x2="14" y2="18"/></svg>
+                    </div>
+                    <div class="tf-rail"><span class="tf-rail-fill"></span></div>
+                    <div class="tf-puck is-target" id="tfPuckB" aria-hidden="true">
+                        <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><line x1="2" y1="20" x2="22" y2="20"/></svg>
+                    </div>
+                </div>
+                <div class="tf-alert" id="tfAlert" role="alert" hidden></div>
+                <div class="tf-announce" id="tfAnnounce" role="status" aria-live="polite"></div>
+
+                <section class="tf-step" id="tfStepScope" data-tf-step="scope" hidden>
+                    <div class="tf-step-body">
+                        <div class="tf-step-title">What will be shared</div>
+                        <p class="tf-text" id="tfScopeStepText">Choose a scope in Settings to review what leaves this device.</p>
+                        <div class="tf-receipt" id="tfScopeStepReceipt"></div>
+                    </div>
+                    <div class="tf-step-actions">
+                        <button type="button" class="tf-btn tf-btn-secondary" data-tf="close">Cancel</button>
+                        <button type="button" class="tf-btn tf-btn-primary" data-tf="scan">Continue to devices</button>
+                    </div>
+                </section>
+
+                <section class="tf-step" id="tfStepDevices" data-tf-step="devices" hidden>
+                    <div class="tf-step-body">
+                        <div class="tf-step-title">Choose a device</div>
+                        <p class="tf-text">Demo devices run the whole flow in this browser. A real Bluetooth send needs HTTPS and a paired FlexFlow bridge.</p>
+                        <div class="tf-scan-row">
+                            <button type="button" class="tf-btn tf-btn-secondary" id="tfScanBtn" data-tf="scan">Scan for devices</button>
+                            <button type="button" class="tf-btn tf-btn-secondary" id="tfDemoBtn" data-tf="demo">Preview with demo devices</button>
+                        </div>
+                        <div class="tf-device-list" id="tfDeviceList" role="list" aria-label="Nearby devices"></div>
+                        <div class="tf-note" id="tfDeviceHint">Demo devices are labelled DEMO. Nothing leaves this browser in demo mode.</div>
+                    </div>
+                    <div class="tf-step-actions">
+                        <button type="button" class="tf-btn tf-btn-secondary" data-tf="close">Cancel</button>
+                    </div>
+                </section>
+
+                <section class="tf-step" id="tfStepHandshake" data-tf-step="handshake" hidden>
+                    <div class="tf-step-body">
+                        <div class="tf-step-title">Match the code</div>
+                        <p class="tf-text">Confirm this 6-digit code matches on the other device before sending.</p>
+                        <div class="tf-code" id="tfCode" aria-live="polite">000 000</div>
+                        <div class="tf-code-label" id="tfHandshakeDevice">Demo device</div>
+                        <p class="tf-note">If the code does not match, cancel and scan again.</p>
+                    </div>
+                    <div class="tf-step-actions">
+                        <button type="button" class="tf-btn tf-btn-secondary" data-tf="back-devices">Back</button>
+                        <button type="button" class="tf-btn tf-btn-primary" data-tf="handshake-confirm">Confirm the code</button>
+                    </div>
+                </section>
+
+                <section class="tf-step" id="tfStepSendConfirm" data-tf-step="send-confirm" hidden>
+                    <div class="tf-step-body">
+                        <div class="tf-step-title">Review the transfer</div>
+                        <div id="tfSummary"></div>
+                        <p class="tf-note">Video files stay on this device. The other device reviews everything before applying it.</p>
+                    </div>
+                    <div class="tf-step-actions">
+                        <button type="button" class="tf-btn tf-btn-secondary" data-tf="back-handshake">Back</button>
+                        <button type="button" class="tf-btn tf-btn-primary" id="tfSendBtn" data-tf="send">Send data</button>
+                    </div>
+                </section>
+
+                <section class="tf-step" id="tfStepSending" data-tf-step="sending" hidden>
+                    <div class="tf-step-body">
+                        <div class="tf-step-title">Sending</div>
+                        <p class="tf-text" id="tfSendStage">Starting the transfer…</p>
+                        <div class="tf-progress" id="tfProgressBar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Transfer progress">
+                            <div class="tf-progress-fill" id="tfProgressFill"></div>
+                        </div>
+                        <div class="tf-progress-meta">
+                            <span id="tfSendStageMeta">Keep both devices nearby.</span>
+                            <span class="tf-progress-pct" id="tfProgressPct">0%</span>
+                        </div>
+                    </div>
+                    <div class="tf-step-actions">
+                        <button type="button" class="tf-btn tf-btn-secondary" data-tf="cancel-send">Cancel transfer</button>
+                    </div>
+                </section>
+
+                <section class="tf-step" id="tfStepSendDone" data-tf-step="send-done" hidden>
+                    <div class="tf-step-body">
+                        <div class="tf-success">
+                            <div class="tf-success-puck">
+                                <svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                            <div class="tf-success-title">Transfer complete</div>
+                            <div class="tf-success-sub" id="tfSendDoneSub">The payload was written to the other device.</div>
+                        </div>
+                        <div class="tf-receipt" id="tfSendDoneCounts"></div>
+                        <p class="tf-note">Send this file to the other device, then choose Import backup file there.</p>
+                        <div class="tf-verify" id="tfVerifyStatus" role="status" aria-live="polite"></div>
+                    </div>
+                    <div class="tf-step-actions">
+                        <button type="button" class="tf-btn tf-btn-secondary" id="tfSaveFileBtn" data-tf="save-file">Save transfer file (.zip)</button>
+                        <button type="button" class="tf-btn tf-btn-secondary" id="tfVerifyBtn" data-tf="verify">Verify transfer</button>
+                        <button type="button" class="tf-btn tf-btn-primary" data-tf="done">Done</button>
+                    </div>
+                </section>
+
+                <section class="tf-step" id="tfStepReceiveWait" data-tf-step="receive-wait" hidden>
+                    <div class="tf-step-body">
+                        <div class="tf-radar" aria-hidden="true">
+                            <div class="tf-radar-sweep"></div>
+                            <div class="tf-radar-core">Open</div>
+                        </div>
+                        <div class="tf-code" id="tfReceiveCode">000 000</div>
+                        <div class="tf-code-label">Local code · <span id="tfLocalName">This device</span></div>
+                        <p class="tf-text" id="tfBridgeNote">Import a transfer file, or preview the receive flow with demo data.</p>
+                        <button type="button" class="tf-btn tf-btn-primary" id="tfImportFileBtn" data-tf="import-file" style="width:100%; margin-top:12px;">Import backup file</button>
+                        <input type="file" id="tfFileInput" accept=".zip,.json,application/zip,application/json" hidden>
+                        <p class="tf-note">Accepts a FlexFlow transfer file or a Settings → Backup archive. Nothing is applied until you confirm.</p>
+                    </div>
+                    <div class="tf-step-actions">
+                        <button type="button" class="tf-btn tf-btn-secondary" id="tfDemoIncomingBtn" data-tf="receive-demo">Preview an incoming transfer</button>
+                        <button type="button" class="tf-btn tf-btn-secondary" data-tf="close">Close</button>
+                    </div>
+                </section>
+
+                <section class="tf-step" id="tfStepReceiveIncoming" data-tf-step="receive-incoming" hidden>
+                    <div class="tf-step-body">
+                        <div class="tf-step-title">Incoming transfer</div>
+                        <div class="tf-incoming">
+                            <div class="tf-device-name" id="tfIncomingName">Demo transfer</div>
+                            <div class="tf-meta" id="tfIncomingMeta">Waiting for details.</div>
+                            <div class="tf-warning" id="tfIncomingWarn" hidden></div>
+                        </div>
+                        <p class="tf-note">Nothing is written until you back up, choose how to apply, and confirm.</p>
+                    </div>
+                    <div class="tf-step-actions">
+                        <button type="button" class="tf-btn tf-btn-secondary" data-tf="close">Decline</button>
+                        <button type="button" class="tf-btn tf-btn-primary" id="tfAcceptIncomingBtn" data-tf="accept-incoming">Accept</button>
+                    </div>
+                </section>
+
+                <section class="tf-step" id="tfStepBackup" data-tf-step="backup" hidden>
+                    <div class="tf-step-body">
+                        <div class="tf-step-title">Back up this device first</div>
+                        <p class="tf-text">Applying a transfer changes stored data. Download a current backup now — this step is required.</p>
+                        <div class="tf-receipt" id="tfBackupCounts"></div>
+                        <div class="tf-verify" id="tfBackupStatus" role="status" aria-live="polite"></div>
+                        <p class="tf-note">If this device has no data yet, the built-in sample is saved instead.</p>
+                    </div>
+                    <div class="tf-step-actions">
+                        <button type="button" class="tf-btn tf-btn-secondary" data-tf="close">Cancel</button>
+                        <button type="button" class="tf-btn tf-btn-primary" id="tfBackupBtn" data-tf="backup">Back up now</button>
+                        <button type="button" class="tf-btn tf-btn-secondary" id="tfBackupContinueBtn" data-tf="backup-continue" disabled>Continue</button>
+                    </div>
+                </section>
+
+                <section class="tf-step" id="tfStepMode" data-tf-step="mode" hidden>
+                    <div class="tf-step-body">
+                        <div class="tf-step-title">How should it be applied?</div>
+                        <div class="tf-options" role="radiogroup" aria-label="Apply method">
+                            <label class="tf-option" id="tfMergeCard">
+                                <input type="radio" name="tf-apply-mode" id="tfModeMerge" value="merge">
+                                <span class="tf-option-dot" aria-hidden="true"></span>
+                                <span class="tf-option-text">
+                                    <span class="tf-option-title">Merge</span>
+                                    <span class="tf-option-desc">Keep this device's data and add or update matching items.</span>
+                                </span>
+                            </label>
+                            <label class="tf-option is-danger" id="tfReplaceCard">
+                                <input type="radio" name="tf-apply-mode" id="tfModeReplace" value="replace">
+                                <span class="tf-option-dot" aria-hidden="true"></span>
+                                <span class="tf-option-text">
+                                    <span class="tf-option-title">Replace</span>
+                                    <span class="tf-option-desc">Delete this device's data and write only the incoming data.</span>
+                                </span>
+                            </label>
+                        </div>
+                        <div class="tf-warning" id="tfModeWarning" role="alert" hidden></div>
+                    </div>
+                    <div class="tf-step-actions">
+                        <button type="button" class="tf-btn tf-btn-secondary" data-tf="back-backup">Back</button>
+                        <button type="button" class="tf-btn tf-btn-primary" id="tfModeContinueBtn" data-tf="mode-continue" disabled>Continue</button>
+                    </div>
+                </section>
+
+                <section class="tf-step" id="tfStepReceiveConfirm" data-tf-step="receive-confirm" hidden>
+                    <div class="tf-step-body">
+                        <div class="tf-step-title">Confirm and apply</div>
+                        <div id="tfReceiveSummary"></div>
+                        <div class="tf-warning" id="tfReceiveWarning" role="alert" hidden></div>
+                        <div class="tf-meta" id="tfApplyGate" style="margin-top:10px;"></div>
+                    </div>
+                    <div class="tf-step-actions">
+                        <button type="button" class="tf-btn tf-btn-secondary" data-tf="back-mode">Back</button>
+                        <button type="button" class="tf-btn tf-btn-primary" id="tfApplyBtn" data-tf="apply">Apply transfer</button>
+                    </div>
+                </section>
+
+                <section class="tf-step" id="tfStepApplying" data-tf-step="applying" hidden>
+                    <div class="tf-step-body">
+                        <div class="tf-step-title">Apply transfer</div>
+                        <p class="tf-text" id="tfApplyStage">Validating the transfer…</p>
+                        <div class="tf-progress" id="tfApplyProgress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Apply progress">
+                            <div class="tf-progress-fill" id="tfApplyFill"></div>
+                        </div>
+                        <div class="tf-progress-meta">
+                            <span id="tfApplyStageMeta">Applying — this cannot be cancelled now.</span>
+                            <span class="tf-progress-pct" id="tfApplyPct">0%</span>
+                        </div>
+                    </div>
+                    <div class="tf-step-actions">
+                        <button type="button" class="tf-btn tf-btn-secondary" id="tfCancelApplyBtn" data-tf="cancel-apply" disabled aria-disabled="true">Cancel transfer</button>
+                    </div>
+                </section>
+
+                <section class="tf-step" id="tfStepReceiveDone" data-tf-step="receive-done" hidden>
+                    <div class="tf-step-body">
+                        <div class="tf-success">
+                            <div class="tf-success-puck">
+                                <svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                            <div class="tf-success-title">Transfer applied</div>
+                            <div class="tf-success-sub" id="tfReceiveDoneSub">The transfer was written to this device.</div>
+                        </div>
+                        <div class="tf-receipt" id="tfReceiveDoneCounts"></div>
+                        <div class="tf-verify" id="tfReceiveVerifyStatus" role="status" aria-live="polite"></div>
+                    </div>
+                    <div class="tf-step-actions">
+                        <button type="button" class="tf-btn tf-btn-secondary" id="tfReceiveVerifyBtn" data-tf="receive-verify">Verify data</button>
+                        <button type="button" class="tf-btn tf-btn-primary" data-tf="done">Done</button>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
     <!-- Bottom Navigation Floating Bar -->
     <nav class="bottom-nav">
         <button onclick="switchTab('home')" id="tab-home" class="nav-item active">
@@ -2943,6 +4258,10 @@
         // Which bottom-nav view is showing. Only 'home' has content; the
         // others (info, clock, settings) intentionally render blank.
         let currentTab = 'home';
+        // Home shows active cards by default; the achieved view is a UI-only
+        // mode (never persisted) so a reload always returns to active cards.
+        let homeView = 'active'; // 'active' | 'achieved'
+        let achievedFilter = 'all'; // 'all' | 'succeeded' | 'failed'
         // The one app-wide header keeps the Home logo position; only this
         // title text changes with the active tab.
         const TAB_LABELS = { home: 'FlexFlow', info: 'Artists', note: 'Quick Note', clock: 'Calendar', settings: 'Settings' };
@@ -3254,6 +4573,68 @@
                 if (min === null || ts < min) min = ts;
             });
             return min;
+        }
+
+        // ---------- Achieved cards (archive) ----------
+        // A card is archived only when status is strictly true. Outcome and
+        // achievedAt are display/persistence fields alongside it.
+        function isAchievedCard(card) {
+            return !!card && card.status === true;
+        }
+
+        function achievedOutcomeOf(card) {
+            return card && card.outcome === 'failed' ? 'failed' : 'succeeded';
+        }
+
+        // Pure: archive or restore a card without mutating the input. Archive
+        // keeps an existing valid outcome, defaults to succeeded, and stamps
+        // achievedAt/updatedAt. Restore clears all three archive fields.
+        function applyAchievedState(card, achieved, atIso) {
+            const next = Object.assign({}, card && typeof card === 'object' ? card : {});
+            if (achieved) {
+                next.status = true;
+                const outcome = card && (card.outcome === 'succeeded' || card.outcome === 'failed')
+                    ? card.outcome
+                    : 'succeeded';
+                next.outcome = outcome;
+                const stamp = (typeof atIso === 'string' && atIso) ? atIso : nowIso();
+                next.achievedAt = stamp;
+                next.updatedAt = stamp;
+            } else {
+                next.status = false;
+                next.outcome = null;
+                next.achievedAt = null;
+                next.updatedAt = nowIso();
+            }
+            return next;
+        }
+
+        function achievedTimeValue(value) {
+            const parsed = Date.parse(value);
+            return isFinite(parsed) ? parsed : 0;
+        }
+
+        // Pure view projection: active keeps input order, achieved filters by
+        // outcome then sorts newest archive first. Never mutates the input.
+        function filterHomeCards(cards, view, filter) {
+            const list = Array.isArray(cards)
+                ? cards.filter(card => card && typeof card === 'object')
+                : [];
+            if (view !== 'achieved') {
+                return list.filter(card => !isAchievedCard(card));
+            }
+            const wanted = filter === 'succeeded' || filter === 'failed' ? filter : 'all';
+            return list
+                .filter(card => isAchievedCard(card) && (wanted === 'all' || achievedOutcomeOf(card) === wanted))
+                .sort((a, b) => {
+                    const at = achievedTimeValue(a.achievedAt);
+                    const bt = achievedTimeValue(b.achievedAt);
+                    if (at !== bt) return bt - at;
+                    const au = achievedTimeValue(a.updatedAt);
+                    const bu = achievedTimeValue(b.updatedAt);
+                    if (au !== bu) return bu - au;
+                    return String(a.id == null ? '' : a.id).localeCompare(String(b.id == null ? '' : b.id));
+                });
         }
 
         // Order the CARD list: unscheduled cards first (their relative order
@@ -3638,10 +5019,12 @@
                         corrupt = true;
                     }
                 } else {
-                    loaded = defaultData;
+                    // Missing store: only a genuine first run seeds the sample.
+                    // After an erase the sentinel survives, so stay empty.
+                    loaded = loadSeededMarker() ? [] : defaultData;
                 }
             } catch (e) {
-                loaded = defaultData;
+                loaded = loadSeededMarker() ? [] : defaultData;
             }
             storageCorrupt = corrupt;
             if (corrupt) {
@@ -3679,11 +5062,21 @@
             persistData();
         }
 
+        function loadSeededMarker() {
+            try { return localStorage.getItem(SEEDED_KEY) === '1'; } catch (e) { return false; }
+        }
+
+        function persistSeededMarker() {
+            try { localStorage.setItem(SEEDED_KEY, '1'); } catch (e) {}
+        }
+
         // Boot-time save: never write the default/empty set over task JSON we
         // failed to parse.
         function saveInitialData() {
             if (storageCorrupt) return false;
             saveData();
+            // One-way marker: once booted, a later erase must not re-seed.
+            persistSeededMarker();
             return true;
         }
 
@@ -3886,6 +5279,9 @@
                 detailPoints: [],
                 coverUrl: '',
                 starred: false,
+                status: false,
+                outcome: null,
+                achievedAt: null,
                 updatedAt: nowIso()
             };
             // Snapshot existing cards first so the new card is the only one
@@ -3942,6 +5338,93 @@
                 btn.setAttribute('aria-label', task.starred ? 'Remove special day' : 'Mark as special day');
             }
             renderCalendar();
+        }
+
+        // Toggle the Home archive view. UI-only state: a reload always lands
+        // back on the active cards.
+        function toggleAchievedView() {
+            if (isEditMode) return;
+            homeView = homeView === 'achieved' ? 'active' : 'achieved';
+            achievedFilter = 'all';
+            if (currentTab !== 'home') {
+                currentTab = 'home';
+                applyActiveNav('home');
+            }
+            renderApp();
+        }
+
+        // Empty-Home escape hatch: save any live edit input first, then show
+        // the achieved view (the header toggle is hidden while editing).
+        function openAchievedFromEmpty() {
+            if (isEditMode) exitEditMode();
+            homeView = 'achieved';
+            achievedFilter = 'all';
+            renderApp({ skipSync: true });
+        }
+
+        function setAchievedFilter(filter) {
+            const next = filter === 'succeeded' || filter === 'failed' ? filter : 'all';
+            if (achievedFilter === next) return;
+            achievedFilter = next;
+            renderApp();
+        }
+
+        // Live counts and pressed state for the three achieved chips.
+        function updateAchievedFilterUI() {
+            const achievedCards = filterHomeCards(tasks, 'achieved', 'all');
+            const counts = { all: achievedCards.length, succeeded: 0, failed: 0 };
+            achievedCards.forEach(card => { counts[achievedOutcomeOf(card)]++; });
+            [
+                ['achievedFilterAll', 'all'],
+                ['achievedFilterSucceeded', 'succeeded'],
+                ['achievedFilterFailed', 'failed']
+            ].forEach(pair => {
+                const el = document.getElementById(pair[0]);
+                if (!el) return;
+                el.setAttribute('aria-pressed', achievedFilter === pair[1] ? 'true' : 'false');
+                const countEl = el.querySelector ? el.querySelector('.achieved-filter-count') : null;
+                if (countEl) countEl.textContent = String(counts[pair[1]]);
+            });
+        }
+
+        // Archive/restore is a state change, so it stamps updatedAt (via
+        // applyAchievedState) and wins a later "newest side" merge.
+        function toggleCardAchieved(cardId) {
+            const index = tasks.findIndex(task => task && task.id === cardId);
+            if (index < 0) return;
+            if (isEditMode) syncInputsBeforeRender();
+            const task = tasks[index];
+            const achieved = isAchievedCard(task);
+            const next = applyAchievedState(task, !achieved, nowIso());
+            tasks[index] = next;
+            logChange('card.update', {
+                cardId: cardId,
+                data: { fields: { status: next.status, outcome: next.outcome, achievedAt: next.achievedAt } }
+            });
+            persistData();
+            renderApp({ skipSync: true });
+        }
+
+        // Per-card outcome on the achieved view persists immediately; the live
+        // filter counts and the visible set update on the same render.
+        function setCardOutcome(cardId, outcome) {
+            const task = tasks.find(t => t && t.id === cardId);
+            if (!task || !isAchievedCard(task)) return;
+            const next = outcome === 'failed' ? 'failed' : 'succeeded';
+            if (achievedOutcomeOf(task) === next) return;
+            if (isEditMode) syncInputsBeforeRender();
+            task.outcome = next;
+            touchEntity(task);
+            logChange('card.update', { cardId: cardId, data: { fields: { outcome: next } } });
+            persistData();
+            // Repaint just this pill and the live chip counts. Re-rendering the
+            // list here would yank the card out from under the pointer when a
+            // single-outcome filter is active; the next filter tap re-filters.
+            const succeededBtn = document.querySelector(`.card[data-id="${cssEscape(cardId)}"] .card-outcome-succeeded`);
+            const failedBtn = document.querySelector(`.card[data-id="${cssEscape(cardId)}"] .card-outcome-failed`);
+            if (succeededBtn) succeededBtn.setAttribute('aria-pressed', next === 'succeeded' ? 'true' : 'false');
+            if (failedBtn) failedBtn.setAttribute('aria-pressed', next === 'failed' ? 'true' : 'false');
+            updateAchievedFilterUI();
         }
 
         const STATUS_LABEL_FOR_ARIA = {
@@ -4651,6 +6134,9 @@
                 expandedCheckDetails.clear();
             }
 
+            // Jump into whichever Home view actually contains the card.
+            homeView = isAchievedCard(task) ? 'achieved' : 'active';
+            achievedFilter = 'all';
             currentTab = 'home';
             applyActiveNav('home');
 
@@ -4718,6 +6204,13 @@
             ['home', 'info', 'note', 'clock', 'settings'].forEach(t => {
                 document.body.classList.toggle('tab-' + t, currentTab === t);
             });
+            // Achieved is a Home-only view; switching tabs leaves it.
+            const achievedNow = currentTab === 'home' && homeView === 'achieved';
+            document.body.classList.toggle('home-achieved', achievedNow);
+            // Reordering only applies to the active Home list, so the hint
+            // must not advertise long-press drag on the achieved view.
+            const hint = document.getElementById('reorderHint');
+            if (hint && achievedNow) hint.hidden = true;
             updateHeaderTitle();
             renderCalendar();
             if (currentTab === 'note') renderQuickNotes();
@@ -4742,10 +6235,16 @@
                 calMonthCursor = null;
                 calSelectedKey = null;
             }
+            // Another tab always restores the active Home cards.
+            const leavingAchieved = homeView === 'achieved' && name !== 'home';
+            if (leavingAchieved) {
+                homeView = 'active';
+                achievedFilter = 'all';
+            }
             currentTab = name;
             applyActiveNav(name);
             applyTabVisibility();
-            if (wasEditing) renderApp({ skipSync: true });
+            if (wasEditing || leavingAchieved) renderApp({ skipSync: true });
         }
 
         // Remember the focused field so a re-render does not interrupt typing
@@ -4800,8 +6299,12 @@
             // via updateHeaderTitle().
             const headerActions = document.getElementById('headerActions');
 
+            const achievedView = homeView === 'achieved';
             if (!isEditMode) {
                 headerActions.innerHTML = `
+                    <button type="button" id="achievedToggle" class="achieved-toggle" onclick="toggleAchievedView()" aria-pressed="${achievedView ? 'true' : 'false'}" aria-label="${achievedView ? 'Show active cards' : 'Show achieved cards'}">
+                        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg>
+                    </button>
                     <button onclick="toggleMode()" class="btn btn-black">
                         <svg class="icon" style="width:14px; height:14px;" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
                         <span>Edit</span>
@@ -4825,15 +6328,23 @@
             const container = document.getElementById('taskList');
             container.innerHTML = '';
 
+            // Active Home keeps the start-time order from tasks; the achieved
+            // view is a projection sorted by achievedAt, so it can never
+            // reorder the active list. Edit on the achieved view always lists
+            // every achieved card (the outcome chips are hidden then).
+            const viewFilter = isEditMode && achievedView ? 'all' : achievedFilter;
+            const visibleTasks = filterHomeCards(tasks, achievedView ? 'achieved' : 'active', viewFilter);
+            updateAchievedFilterUI();
+
             const now = getCambodiaNow();
-            tasks.forEach((task, index) => {
+            visibleTasks.forEach(task => {
                 const card = document.createElement('div');
                 const hasCover = !isEditMode && !!task.coverUrl;
                 card.className = hasCover ? 'card has-cover' : 'card';
                 card.dataset.id = task.id;
                 // Focusable target for the calendar jump (not in tab order)
                 card.setAttribute('tabindex', '-1');
-                if (!isEditMode) {
+                if (!isEditMode && !achievedView) {
                     // setAttribute does not HTML-decode entities, so unescape the
                     // JSON quote wrapper that escapeJsArg produces. Ids reaching
                     // here are already SAFE_ID_RE, so no other entity remains.
@@ -4845,7 +6356,7 @@
                 const badgeType = computeCardBadge(task, now);
                 const handleBg = badgeType === 'red' ? '#FF3B30' : badgeType === 'green' ? '#34C759' : badgeType === 'orange' ? '#FF9500' : '#8E8E93';
 
-                let dragHtml = isEditMode ? `
+                let dragHtml = isEditMode && !achievedView ? `
                     <div class="card-drag-handle" onpointerdown="initPointerDrag(event, ${escapeJsArg(task.id)})">
                         <div class="drag-bar" style="background-color:${handleBg}">
                             <div class="drag-bar-line"></div>
@@ -4953,7 +6464,7 @@
                 const draft = drafts[task.id] || {};
                 let addCheckControl = isEditMode ? `
                     <div class="add-check-row">
-                        <button type="button" onclick="addCheckItem(${escapeJsArg(task.id)})" class="btn btn-green add-check-card-btn">Add new card</button>
+                        <button type="button" onclick="addCheckItem(${escapeJsArg(task.id)})" class="btn btn-green add-check-card-btn">Add checklist item</button>
                     </div>
                 ` : '';
 
@@ -4995,6 +6506,22 @@
                     `;
                 }
 
+                const achieved = isAchievedCard(task);
+                const outcome = achievedOutcomeOf(task);
+                const archiveLabel = achieved ? 'Restore to active' : 'Mark as achieved';
+                const archiveIcon = achieved
+                    ? '<polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>'
+                    : '<path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/>';
+                const outcomeHtml = achieved ? `
+                    <div class="card-outcome-row">
+                        <span class="card-outcome-label" aria-hidden="true">Outcome</span>
+                        <div class="card-outcome" role="group" aria-label="Outcome">
+                            <button type="button" class="card-outcome-btn card-outcome-succeeded" onclick="setCardOutcome(${escapeJsArg(task.id)}, 'succeeded')" aria-pressed="${outcome === 'succeeded' ? 'true' : 'false'}"><span aria-hidden="true">\u2713</span> Succeeded</button>
+                            <button type="button" class="card-outcome-btn card-outcome-failed" onclick="setCardOutcome(${escapeJsArg(task.id)}, 'failed')" aria-pressed="${outcome === 'failed' ? 'true' : 'false'}"><span aria-hidden="true">\u2715</span> Failed</button>
+                        </div>
+                    </div>
+                ` : '';
+
                 card.innerHTML = `
                     ${coverHtml}
                     ${dragHtml}
@@ -5015,8 +6542,14 @@
                             <button class="toggle-expand-btn" onclick="toggleExpand(${escapeJsArg(task.id)})">
                                 ${task.expanded ? 'Show less' : 'Show more'}
                             </button>
-                            <button type="button" class="card-star-btn${task.starred === true ? ' is-starred' : ''}" onclick="toggleCardStar(${escapeJsArg(task.id)})" aria-pressed="${task.starred === true ? 'true' : 'false'}" aria-label="${task.starred === true ? 'Remove special day' : 'Mark as special day'}">${task.starred === true ? '\u2605' : '\u2606'}</button>
+                            <div class="card-footer-actions">
+                                <button type="button" class="card-archive-btn${achieved ? ' is-achieved' : ''}" onclick="toggleCardAchieved(${escapeJsArg(task.id)})" aria-pressed="${achieved ? 'true' : 'false'}" aria-label="${archiveLabel}">
+                                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">${archiveIcon}</svg>
+                                </button>
+                                <button type="button" class="card-star-btn${task.starred === true ? ' is-starred' : ''}" onclick="toggleCardStar(${escapeJsArg(task.id)})" aria-pressed="${task.starred === true ? 'true' : 'false'}" aria-label="${task.starred === true ? 'Remove special day' : 'Mark as special day'}">${task.starred === true ? '\u2605' : '\u2606'}</button>
+                            </div>
                         </div>
+                        ${outcomeHtml}
                     </div>
                 `;
 
@@ -5026,6 +6559,45 @@
                     requestCoverPreview(card.querySelector('.cover-preview'), sanitizeCoverUrl(task.coverUrl));
                 }
             });
+
+            if (visibleTasks.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state card-list-empty';
+                if (achievedView) {
+                    empty.textContent = achievedFilter === 'failed'
+                        ? 'No failed cards yet.'
+                        : achievedFilter === 'succeeded'
+                            ? 'No succeeded cards yet.'
+                            : 'Nothing achieved yet. Archive a card from Home to file it here.';
+                } else if (tasks.some(isAchievedCard)) {
+                    // Active list is empty because everything was filed: give
+                    // the user a direct way over to the achieved view.
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.id = 'emptyAchievedBtn';
+                    btn.className = 'empty-state-link';
+                    btn.textContent = 'Achieved';
+                    btn.setAttribute('aria-label', 'Show achieved cards');
+                    btn.addEventListener('click', openAchievedFromEmpty);
+                    empty.append(
+                        document.createTextNode('All cards are filed. Open '),
+                        btn,
+                        document.createTextNode(' to see them.')
+                    );
+                } else {
+                    empty.textContent = 'No cards yet. Add your first card.';
+                }
+                container.appendChild(empty);
+            }
+
+            // Nothing to reorder means nothing to advertise. Only ever hide
+            // here: showing stays with initReorderHint()/the seen flag.
+            const hintEl = document.getElementById('reorderHint');
+            if (hintEl) {
+                const activeCount = filterHomeCards(tasks, 'active', 'all').length;
+                if (activeCount < 2) hintEl.hidden = true;
+            }
+
             refreshStatuses();
             restoreFocusState(focusState);
         }
@@ -5292,6 +6864,10 @@
         const LONG_PRESS_MS = 430;
         const LONG_PRESS_CANCEL_PX = 8;
         const REORDER_HINT_KEY = 'cambodia_task_manager_hint_v1';
+        // Set on first successful boot. Erase removes the data keys but keeps
+        // this sentinel, so the next load shows an empty app instead of
+        // re-seeding the built-in sample cards over an intentional erase.
+        const SEEDED_KEY = 'cambodia_seeded_v1';
         let longPressState = null;
         let suppressRowClick = false;
         let suppressClickTimer = null;
@@ -7551,6 +9127,19 @@
             card.coverUrl = sanitizeCoverUrl(card.coverUrl);
             card.starred = card.starred === true;
             card.expanded = card.expanded !== false;
+            // Archive state travels with backups/transfers. Outcome and
+            // achievedAt only mean anything on an achieved card, so a merge
+            // can never leave a "failed but not achieved" card behind.
+            card.status = card.status === true;
+            card.outcome = card.status && (card.outcome === 'succeeded' || card.outcome === 'failed')
+                ? card.outcome
+                : null;
+            let achievedAt = null;
+            if (typeof card.achievedAt === 'string' && card.achievedAt.trim() !== '') {
+                const parsed = Date.parse(card.achievedAt);
+                if (isFinite(parsed)) achievedAt = new Date(parsed).toISOString();
+            }
+            card.achievedAt = card.status ? achievedAt : null;
             card.badge = ['red', 'green', 'orange', 'gray'].indexOf(card.badge) >= 0 ? card.badge : 'gray';
             const seenItemIds = Object.create(null);
             card.checklist = Array.isArray(card.checklist) ? card.checklist.filter(it => it && typeof it === 'object').map(it => {
@@ -7630,7 +9219,7 @@
         }
 
         // ---------- Merge (newest wins, field by field) ----------
-        const MERGE_CARD_FIELDS = ['title', 'description', 'coverUrl', 'expanded', 'starred', 'badge'];
+        const MERGE_CARD_FIELDS = ['title', 'description', 'coverUrl', 'expanded', 'starred', 'badge', 'status', 'outcome', 'achievedAt'];
         const MERGE_ITEM_FIELDS = ['text', 'status', 'start', 'duration', 'end', 'time', 'statusLocked', 'autoMissed'];
 
         function newerOf(a, b) {
@@ -7639,14 +9228,29 @@
             return tb > ta ? b : a;
         }
 
+        // Archive keys are tri-state: absent means "not archived", never
+        // "inherit the loser". Only card merges use this map; checklist rows
+        // also carry a "status" field that must keep normal fallback.
+        const ARCHIVE_MERGE_NEUTRAL = { status: false, outcome: null, achievedAt: null };
+
         function mergeEntityFields(local, remote, fields) {
             const source = newerOf(local, remote);
             const other = source === local ? remote : local;
             const merged = Object.assign({}, local);
+            const isCardMerge = fields === MERGE_CARD_FIELDS;
             fields.forEach(f => {
                 if (Object.prototype.hasOwnProperty.call(source, f)) merged[f] = source[f];
+                else if (isCardMerge && Object.prototype.hasOwnProperty.call(ARCHIVE_MERGE_NEUTRAL, f)) {
+                    merged[f] = ARCHIVE_MERGE_NEUTRAL[f];
+                }
                 else if (Object.prototype.hasOwnProperty.call(other, f)) merged[f] = other[f];
             });
+            // Coherence: a non-achieved card can never read "failed" or carry
+            // an archive timestamp, whichever side won the other fields.
+            if (isCardMerge && merged.status !== true) {
+                merged.outcome = null;
+                merged.achievedAt = null;
+            }
             merged.updatedAt = source.updatedAt || other.updatedAt || nowIso();
             return merged;
         }
@@ -7976,6 +9580,7 @@
                     ? 'Last archive: ' + formatBytes(info.size) + ' (' + info.entries + ' entries)'
                     : 'Last archive: none yet';
             }
+            renderPeerEntry();
         }
 
         function backupStamp() {
@@ -8333,36 +9938,80 @@
             return parts.join(' · ');
         }
 
+        function settingsImportOutcomeStatus(verb) {
+            const cards = readStorageArray(TASKS_KEY).length;
+            const notes = readStorageArray(QUICK_NOTES_KEY).length;
+            setSettingsStatus(
+                verb + ' successfully — ' + cards + (cards === 1 ? ' card' : ' cards') +
+                ', ' + notes + (notes === 1 ? ' note' : ' notes') + '.',
+                false
+            );
+        }
+
+        // A parsed file is never applied here. Both the Browse and folder
+        // paths pause on an explicit Merge / Replace choice.
         function stageImport(result) {
             // Starting an import cancels any armed erase. Without this the
             // Confirm button still points at applyEraseAll() and a Replace
             // would erase everything instead of restoring the backup.
             settingsConfirmAction = null;
             settingsPendingImport = result;
+            settingsConfirmArmed = false;
             const kindLabel = result.kind === 'full' ? 'Full' : result.kind === 'media' ? 'Media' : 'Changes';
             const canReplace = result.kind === 'full';
-            const modeEl = document.getElementById('backupModeSelect');
-            const mode = modeEl ? String(modeEl.value || 'merge') : 'merge';
+            const cards = Array.isArray(result.tasks) ? result.tasks.length : 0;
+            const notes = Array.isArray(result.quickNotes) ? result.quickNotes.length : 0;
+            const artists = result.artists && Array.isArray(result.artists.artists) ? result.artists.artists.length : 0;
+            let bytes = 0;
+            try {
+                bytes = utf8Encode(JSON.stringify({
+                    tasks: result.tasks || [],
+                    quickNotes: result.quickNotes || [],
+                    changes: result.changes || []
+                })).length;
+            } catch (e) { bytes = 0; }
             const warn = result.warnings && result.warnings.length
                 ? ' ' + result.warnings.length + ' referenced media file(s) are missing.'
                 : '';
+            const summary = kindLabel + ' backup · ' + cards + (cards === 1 ? ' card' : ' cards') +
+                ' · ' + notes + (notes === 1 ? ' note' : ' notes') +
+                (artists ? ' · ' + artists + (artists === 1 ? ' artist' : ' artists') : '') +
+                ' · ' + formatBytes(bytes) + '. Choose Merge or Replace.' + warn;
 
-            // Merge: apply straight away (the summary lands in #settingsStatus).
-            // Replace: keep the existing two-step confirm panel.
-            if (mode !== 'replace' || !canReplace) {
-                if (mode === 'replace' && !canReplace) {
-                    setSettingsStatus(kindLabel + ' backups can only be merged. Merging…', false);
-                }
-                applyMergeImport();
-                return;
-            }
-
+            // One factual line here; the panel title and summary carry the rest.
+            setSettingsStatus('Backup ready.', false);
             showSettingsConfirm(
-                kindLabel + ' backup detected',
-                'Replace overwrites everything with this backup.' + warn,
+                kindLabel + ' backup ready',
+                summary,
                 'Replace everything',
                 { showMerge: true, showReplace: canReplace }
             );
+            // The panel sits deep inside the Restore group; bring the choice
+            // into view and put keyboard focus on the first choice so it is
+            // never mistaken for "nothing happened".
+            const panel = document.getElementById('settingsConfirmPanel');
+            if (!panel) return;
+            if (typeof panel.scrollIntoView === 'function') {
+                // 'center' (not 'nearest'): the floating nav covers the last
+                // ~90px, so a panel touching the fold still reads as hidden.
+                try { panel.scrollIntoView({ block: 'center', behavior: motionReduced() ? 'auto' : 'smooth' }); } catch (e) {}
+            }
+            if (!motionReduced()) {
+                panel.classList.remove('is-arrived');
+                // Reflow so a repeat import restarts the tint.
+                void panel.offsetWidth;
+                panel.classList.add('is-arrived');
+                setTimeout(() => panel.classList.remove('is-arrived'), 650);
+            }
+            const mergeBtn = document.getElementById('settingsMergeBtn');
+            const confirmBtn = document.getElementById('settingsConfirmBtn');
+            const pickable = btn => btn && !btn.hidden && !btn.disabled;
+            const action = pickable(mergeBtn) ? mergeBtn
+                : pickable(confirmBtn) ? confirmBtn
+                : Array.from(panel.querySelectorAll('button')).find(pickable);
+            if (action && typeof action.focus === 'function') {
+                try { action.focus({ preventScroll: true }); } catch (e) {}
+            }
         }
 
         // Archive entries are attacker-named: reject reserved keys and duplicates
@@ -8551,7 +10200,7 @@
                 settingsConfirmAction = null;
                 settingsPendingImport = null;
                 hideSettingsConfirm();
-                setSettingsStatus('Merged. ' + summarizeMerge(summary), false);
+                settingsImportOutcomeStatus('Merged');
             } catch (e) {
                 setSettingsStatus('Merge failed. Nothing was changed.', true);
             }
@@ -8572,6 +10221,7 @@
                 applyArtistsPayload(pending.artists, false);
                 settingsPendingImport = null;
                 hideSettingsConfirm();
+                settingsImportOutcomeStatus('Replaced');
             } catch (e) {
                 setSettingsStatus('Replace failed. Nothing was changed.', true);
             }
@@ -8624,6 +10274,26 @@
         // label = the Confirm button text. canMerge/canReplace decide which
         // buttons the panel offers (imports show Merge; only full backups
         // also offer Replace, behind a second press).
+        // Keep DOM/tab order identical to the visual order: on phones the safe
+        // choice comes first and the destructive one sits directly above
+        // Cancel; on wider screens Cancel leads the row.
+        function layoutSettingsConfirm() {
+            const panel = document.getElementById('settingsConfirmPanel');
+            const row = document.getElementById('settingsConfirmRow');
+            if (!panel || !row) return;
+            const cancel = document.getElementById('settingsConfirmCancel');
+            const merge = document.getElementById('settingsMergeBtn');
+            const replace = document.getElementById('settingsConfirmBtn');
+            if (!cancel || !merge || !replace) return;
+            const narrow = (function () {
+                try { return window.matchMedia('(max-width: 520px)').matches; } catch (e) { return false; }
+            })();
+            const order = narrow && panel.classList.contains('is-import')
+                ? [merge, replace, cancel]
+                : [cancel, merge, replace];
+            order.forEach(node => row.appendChild(node));
+        }
+
         function showSettingsConfirm(title, message, label, opts) {
             const options = opts || {};
             const panel = document.getElementById('settingsConfirmPanel');
@@ -8638,6 +10308,8 @@
                 btn.hidden = !options.showReplace;
             }
             if (mergeBtn) mergeBtn.hidden = !options.showMerge;
+            if (panel) panel.classList.toggle('is-import', !!options.showMerge);
+            layoutSettingsConfirm();
             settingsConfirmArmed = false;
             if (panel) panel.hidden = false;
         }
@@ -8703,7 +10375,18 @@
                 localStorage.removeItem(LAST_EXPORT_KEY);
                 localStorage.removeItem(LAST_ARCHIVE_KEY);
                 localStorage.removeItem(REORDER_HINT_KEY);
+                // Session residue: the peer backup record must not outlive an erase.
+                localStorage.removeItem(PEER_BACKUP_KEY);
             } catch (e) {}
+            // The seeded sentinel is deliberately kept so the next boot stays
+            // empty instead of restoring the sample cards.
+            if (typeof tfState === 'object' && tfState) {
+                tfState.backupDone = false;
+                tfState.backupRecord = null;
+                tfState.incoming = null;
+                tfState.expectedIds = null;
+                tfState.appliedCounts = null;
+            }
             changeLog = [];
             changeSeq = 1;
             artistsData = { version: 1, artists: [], slots: [], events: [implicitEvent()] };
@@ -8718,7 +10401,7 @@
             renderQuickNotes();
             renderSettingsMeta();
             qnSetStatus('');
-            setSettingsStatus('All local data erased. Storage is empty.', false);
+            setSettingsStatus('All local data erased. Nothing will be restored on reload.', false);
         }
 
         function bindQuickNoteEvents() {
@@ -9522,6 +11205,1975 @@
             } catch (e) { setSettingsStatus('That image could not be read.', true); }
         }
 
+        // ---------- Peer transfer: shared pure API ----------
+        const PEER_BACKUP_KEY = 'cambodia_peer_backup_v1';
+
+        const TRANSFER_SCOPES = [
+            { id: 'all', label: 'Everything', desc: 'Cards, checklists, quick notes, media, artists and the change log.' },
+            { id: 'media', label: 'Media & quick notes', desc: 'Quick notes with photos, voice clips and image links. Video files stay on this device.' },
+            { id: 'metadata', label: 'System & metadata', desc: 'Artists directory, change log and app metadata. No cards or notes.' }
+        ];
+
+        function isTransferScope(value) {
+            return value === 'all' || value === 'media' || value === 'metadata';
+        }
+
+        function transferScopeMeta(scope) {
+            return TRANSFER_SCOPES.find(s => s.id === scope) || TRANSFER_SCOPES[0];
+        }
+
+        // FNV-1a 32-bit over UTF-16 code units -> 8 lowercase hex chars
+        function transferChecksum(text) {
+            const s = String(text == null ? '' : text);
+            let h = 0x811c9dc5;
+            for (let i = 0; i < s.length; i++) {
+                h ^= s.charCodeAt(i);
+                h = Math.imul(h, 0x01000193);
+            }
+            return (h >>> 0).toString(16).padStart(8, '0');
+        }
+
+        // FNV-1a 32-bit over raw bytes -> 8 lowercase hex chars
+        function transferByteChecksum(bytes) {
+            let src;
+            if (Array.isArray(bytes)) src = bytes;
+            else if (bytes && typeof bytes === 'object' && typeof bytes.length === 'number') src = bytes;
+            else if (bytes && typeof bytes === 'object' && typeof bytes.byteLength === 'number') {
+                try { src = new Uint8Array(bytes); } catch (e) { src = new Uint8Array(0); }
+            } else src = new Uint8Array(0);
+            let h = 0x811c9dc5;
+            for (let i = 0; i < src.length; i++) {
+                h ^= src[i];
+                h = Math.imul(h, 0x01000193);
+            }
+            return (h >>> 0).toString(16).padStart(8, '0');
+        }
+
+        function transferNoteIsVideo(note) {
+            return !!(note && (note.type === 'video' || note.mediaId));
+        }
+
+        function transferNoteIsMedia(note) {
+            if (!note || typeof note !== 'object') return false;
+            if (transferNoteIsVideo(note)) return true;
+            if (note.imageUrl || note.audioDataUrl) return true;
+            if (note.type === 'image' || note.type === 'audio' || note.type === 'location') return true;
+            return note.lat != null && note.lng != null;
+        }
+
+        function transferArtistsPayload() {
+            let parsed = null;
+            try { parsed = JSON.parse(readStorageValue(ARTISTS_KEY) || 'null'); } catch (e) { parsed = null; }
+            if (!parsed || typeof parsed !== 'object' || !Array.isArray(parsed.artists)) {
+                return { version: 1, artists: [], slots: [], events: [] };
+            }
+            return parsed;
+        }
+
+        function transferChangeLogSnapshot() {
+            let fromStore = null;
+            try {
+                const raw = readStorageValue(CHANGE_LOG_KEY);
+                fromStore = raw ? JSON.parse(raw) : null;
+            } catch (e) { fromStore = null; }
+            if (Array.isArray(fromStore)) return fromStore;
+            return Array.isArray(changeLog) ? changeLog.slice() : [];
+        }
+
+        function transferLocalSnapshot() {
+            return {
+                tasks: readStorageArray(TASKS_KEY),
+                quickNotes: readStorageArray(QUICK_NOTES_KEY),
+                artists: transferArtistsPayload(),
+                changeLog: transferChangeLogSnapshot()
+            };
+        }
+
+        function transferDevicePlatform() {
+            const nav = (typeof navigator !== 'undefined' && navigator) ? navigator : {};
+            const ua = String(nav.userAgent || '');
+            if (/iPhone/i.test(ua)) return 'iPhone';
+            if (/iPad/i.test(ua)) return 'iPad';
+            if (/Android/i.test(ua)) return 'Android';
+            if (/Mac OS X|Macintosh/i.test(ua)) return 'Mac';
+            if (/Windows/i.test(ua)) return 'Windows';
+            if (/Linux/i.test(ua)) return 'Linux';
+            return 'Web';
+        }
+
+        function transferDeviceName() {
+            const platform = transferDevicePlatform();
+            return platform === 'Web' ? 'This browser' : 'This ' + platform;
+        }
+
+        // Data selection + counts shared by summary and envelope building.
+        function transferPayloadFor(scope, local) {
+            const snap = local || transferLocalSnapshot();
+            const notes = Array.isArray(snap.quickNotes) ? snap.quickNotes : [];
+            const tasks = Array.isArray(snap.tasks) ? snap.tasks : [];
+            const artistsPayload = snap.artists && Array.isArray(snap.artists.artists)
+                ? snap.artists
+                : { version: 1, artists: [], slots: [], events: [] };
+            const changes = Array.isArray(snap.changeLog) ? snap.changeLog : [];
+            const keptNotes = notes.filter(n => !transferNoteIsVideo(n));
+            const meta = {
+                app: 'FlexFlow',
+                payload: 'peer-transfer',
+                schema: 1,
+                exportedAt: nowIso(),
+                device: transferDevicePlatform()
+            };
+            const allCounts = {
+                cards: tasks.length,
+                items: tasks.reduce((n, t) => n + (t && Array.isArray(t.checklist) ? t.checklist.length : 0), 0),
+                notes: notes.length,
+                media: notes.filter(transferNoteIsMedia).length,
+                artists: artistsPayload.artists.length,
+                changes: changes.length,
+                videos: notes.filter(transferNoteIsVideo).length
+            };
+            let data;
+            let counts;
+            if (scope === 'media') {
+                data = { quickNotes: keptNotes };
+                counts = { cards: 0, items: 0, notes: allCounts.notes, media: allCounts.media, artists: 0, changes: 0, videos: allCounts.videos };
+            } else if (scope === 'metadata') {
+                data = { artists: artistsPayload, changeLog: changes, meta: meta };
+                counts = { cards: 0, items: 0, notes: 0, media: 0, artists: allCounts.artists, changes: allCounts.changes, videos: 0 };
+            } else {
+                data = { tasks: tasks, quickNotes: keptNotes, artists: artistsPayload, changeLog: changes, meta: meta };
+                counts = allCounts;
+            }
+            return { data: data, counts: counts };
+        }
+
+        function transferScopeSummary(scope) {
+            const id = isTransferScope(scope) ? scope : 'all';
+            const meta = transferScopeMeta(id);
+            const built = transferPayloadFor(id);
+            const counts = built.counts;
+            let bytes = 0;
+            try { bytes = utf8Encode(JSON.stringify(built.data)).length; } catch (e) { bytes = 0; }
+            const empty = id === 'media'
+                ? counts.notes === 0
+                : id === 'metadata'
+                    ? counts.artists === 0 && counts.changes === 0
+                    : counts.cards === 0 && counts.notes === 0 && counts.artists === 0 && counts.changes === 0;
+            return { scope: id, label: meta.label, desc: meta.desc, counts: counts, bytes: bytes, empty: empty };
+        }
+
+        function buildTransferEnvelope(scope, opts) {
+            // Never fail open: an unknown scope used to become a full export.
+            if (!isTransferScope(scope)) {
+                throw new TypeError('Unknown transfer scope: ' + scope);
+            }
+            const id = scope;
+            const options = opts && typeof opts === 'object' ? opts : {};
+            const built = transferPayloadFor(id, options.local);
+            const senderInfo = options.sender && typeof options.sender === 'object' ? options.sender : {};
+            const version = 1;
+            const createdAt = typeof options.now === 'string' ? options.now : nowIso();
+            const scopeMeta = transferScopeMeta(id);
+            const builtCounts = built.counts;
+            let builtBytes = 0;
+            try { builtBytes = utf8Encode(JSON.stringify(built.data)).length; } catch (e) { builtBytes = 0; }
+            const builtEmpty = id === 'media'
+                ? builtCounts.notes === 0
+                : id === 'metadata'
+                    ? builtCounts.artists === 0 && builtCounts.changes === 0
+                    : builtCounts.cards === 0 && builtCounts.notes === 0 && builtCounts.artists === 0 && builtCounts.changes === 0;
+            const envelope = {
+                kind: 'flexflow-transfer',
+                version: version,
+                scope: id,
+                createdAt: createdAt,
+                sender: {
+                    name: String(senderInfo.name || transferDeviceName()),
+                    platform: String(senderInfo.platform || transferDevicePlatform())
+                },
+                summary: {
+                    scope: id,
+                    label: scopeMeta.label,
+                    desc: scopeMeta.desc,
+                    counts: builtCounts,
+                    bytes: builtBytes,
+                    empty: builtEmpty
+                },
+                data: built.data,
+                checksum: ''
+            };
+            envelope.checksum = transferChecksum(JSON.stringify([version, id, built.data]));
+            return envelope;
+        }
+
+        function validateTransferEnvelope(value) {
+            if (!value || typeof value !== 'object' || Array.isArray(value)) {
+                return { ok: false, error: 'This is not a FlexFlow transfer file.' };
+            }
+            if (value.kind !== 'flexflow-transfer') {
+                return { ok: false, error: 'This file is not a FlexFlow transfer.' };
+            }
+            if (value.version !== 1) {
+                return { ok: false, error: 'This transfer uses a version this app cannot read.' };
+            }
+            if (!isTransferScope(value.scope)) {
+                return { ok: false, error: 'This transfer has an unknown share scope.' };
+            }
+            if (!value.data || typeof value.data !== 'object' || Array.isArray(value.data)) {
+                return { ok: false, error: 'This transfer has no usable data payload.' };
+            }
+            let size = 0;
+            try { size = utf8Encode(JSON.stringify(value)).length; } catch (e) { size = 0; }
+            if (size > 8 * 1024 * 1024) {
+                return { ok: false, error: 'This transfer is larger than the 8 MB limit.' };
+            }
+            const caps = [
+                [value.data.tasks, 5000, 'cards'],
+                [value.data.quickNotes, 5000, 'quick notes'],
+                [value.data.changeLog, 20000, 'change-log entries']
+            ];
+            const artistsArr = value.data.artists && Array.isArray(value.data.artists.artists) ? value.data.artists.artists : null;
+            if (artistsArr) caps.push([artistsArr, 5000, 'artists']);
+            for (const [arr, limit, label] of caps) {
+                if (arr === undefined || arr === null) continue;
+                if (!Array.isArray(arr)) {
+                    return { ok: false, error: 'This transfer has a malformed ' + label + ' list.' };
+                }
+                if (arr.length > limit) {
+                    return { ok: false, error: 'This transfer has too many ' + label + ' (limit ' + limit + ').' };
+                }
+            }
+            if (typeof value.checksum !== 'string' || !/^[0-9a-f]{8}$/.test(value.checksum)) {
+                return { ok: false, error: 'This transfer is missing a valid checksum.' };
+            }
+            let expected;
+            try {
+                expected = transferChecksum(JSON.stringify([value.version, value.scope, value.data]));
+            } catch (e) {
+                return { ok: false, error: 'This transfer could not be read.' };
+            }
+            if (expected !== value.checksum) {
+                return { ok: false, error: 'This transfer failed its checksum check and was not applied.' };
+            }
+            return { ok: true, envelope: value };
+        }
+
+        function classifyTransferEntries(entriesMap) {
+            const map = entriesMap && typeof entriesMap === 'object' ? entriesMap : {};
+            const names = Object.keys(map);
+            const transferName = names.find(n => n === 'transfer.json' || /(^|\/)transfer\.json$/i.test(n));
+            if (transferName) {
+                let parsed = null;
+                try { parsed = JSON.parse(utf8Decode(map[transferName])); } catch (e) {
+                    return { ok: false, error: 'transfer.json is not valid JSON.' };
+                }
+                const check = validateTransferEnvelope(parsed);
+                if (!check.ok) return { ok: false, error: check.error };
+                return { ok: true, kind: 'envelope', envelope: check.envelope };
+            }
+            const result = inspectBackupEntries(map);
+            if (!result.ok) return { ok: false, error: result.message };
+            return { ok: true, kind: 'backup', staged: result };
+        }
+
+        function transferBlankArtists() {
+            return { version: 1, artists: [], slots: [], events: [] };
+        }
+
+        function transferSanitizeArtists(raw) {
+            if (!raw || typeof raw !== 'object' || !Array.isArray(raw.artists)) return transferBlankArtists();
+            return {
+                version: 1,
+                artists: raw.artists.map(normaliseArtist).filter(Boolean),
+                slots: Array.isArray(raw.slots) ? raw.slots.map(normaliseSlot).filter(Boolean) : [],
+                events: Array.isArray(raw.events)
+                    ? raw.events.filter(e => e && typeof e === 'object').map(e => ({
+                        id: typeof e.id === 'string' && e.id ? e.id : uniqueId('event-'),
+                        name: String(e.name || 'Show'),
+                        date: String(e.date || ''),
+                        venue: String(e.venue || '')
+                    }))
+                    : []
+            };
+        }
+
+        function planTransferApply(envelope, mode, local) {
+            const checked = validateTransferEnvelope(envelope);
+            if (!checked.ok) return { ok: false, error: checked.error };
+            if (mode !== 'merge' && mode !== 'replace') {
+                return { ok: false, error: 'Choose merge or replace.' };
+            }
+            const env = checked.envelope;
+            const data = env.data;
+            const localSnap = local && typeof local === 'object' ? local : transferLocalSnapshot();
+            const incomingTasks = (Array.isArray(data.tasks) ? data.tasks : []).map(sanitizeImportedTask).filter(Boolean);
+            const incomingNotes = sanitizeImportedNotes(Array.isArray(data.quickNotes) ? data.quickNotes : []);
+            const hasArtists = !!(data.artists && Array.isArray(data.artists.artists));
+            const incomingArtists = hasArtists ? transferSanitizeArtists(data.artists) : transferBlankArtists();
+            const videosSkipped = Number(env.summary && env.summary.counts && env.summary.counts.videos) || 0;
+            const incomingCounts = {
+                tasks: incomingTasks.length,
+                items: incomingTasks.reduce((n, t) => n + (Array.isArray(t.checklist) ? t.checklist.length : 0), 0),
+                notes: incomingNotes.length,
+                artists: incomingArtists.artists.length,
+                videos: videosSkipped
+            };
+
+            if (mode === 'replace') {
+                return {
+                    ok: true,
+                    mode: mode,
+                    tasks: incomingTasks,
+                    quickNotes: incomingNotes,
+                    artists: incomingArtists,
+                    counts: incomingCounts,
+                    videosSkipped: videosSkipped
+                };
+            }
+
+            const localTasks = Array.isArray(localSnap.tasks) ? localSnap.tasks : [];
+            const localNotes = Array.isArray(localSnap.quickNotes) ? localSnap.quickNotes : [];
+            const localArtists = localSnap.artists && Array.isArray(localSnap.artists.artists) ? localSnap.artists : transferBlankArtists();
+            const mergedTasks = mergeTasks(localTasks, incomingTasks).tasks.map(sanitizeImportedTask).filter(Boolean);
+            const mergedNotes = sanitizeImportedNotes(mergeQuickNotes(localNotes, incomingNotes).notes);
+            const mergedArtists = hasArtists ? mergeArtists(localArtists, incomingArtists).data : localArtists;
+            return {
+                ok: true,
+                mode: mode,
+                tasks: mergedTasks,
+                quickNotes: mergedNotes,
+                artists: mergedArtists,
+                counts: incomingCounts,
+                videosSkipped: videosSkipped
+            };
+        }
+
+        function canConfirmReceive(input) {
+            const opts = input && typeof input === 'object' ? input : {};
+            if (opts.envelopeOk !== true) {
+                return { ok: false, reason: 'The transfer could not be validated. Nothing will be applied.' };
+            }
+            if (opts.backupDone !== true) {
+                return { ok: false, reason: 'Back up this device before applying the transfer.' };
+            }
+            if (opts.mode !== 'merge' && opts.mode !== 'replace') {
+                return { ok: false, reason: 'Choose merge or replace first.' };
+            }
+            if (opts.mode === 'replace' && opts.kind !== 'full') {
+                return { ok: false, reason: 'Replace needs a full backup or an Everything transfer. Merge this file instead.' };
+            }
+            return { ok: true };
+        }
+
+        // ---------- Peer transfer: transport ----------
+        const TF_BT_SERVICE = '0000ffe0-0000-1000-8000-00805f9b34fb';
+        const TF_BT_CHARACTERISTIC = '0000ffe1-0000-1000-8000-00805f9b34fb';
+        const TF_CHUNK_BYTES = 180;
+        const TF_CONNECT_TIMEOUT_MS = 8000;
+
+        const TF_DEMO_DEVICES = [
+            { id: 'demo-sokha', name: "Sokha's iPhone", meta: 'Demo · nearby', kind: 'demo', glyph: 'phone', pill: 'DEMO' },
+            { id: 'demo-stage', name: 'Stage iPad', meta: 'Demo · backstage', kind: 'demo', glyph: 'phone', pill: 'DEMO' },
+            { id: 'demo-foh', name: 'FOH MacBook', meta: 'Demo · front of house', kind: 'demo', glyph: 'laptop', pill: 'DEMO' }
+        ];
+
+        function tfBluetoothCapability() {
+            const nav = (typeof navigator !== 'undefined' && navigator) ? navigator : {};
+            const hasApi = !!(nav.bluetooth && typeof nav.bluetooth.requestDevice === 'function');
+            const secure = (typeof window !== 'undefined' && window.isSecureContext === true) &&
+                (typeof location === 'undefined' || location.protocol !== 'file:');
+            return { hasApi: hasApi, secure: secure, available: hasApi && secure };
+        }
+
+        function tfCapabilityCopy() {
+            const caps = tfBluetoothCapability();
+            if (caps.available) {
+                return 'Bluetooth ready. FlexFlow can request a paired device, but browsers cannot host a receive connection — demo and file transfer always work.';
+            }
+            if (caps.hasApi) {
+                return 'Bluetooth needs https:// or localhost. Demo and file transfer work anywhere.';
+            }
+            return 'This browser has no Web Bluetooth. Demo and file transfer work everywhere.';
+        }
+
+        function tfDelay(ms) {
+            return new Promise(resolve => {
+                const entry = { resolve: resolve, id: 0 };
+                entry.id = setTimeout(() => {
+                    const i = tfState.delayResolvers.indexOf(entry);
+                    if (i >= 0) tfState.delayResolvers.splice(i, 1);
+                    resolve();
+                }, Math.max(0, ms));
+                tfState.delayResolvers.push(entry);
+                tfState.timers.push(entry.id);
+            });
+        }
+
+        // Applying/sending must stay on screen long enough to be perceived.
+        // Reduced motion still needs feedback, just without the animation.
+        function tfMinVisibleMs() {
+            return motionReduced() ? 350 : 700;
+        }
+
+        function tfWaitVisibleFloor(startedAt) {
+            const remaining = tfMinVisibleMs() - (Date.now() - startedAt);
+            return remaining > 0 ? tfDelay(remaining) : Promise.resolve();
+        }
+
+        // A stale run must never reveal a result after close or a step change.
+        function tfFlowStale(token, stepKey) {
+            if (token !== tfState.flowToken) return true;
+            const modal = tfEl('transferModal');
+            if (!modal || modal.hidden) return true;
+            return tfState.step !== stepKey;
+        }
+
+        function tfDeviceFromBluetooth(device, pill) {
+            return {
+                id: 'bt-' + (device && device.id ? device.id : uniqueId('dev-')),
+                name: (device && device.name) || 'Bluetooth device',
+                meta: pill === 'PAIRED' ? 'Previously paired' : 'Bluetooth',
+                kind: 'bluetooth',
+                pill: pill || 'NEW',
+                raw: device
+            };
+        }
+
+        function tfConnectWithTimeout(device) {
+            if (!device || !device.gatt) return Promise.reject(new Error('no-gatt'));
+            const connect = device.gatt.connect();
+            return Promise.race([
+                connect,
+                new Promise((resolve, reject) => {
+                    const id = setTimeout(() => reject(new Error('timeout')), TF_CONNECT_TIMEOUT_MS);
+                    tfState.timers.push(id);
+                })
+            ]);
+        }
+
+        function tfFriendlyBleError(err) {
+            const name = err && err.name ? String(err.name) : '';
+            const msg = err && err.message ? String(err.message) : '';
+            if (name === 'NotFoundError') {
+                return 'No device was chosen. Press Scan again, or use a demo device.';
+            }
+            if (name === 'NotAllowedError' || msg === 'timeout' || /permission|denied/i.test(msg)) {
+                return 'Bluetooth permission was denied or timed out. Allow access, keep the device nearby, then try again.';
+            }
+            if (name === 'NetworkError' || /gatt|connect/i.test(msg)) {
+                return 'Could not connect. Move closer to the device and try again.';
+            }
+            return 'Bluetooth transfer failed. Nothing was sent. You can save a transfer file instead.';
+        }
+
+        async function tfRealScan() {
+            const caps = tfBluetoothCapability();
+            if (!caps.available) {
+                tfShowAlert(caps.hasApi
+                    ? 'Bluetooth needs https:// or localhost. Demo devices are ready below.'
+                    : 'This browser has no Web Bluetooth. Use demo devices or save a transfer file.');
+                tfRenderDevices();
+                return;
+            }
+            tfClearAlert();
+            tfState.devices = tfState.devices.filter(d => d.kind !== 'bluetooth');
+            tfRenderDevices(true);
+            try {
+                if (navigator.bluetooth && typeof navigator.bluetooth.getDevices === 'function') {
+                    const known = await navigator.bluetooth.getDevices();
+                    (Array.isArray(known) ? known : []).forEach(d => {
+                        const row = tfDeviceFromBluetooth(d, 'PAIRED');
+                        if (!tfState.devices.some(x => x.id === row.id)) tfState.devices.push(row);
+                    });
+                    tfRenderDevices();
+                }
+                const chosen = await navigator.bluetooth.requestDevice({
+                    acceptAllDevices: true,
+                    optionalServices: [TF_BT_SERVICE]
+                });
+                if (chosen) {
+                    const row = tfDeviceFromBluetooth(chosen, 'NEW');
+                    if (!tfState.devices.some(x => x.id === row.id)) tfState.devices.push(row);
+                    tfRenderDevices();
+                    tfAnnounce('Device added: ' + row.name + '.');
+                }
+            } catch (err) {
+                tfRenderDevices();
+                tfShowAlert(tfFriendlyBleError(err));
+            }
+        }
+
+        async function tfRealSend(device, envelope) {
+            const raw = device && device.raw;
+            if (!raw) throw new Error('no-gatt');
+            const gatt = await tfConnectWithTimeout(raw);
+            const server = gatt || (raw.gatt && raw.gatt.connected ? raw.gatt : null);
+            if (!server) throw new Error('gatt');
+            const service = await server.getPrimaryService(TF_BT_SERVICE);
+            const char = await service.getCharacteristic(TF_BT_CHARACTERISTIC);
+            const bytes = utf8Encode(JSON.stringify(envelope));
+            const write = async chunk => {
+                if (tfState.transport && tfState.transport.cancelled) throw new Error('cancelled');
+                if (typeof char.writeValueWithoutResponse === 'function') {
+                    try { await char.writeValueWithoutResponse(chunk); return; } catch (e) {}
+                }
+                if (typeof char.writeValue === 'function') { await char.writeValue(chunk); return; }
+                throw new Error('no-write');
+            };
+            for (let i = 0; i < bytes.length; i += TF_CHUNK_BYTES) {
+                if (tfState.transport && tfState.transport.cancelled) throw new Error('cancelled');
+                await write(bytes.slice(i, Math.min(bytes.length, i + TF_CHUNK_BYTES)));
+                const pct = Math.round(Math.min(1, (i + TF_CHUNK_BYTES) / bytes.length) * 100);
+                tfSetSendProgress(pct, 'Writing ' + Math.min(bytes.length, i + TF_CHUNK_BYTES) + ' of ' + bytes.length + ' bytes');
+            }
+        }
+
+        // ---------- Peer transfer: incoming sessions ----------
+        function tfCountVideos(notes) {
+            return (Array.isArray(notes) ? notes : []).filter(n => n && (n.type === 'video' || n.mediaId || n.videoRef || n.video)).length;
+        }
+
+        function tfCountsFromEnvelope(envelope) {
+            const c = envelope && envelope.summary && envelope.summary.counts ? envelope.summary.counts : {};
+            return {
+                cards: Number(c.cards) || (Array.isArray(envelope && envelope.data && envelope.data.tasks) ? envelope.data.tasks.length : 0),
+                items: Number(c.items) || 0,
+                notes: Number(c.notes) || (Array.isArray(envelope && envelope.data && envelope.data.quickNotes) ? envelope.data.quickNotes.length : 0),
+                media: Number(c.media) || 0,
+                artists: Number(c.artists) || 0,
+                changes: Number(c.changes) || 0,
+                videos: Number(c.videos) || 0
+            };
+        }
+
+        function tfSessionFromEnvelope(envelope, filename, bytes) {
+            const meta = transferScopeMeta(envelope.scope);
+            return {
+                source: 'file',
+                filename: filename,
+                bytes: Number(bytes) || 0,
+                checksum: envelope.checksum,
+                kindLabel: meta.label,
+                scopeId: envelope.scope,
+                counts: tfCountsFromEnvelope(envelope),
+                warnings: [],
+                envelope: envelope
+            };
+        }
+
+        function tfSessionFromStaged(staged, filename, bytes) {
+            const tasks = Array.isArray(staged.tasks) ? staged.tasks : [];
+            const notes = Array.isArray(staged.quickNotes) ? staged.quickNotes : [];
+            const artists = staged.artists && Array.isArray(staged.artists.artists) ? staged.artists.artists : [];
+            const changes = Array.isArray(staged.changes) ? staged.changes : [];
+            const kindLabel = staged.kind === 'full' ? 'Full backup' : staged.kind === 'media' ? 'Media backup' : 'Changes backup';
+            const warnings = Array.isArray(staged.warnings) ? staged.warnings.slice() : [];
+            const videos = tfCountVideos(notes);
+            return {
+                source: 'file',
+                filename: filename,
+                bytes: Number(bytes) || 0,
+                checksum: transferByteChecksum(utf8Encode(JSON.stringify({ tasks: tasks, quickNotes: notes, changes: changes }))),
+                kindLabel: kindLabel,
+                scopeId: staged.kind === 'full' ? 'all' : null,
+                counts: {
+                    cards: tasks.length,
+                    items: tasks.reduce((n, t) => n + (t && Array.isArray(t.checklist) ? t.checklist.length : 0), 0),
+                    notes: notes.length,
+                    media: notes.filter(transferNoteIsMedia).length,
+                    artists: artists.length,
+                    changes: changes.length,
+                    videos: videos
+                },
+                warnings: warnings,
+                staged: staged
+            };
+        }
+
+        function tfBuildDemoNotes() {
+            const now = nowIso();
+            return [
+                {
+                    id: 'demo-note-1',
+                    type: 'text',
+                    text: 'Demo transfer: load-in moves to 14:00.',
+                    imageUrl: '', audioDataUrl: '', audioMime: '',
+                    lat: null, lng: null, createdAt: now
+                },
+                {
+                    id: 'demo-note-2',
+                    type: 'image',
+                    text: 'Stage plot photo',
+                    imageUrl: 'data:image/gif;base64,R0lGODlhAQABAAAAACw=',
+                    audioDataUrl: '', audioMime: '',
+                    lat: null, lng: null, createdAt: now
+                },
+                {
+                    id: 'demo-note-video',
+                    type: 'video',
+                    text: 'Soundcheck clip (stays on the sender)',
+                    imageUrl: '', audioDataUrl: '', audioMime: '',
+                    lat: null, lng: null, mediaId: 'demo-video-1', createdAt: now
+                }
+            ];
+        }
+
+        function tfBuildDemoEnvelope() {
+            const tasks = defaultData.map(t => JSON.parse(JSON.stringify(t)));
+            const quickNotes = tfBuildDemoNotes();
+            const data = {
+                tasks: tasks,
+                quickNotes: quickNotes.filter(n => !transferNoteIsVideo(n)),
+                artists: transferBlankArtists(),
+                changeLog: [],
+                meta: { app: 'FlexFlow', payload: 'demo-transfer', schema: 1, exportedAt: nowIso(), device: 'Demo' }
+            };
+            const counts = {
+                cards: tasks.length,
+                items: tasks.reduce((n, t) => n + (Array.isArray(t.checklist) ? t.checklist.length : 0), 0),
+                notes: quickNotes.length,
+                media: quickNotes.filter(transferNoteIsMedia).length,
+                artists: 0,
+                changes: 0,
+                videos: quickNotes.filter(transferNoteIsVideo).length
+            };
+            return {
+                kind: 'flexflow-transfer',
+                version: 1,
+                scope: 'all',
+                createdAt: nowIso(),
+                sender: { name: "Sokha's iPhone", platform: 'Demo' },
+                summary: {
+                    scope: 'all',
+                    label: 'Everything',
+                    desc: transferScopeMeta('all').desc,
+                    counts: counts,
+                    bytes: utf8Encode(JSON.stringify(data)).length,
+                    empty: false
+                },
+                data: data,
+                checksum: transferChecksum(JSON.stringify([1, 'all', data]))
+            };
+        }
+
+        function tfSessionFromDemo() {
+            const envelope = tfBuildDemoEnvelope();
+            const session = tfSessionFromEnvelope(envelope, 'Demo transfer', envelope.summary.bytes);
+            session.source = 'demo';
+            session.kindLabel = 'Everything (demo)';
+            session.warnings = session.counts.videos
+                ? [session.counts.videos + ' video note(s) stay on the sending device.']
+                : [];
+            return session;
+        }
+
+        async function tfParseTransferFile(file) {
+            if (!file) return;
+            const name = file.name || 'transfer file';
+            tfClearAlert();
+            try {
+                const bytes = await readFileBytes(file);
+                const isZip = /\.zip$/i.test(name) || String(file.type || '').toLowerCase().indexOf('zip') >= 0;
+                let session = null;
+                if (isZip) {
+                    const buffer = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
+                    const zip = readZipBuffer(buffer);
+                    if (!zip.ok) { tfShowAlert(zip.message + ' Nothing was changed.'); return; }
+                    const map = Object.create(null);
+                    zip.entries.forEach(entry => putBackupEntry(map, entry.name, entry.bytes));
+                    if (!Object.keys(map).length) { tfShowAlert('That archive is empty. Nothing was changed.'); return; }
+                    const result = classifyTransferEntries(map);
+                    if (!result.ok) { tfShowAlert(result.error + ' Nothing was changed.'); return; }
+                    session = result.kind === 'envelope'
+                        ? tfSessionFromEnvelope(result.envelope, name, bytes.length)
+                        : tfSessionFromStaged(result.staged, name, bytes.length);
+                    session.checksum = result.kind === 'envelope' ? result.envelope.checksum : transferByteChecksum(bytes);
+                } else {
+                    let parsed = null;
+                    try { parsed = JSON.parse(utf8Decode(bytes)); } catch (e) {
+                        tfShowAlert('That file is not valid JSON. Nothing was changed.');
+                        return;
+                    }
+                    if (parsed && parsed.kind === 'flexflow-transfer') {
+                        const check = validateTransferEnvelope(parsed);
+                        if (!check.ok) { tfShowAlert(check.error + ' Nothing was changed.'); return; }
+                        session = tfSessionFromEnvelope(check.envelope, name, bytes.length);
+                    } else {
+                        const check = validateBackup(parsed);
+                        if (!check.ok) { tfShowAlert(check.message + ' Nothing was changed.'); return; }
+                        const rehydrated = rehydrateBackup(parsed, () => null);
+                        const staged = {
+                            ok: true, kind: 'full',
+                            tasks: rehydrated.tasks,
+                            quickNotes: rehydrated.quickNotes,
+                            warnings: rehydrated.warnings,
+                            changes: Array.isArray(parsed.changes) ? parsed.changes : null
+                        };
+                        session = tfSessionFromStaged(staged, name, bytes.length);
+                        session.checksum = transferByteChecksum(bytes);
+                    }
+                }
+                tfState.incoming = session;
+                tfRenderIncoming(session);
+                tfShowStep('receive-incoming');
+                tfAnnounce('File ready to review.');
+            } catch (e) {
+                tfShowAlert('That file could not be read. Nothing was changed.');
+            }
+        }
+
+        // ---------- Peer transfer: backup gate ----------
+        function tfLocalBackupCounts() {
+            const snap = transferLocalSnapshot();
+            return {
+                cards: snap.tasks.length,
+                notes: snap.quickNotes.length,
+                artists: snap.artists && Array.isArray(snap.artists.artists) ? snap.artists.artists.length : 0
+            };
+        }
+
+        function tfLocalIsEmpty() {
+            const c = tfLocalBackupCounts();
+            return c.cards === 0 && c.notes === 0 && c.artists === 0;
+        }
+
+        function tfDownloadSampleBackup() {
+            const payload = {
+                version: 1,
+                exportedAt: nowIso(),
+                tasks: defaultData.map(t => JSON.parse(JSON.stringify(t))),
+                quickNotes: []
+            };
+            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+            downloadBlobFile(blob, 'flexflow-sample-backup-' + backupStamp() + '.json');
+            return blob.size;
+        }
+
+        async function backupBeforeReceive() {
+            const btn = document.getElementById('tfBackupBtn');
+            const status = document.getElementById('tfBackupStatus');
+            const cont = document.getElementById('tfBackupContinueBtn');
+            tfState.backupDone = false;
+            if (btn) btn.disabled = true;
+            if (cont) cont.disabled = true;
+            if (status) { status.textContent = 'Preparing a backup…'; status.classList.remove('is-error'); }
+            const counts = tfLocalBackupCounts();
+            const startedAt = Date.now();
+            try {
+                let source = 'device';
+                let bytes = 0;
+                if (tfLocalIsEmpty()) {
+                    source = 'sample';
+                    bytes = tfDownloadSampleBackup();
+                } else {
+                    const before = (function () {
+                        try { return JSON.parse(readStorageValue(LAST_ARCHIVE_KEY) || 'null'); } catch (e) { return null; }
+                    })();
+                    const beforeAt = before && before.at ? before.at : '';
+                    await exportFullBackup();
+                    let after = null;
+                    try { after = JSON.parse(readStorageValue(LAST_ARCHIVE_KEY) || 'null'); } catch (e) { after = null; }
+                    const fresh = !!(after && after.at && after.at !== beforeAt &&
+                        (Date.parse(after.at) || 0) >= startedAt - 2000);
+                    if (!fresh) throw new Error('no-archive');
+                    bytes = Number(after.size) || 0;
+                }
+                const record = { at: nowIso(), source: source, counts: counts, bytes: bytes };
+                try { localStorage.setItem(PEER_BACKUP_KEY, JSON.stringify(record)); } catch (e) {}
+                tfState.backupDone = true;
+                tfState.backupRecord = record;
+                if (status) {
+                    status.classList.remove('is-error');
+                    status.textContent = 'Backed up · ' + formatBytes(bytes) + ' · just now';
+                }
+                if (cont) {
+                    cont.disabled = false;
+                    cont.classList.remove('tf-btn-secondary');
+                    cont.classList.add('tf-btn-primary');
+                }
+                if (btn) {
+                    btn.textContent = 'Back up again';
+                    btn.classList.remove('tf-btn-primary');
+                    btn.classList.add('tf-btn-secondary');
+                }
+                tfAnnounce('Backup complete. You can continue.');
+            } catch (e) {
+                tfState.backupDone = false;
+                tfState.backupRecord = null;
+                if (status) {
+                    status.classList.add('is-error');
+                    status.textContent = 'Backup did not complete. Nothing has been applied — free some space and try again.';
+                }
+                if (cont) cont.disabled = true;
+            } finally {
+                if (btn) btn.disabled = false;
+            }
+        }
+
+        // ---------- Peer transfer: UI state ----------
+        const TF_STEP_IDS = {
+            'scope': 'tfStepScope',
+            'devices': 'tfStepDevices',
+            'handshake': 'tfStepHandshake',
+            'send-confirm': 'tfStepSendConfirm',
+            'sending': 'tfStepSending',
+            'send-done': 'tfStepSendDone',
+            'receive-wait': 'tfStepReceiveWait',
+            'receive-incoming': 'tfStepReceiveIncoming',
+            'backup': 'tfStepBackup',
+            'mode': 'tfStepMode',
+            'receive-confirm': 'tfStepReceiveConfirm',
+            'applying': 'tfStepApplying',
+            'receive-done': 'tfStepReceiveDone'
+        };
+
+        const TF_STEP_META = {
+            'devices': { eyebrow: 'Send data', title: 'Send data', subtitle: 'Choose a nearby device.' },
+            'handshake': { eyebrow: 'Send data', title: 'Confirm the connection', subtitle: 'Match the code on both devices.' },
+            'send-confirm': { eyebrow: 'Send data', title: 'Review and send', subtitle: 'Check the destination and what will leave this device.' },
+            'sending': { eyebrow: 'Send data', title: 'Sending', subtitle: 'Keep both devices nearby.' },
+            'send-done': { eyebrow: 'Send data', title: 'Transfer complete', subtitle: 'The other device can now review the transfer.' },
+            'receive-wait': { eyebrow: 'Receive data', title: 'Ready to receive', subtitle: 'Import a transfer file or preview the flow.' },
+            'receive-incoming': { eyebrow: 'Receive data', title: 'Incoming transfer', subtitle: 'Review before anything changes.' },
+            'backup': { eyebrow: 'Receive data', title: 'Back up this device', subtitle: 'Required before applying a transfer.' },
+            'mode': { eyebrow: 'Receive data', title: 'Choose how to apply', subtitle: 'Merge keeps local data; replace does not.' },
+            'receive-confirm': { eyebrow: 'Receive data', title: 'Confirm and apply', subtitle: 'Final check before writing to this device.' },
+            'applying': { eyebrow: 'Receive data', title: 'Apply transfer', subtitle: 'Do not close this screen.' },
+            'receive-done': { eyebrow: 'Receive data', title: 'Transfer applied', subtitle: 'Check the receipt, then verify.' }
+        };
+
+        const tfState = {
+            mode: 'send',
+            step: 'devices',
+            scope: null,
+            envelope: null,
+            device: null,
+            code: '',
+            devices: [],
+            scanning: false,
+            busy: false,
+            backupDone: false,
+            backupRecord: null,
+            incoming: null,
+            applyMode: 'merge',
+            lastFocus: null,
+            timers: [],
+            transport: null,
+            expectedIds: null,
+            appliedCounts: null,
+            verifyNote: '',
+            flowToken: 0,
+            // Timestamp guard (not a timer): ignores stray activations that
+            // land on newly positioned controls after starting send/apply.
+            guardUntil: 0,
+            delayResolvers: [],
+            applyCommitted: false
+        };
+
+        const TF_ACTIVATION_GUARD_MS = 600;
+
+        function tfArmGuard() {
+            tfState.guardUntil = Date.now() + TF_ACTIVATION_GUARD_MS;
+        }
+
+        function tfGuardActive() {
+            return Date.now() < tfState.guardUntil;
+        }
+
+        function tfBusyStep() {
+            return tfState.busy || tfState.step === 'sending' || tfState.step === 'applying';
+        }
+
+        function tfEl(id) { return document.getElementById(id); }
+
+        function tfClearTimers() {
+            tfState.timers.forEach(id => { clearTimeout(id); clearInterval(id); });
+            tfState.timers = [];
+            // Resolve any pending visibility-floor waits so an aborted run
+            // cannot leave an unresolved promise holding its closure.
+            const pending = tfState.delayResolvers || [];
+            tfState.delayResolvers = [];
+            pending.forEach(entry => { try { entry.resolve(); } catch (e) {} });
+        }
+
+        function tfAnnounce(message) {
+            const el = tfEl('tfAnnounce');
+            if (el) el.textContent = message || '';
+        }
+
+        function tfClearAlert() {
+            const el = tfEl('tfAlert');
+            if (el) { el.hidden = true; el.textContent = ''; }
+        }
+
+        function tfShowAlert(message) {
+            const el = tfEl('tfAlert');
+            if (!el) return;
+            el.textContent = String(message || '');
+            el.hidden = !message;
+            if (message) tfAnnounce(message);
+        }
+
+        function tfSetBusy(busy) {
+            tfState.busy = !!busy;
+            const modal = tfEl('transferModal');
+            if (modal) modal.classList.toggle('is-busy', !!busy);
+            // Busy: the step's own Cancel control is the deliberate abort.
+            const close = tfEl('tfClose');
+            if (close) {
+                close.disabled = !!busy;
+                close.setAttribute('aria-disabled', busy ? 'true' : 'false');
+            }
+        }
+
+        function tfVisibleSteps() {
+            const modal = tfEl('transferModal');
+            return modal ? Array.from(modal.querySelectorAll('.tf-step')).filter(sec => !sec.hidden) : [];
+        }
+
+        function tfFocusFirst(stepKey) {
+            const id = TF_STEP_IDS[stepKey];
+            const sec = id ? tfEl(id) : null;
+            if (!sec) return;
+            const target = sec.querySelector('[data-tf="scan"], .tf-btn-primary, .tf-btn-secondary, input');
+            if (target && typeof target.focus === 'function') {
+                try { target.focus({ preventScroll: true }); } catch (e) {}
+            }
+        }
+
+        function tfShowStep(key) {
+            if (!TF_STEP_IDS[key]) return;
+            tfClearAlert();
+            tfState.step = key;
+            Object.keys(TF_STEP_IDS).forEach(k => {
+                const sec = tfEl(TF_STEP_IDS[k]);
+                if (sec) sec.hidden = k !== key;
+            });
+            const meta = TF_STEP_META[key] || {};
+            const eyebrow = tfEl('tfEyebrow');
+            const title = tfEl('tfTitle');
+            const sub = tfEl('tfSubtitle');
+            if (eyebrow) eyebrow.textContent = meta.eyebrow || 'Peer transfer';
+            if (title) title.textContent = meta.title || 'Peer transfer';
+            if (sub) sub.textContent = meta.subtitle || '';
+            tfSetBusy(key === 'sending' || key === 'applying');
+            // Once the write starts there is no safe pre-commit window, so the
+            // control is inert while applying and re-enabled on every exit.
+            const cancelApply = tfEl('tfCancelApplyBtn');
+            if (cancelApply) {
+                const inert = key === 'applying';
+                cancelApply.disabled = inert;
+                cancelApply.setAttribute('aria-disabled', inert ? 'true' : 'false');
+            }
+            tfAnnounce(meta.title || '');
+            tfFocusFirst(key);
+        }
+
+        function tfSetRail(percent, opts) {
+            const rail = tfEl('tfLinkRail');
+            if (!rail) return;
+            const pct = Math.max(0, Math.min(100, Math.round(percent)));
+            rail.style.setProperty('--tf-progress', pct + '%');
+            const puckB = tfEl('tfPuckB');
+            const puckA = tfEl('tfPuckA');
+            if (puckB) {
+                puckB.classList.toggle('is-waiting', !!(opts && opts.waiting));
+                puckB.classList.toggle('is-done', !!(opts && opts.done));
+            }
+            if (puckA) puckA.classList.toggle('is-done', !!(opts && opts.done));
+        }
+
+        function tfScopeCountsText(summary) {
+            const c = summary.counts;
+            const parts = [];
+            if (c.cards) parts.push(c.cards + (c.cards === 1 ? ' card' : ' cards'));
+            if (c.items) parts.push(c.items + (c.items === 1 ? ' item' : ' items'));
+            if (c.notes) parts.push(c.notes + (c.notes === 1 ? ' note' : ' notes'));
+            if (c.artists) parts.push(c.artists + (c.artists === 1 ? ' artist' : ' artists'));
+            if (c.changes) parts.push(c.changes + ' log ' + (c.changes === 1 ? 'entry' : 'entries'));
+            if (!parts.length) return 'No data stored for this scope yet.';
+            return parts.join(' · ');
+        }
+
+        function tfReceiptRows(rows) {
+            return '<div class="tf-receipt">' + rows.map(row =>
+                '<div class="tf-receipt-row"><span class="tf-receipt-key">' + escapeHtml(row[0]) +
+                '</span><span class="tf-receipt-val">' + escapeHtml(row[1]) + '</span></div>'
+            ).join('') + '</div>';
+        }
+
+        function tfCountsReceipt(counts, kindLabel) {
+            const rows = [];
+            if (kindLabel) rows.push(['Transfer', kindLabel]);
+            rows.push(['Cards', String(counts.cards || 0)]);
+            rows.push(['Checklist items', String(counts.items || 0)]);
+            rows.push(['Quick notes', String(counts.notes || 0)]);
+            if (counts.artists) rows.push(['Artists', String(counts.artists)]);
+            if (counts.videos) rows.push(['Videos skipped', String(counts.videos)]);
+            return tfReceiptRows(rows);
+        }
+
+        function tfRandomCode() {
+            return String(Math.floor(100000 + Math.random() * 900000));
+        }
+
+        function tfFormatCode(code) {
+            const s = String(code || '');
+            return s.slice(0, 3) + ' ' + s.slice(3);
+        }
+
+        function tfCanReplaceIncoming() {
+            const inc = tfState.incoming;
+            if (!inc) return false;
+            if (inc.envelope) return inc.envelope.scope === 'all';
+            return !!(inc.staged && inc.staged.kind === 'full');
+        }
+
+        function tfIncomingKindKey() {
+            const inc = tfState.incoming;
+            if (!inc) return '';
+            if (inc.envelope) return inc.envelope.scope === 'all' ? 'full' : inc.envelope.scope;
+            return inc.staged && inc.staged.kind ? inc.staged.kind : '';
+        }
+
+        function tfIncomingLabel() {
+            const inc = tfState.incoming;
+            if (!inc) return 'this transfer';
+            return inc.envelope ? (transferScopeMeta(inc.envelope.scope).label || 'transfer') : inc.kindLabel;
+        }
+
+        // ---------- Peer transfer: settings entry ----------
+        function renderPeerEntry() {
+            const desc = tfEl('peerScopeDesc');
+            const cap = tfEl('peerCapability');
+            const select = tfEl('peerScopeSelect');
+            if (desc) {
+                const value = select ? String(select.value || '') : '';
+                if (!isTransferScope(value)) {
+                    desc.textContent = 'Choose what should leave this device. Nothing is sent until you review and confirm.';
+                } else {
+                    const summary = transferScopeSummary(value);
+                    const bits = [summary.label, tfScopeCountsText(summary), formatBytes(summary.bytes)];
+                    if (summary.counts.videos) bits.push(summary.counts.videos + ' video' + (summary.counts.videos === 1 ? '' : 's') + ' skipped');
+                    desc.textContent = bits.join(' · ');
+                }
+            }
+            if (cap) cap.textContent = tfCapabilityCopy();
+        }
+
+        function tfEntryError(message) {
+            const error = tfEl('peerScopeError');
+            if (error) {
+                error.textContent = message || '';
+                error.hidden = !message;
+            }
+        }
+
+        // ---------- Peer transfer: sender rendering ----------
+        // Pick a glyph from the device itself: laptop for desktops, phone otherwise.
+        function tfDeviceIcon(device) {
+            const kind = String((device && device.kind) || '');
+            const glyph = String((device && device.glyph) || '');
+            const name = String((device && device.name) || '');
+            if (kind === 'bluetooth') {
+                return '<svg class="icon" viewBox="0 0 24 24"><polyline points="6 7 18 17 12 22 12 2 18 7 6 17"/></svg>';
+            }
+            if (glyph === 'laptop' || /macbook|desktop|mac|pc|computer|laptop/i.test(name)) {
+                return '<svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><line x1="2" y1="20" x2="22" y2="20"/></svg>';
+            }
+            return '<svg class="icon" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="10" y1="18" x2="14" y2="18"/></svg>';
+        }
+
+        function tfRenderDevices(scanning) {
+            const list = tfEl('tfDeviceList');
+            if (!list) return;
+            const devices = tfState.devices;
+            const html = [];
+            if (scanning) {
+                html.push('<div class="tf-scanning"><span class="tf-spinner" aria-hidden="true"></span><span>Scanning for nearby devices…</span></div>');
+            }
+            devices.forEach(device => {
+                const pillClass = device.pill === 'DEMO' ? ' is-demo' : device.pill === 'PAIRED' ? ' is-paired' : '';
+                html.push(
+                    '<button type="button" class="tf-device" role="listitem" data-tf="connect" data-device-id="' + escapeHtml(device.id) + '">' +
+                        '<span class="tf-device-puck" aria-hidden="true">' + tfDeviceIcon(device) + '</span>' +
+                        '<span class="tf-device-text">' +
+                            '<span class="tf-device-name">' + escapeHtml(device.name) + '</span>' +
+                            '<span class="tf-device-meta">' + escapeHtml(device.meta || '') + '</span>' +
+                        '</span>' +
+                        '<span class="tf-pill' + pillClass + '">' + escapeHtml(device.pill || '') + '</span>' +
+                    '</button>'
+                );
+            });
+            if (!scanning && !devices.length) {
+                html.push('<div class="tf-meta">No devices yet. Press Scan for devices, or use a demo device.</div>');
+            }
+            list.innerHTML = html.join('');
+        }
+
+        function tfOpenSend() {
+            const select = tfEl('peerScopeSelect');
+            const scope = select ? String(select.value || '') : '';
+            if (!isTransferScope(scope)) return;
+            tfState.mode = 'send';
+            tfState.scope = scope;
+            tfState.envelope = buildTransferEnvelope(scope);
+            tfState.device = null;
+            tfState.devices = TF_DEMO_DEVICES.slice();
+            tfState.scanning = false;
+            tfState.backupDone = false;
+            tfState.incoming = null;
+            tfOpenModal();
+            tfRenderDevices();
+            tfShowStep('devices');
+            tfSetRail(0, {});
+            tfAnnounce('Send data. Choose a device. ' + tfScopeCountsText(tfState.envelope.summary));
+        }
+
+        function tfOpenReceive() {
+            tfState.mode = 'receive';
+            tfState.incoming = null;
+            tfState.backupDone = false;
+            tfState.backupRecord = null;
+            tfState.expectedIds = null;
+            tfState.appliedCounts = null;
+            tfOpenModal();
+            tfClearAlert();
+            const code = tfRandomCode();
+            tfState.code = code;
+            const codeEl = tfEl('tfReceiveCode');
+            if (codeEl) codeEl.textContent = tfFormatCode(code);
+            const nameEl = tfEl('tfLocalName');
+            if (nameEl) nameEl.textContent = transferDeviceName();
+            const bridgeEl = tfEl('tfBridgeNote');
+            if (bridgeEl) {
+                const caps = tfBluetoothCapability();
+                bridgeEl.textContent = caps.available
+                    ? 'This browser can only act as a Bluetooth client, so it cannot host a receive connection. Import a transfer file, or preview the flow with demo data.'
+                    : 'Bluetooth receive needs a FlexFlow bridge. Import a transfer file, or preview the flow with demo data.';
+            }
+            const statusEl = tfEl('tfBackupStatus');
+            if (statusEl) { statusEl.textContent = ''; statusEl.classList.remove('is-error'); }
+            tfShowStep('receive-wait');
+            tfSetRail(0, { waiting: true });
+            tfAnnounce('Ready to receive. Local code ' + code + '.');
+        }
+
+        function tfOpenModal() {
+            const modal = tfEl('transferModal');
+            if (!modal) return;
+            tfState.lastFocus = document.activeElement;
+            // Reset the rail while the sheet is still hidden so reopening does
+            // not animate from the previous transfer's 100%.
+            const rail = tfEl('tfLinkRail');
+            if (rail) {
+                rail.style.transition = 'none';
+                rail.style.setProperty('--tf-progress', '0%');
+            }
+            modal.hidden = false;
+            if (rail) {
+                void rail.offsetWidth;
+                rail.style.transition = '';
+            }
+            document.body.classList.add('tf-open');
+            tfClearAlert();
+            tfState.guardUntil = 0;
+            tfState.applyCommitted = false;
+            const puckA = tfEl('tfPuckA');
+            const puckB = tfEl('tfPuckB');
+            if (puckA) puckA.classList.remove('is-done');
+            if (puckB) puckB.classList.remove('is-done', 'is-waiting');
+        }
+
+        function tfClose() {
+            const modal = tfEl('transferModal');
+            if (!modal || modal.hidden) return;
+            // Stray backdrop taps, double-taps and Escape must never abort a
+            // transfer. Deliberate aborts go through the step's Cancel button.
+            // A blocked close must not invalidate the run token.
+            if (tfBusyStep() || tfGuardActive()) {
+                tfAnnounce('Transfer in progress. Use Cancel transfer to stop.');
+                return;
+            }
+            tfState.flowToken++;
+            tfClearTimers();
+            if (tfState.transport && typeof tfState.transport.cancel === 'function') {
+                try { tfState.transport.cancel(); } catch (e) {}
+            }
+            tfState.transport = null;
+            modal.hidden = true;
+            document.body.classList.remove('tf-open');
+            tfSetBusy(false);
+            tfState.scanning = false;
+            tfState.incoming = null;
+            tfState.envelope = null;
+            tfState.device = null;
+            tfState.expectedIds = null;
+            tfState.appliedCounts = null;
+            tfState.verifyNote = '';
+            tfState.applyCommitted = false;
+            const last = tfState.lastFocus;
+            tfState.lastFocus = null;
+            if (last && typeof last.focus === 'function') {
+                try { last.focus({ preventScroll: true }); } catch (e) {}
+            } else {
+                const btn = tfEl('peerReceiveBtn');
+                if (btn) try { btn.focus({ preventScroll: true }); } catch (e) {}
+            }
+        }
+
+        function tfSendConfirmHtml() {
+            const env = tfState.envelope;
+            const device = tfState.device;
+            if (!env || !device) return '';
+            const c = env.summary.counts;
+            const rows = [
+                ['Destination', device.name],
+                ['Share scope', env.summary.label],
+                ['Cards', String(c.cards)],
+                ['Checklist items', String(c.items)],
+                ['Quick notes', String(c.notes)],
+                ['Artists', String(c.artists)],
+                ['Change log', String(c.changes)],
+                ['Estimated size', formatBytes(env.summary.bytes)]
+            ];
+            if (c.videos) rows.push(['Videos skipped', String(c.videos)]);
+            rows.push(['Checksum', env.checksum]);
+            return tfReceiptRows(rows);
+        }
+
+        function tfChooseSendDevice(deviceId) {
+            const device = tfState.devices.find(d => d.id === deviceId);
+            if (!device) return;
+            tfState.device = device;
+            tfState.code = tfRandomCode();
+            const codeEl = tfEl('tfCode');
+            if (codeEl) codeEl.textContent = tfFormatCode(tfState.code);
+            const nameEl = tfEl('tfHandshakeDevice');
+            if (nameEl) nameEl.textContent = device.name + (device.kind === 'demo' ? ' · demo' : '');
+            tfShowStep('handshake');
+            tfSetRail(18, { waiting: true });
+            tfAnnounce('Confirm the code ' + tfState.code + ' on ' + device.name + '.');
+        }
+
+        function tfShowSendConfirm() {
+            const summary = tfEl('tfSummary');
+            if (summary) summary.innerHTML = tfSendConfirmHtml();
+            tfShowStep('send-confirm');
+            tfSetRail(30, {});
+        }
+
+        function tfStartSend() {
+            const env = tfState.envelope;
+            const device = tfState.device;
+            if (!env || !device) return;
+            const token = ++tfState.flowToken;
+            const startedAt = Date.now();
+            tfState.transport = { cancelled: false };
+            tfClearAlert();
+            tfSetBusy(true);
+            // Ignore stray activations for 600ms: a double-tap on Send lands
+            // where the Cancel control appears once the step reflows.
+            tfArmGuard();
+            tfState.step = 'sending';
+            Object.keys(TF_STEP_IDS).forEach(k => {
+                const sec = tfEl(TF_STEP_IDS[k]);
+                if (sec) sec.hidden = k !== 'sending';
+            });
+            const meta = TF_STEP_META['sending'];
+            const eyebrow = tfEl('tfEyebrow');
+            const title = tfEl('tfTitle');
+            const sub = tfEl('tfSubtitle');
+            if (eyebrow) eyebrow.textContent = meta.eyebrow;
+            if (title) title.textContent = meta.title;
+            if (sub) sub.textContent = meta.subtitle;
+            tfSetSendProgress(0, 'Preparing the payload…');
+            tfAnnounce('Sending data to ' + device.name + '.');
+
+            if (device.kind === 'bluetooth') {
+                tfRealSend(device, env).then(() => tfSendFinished(token, startedAt)).catch(err => {
+                    if (tfState.transport && tfState.transport.cancelled) return;
+                    if (tfFlowStale(token, 'sending')) return;
+                    tfSetBusy(false);
+                    tfShowStep('devices');
+                    tfShowAlert(tfFriendlyBleError(err));
+                });
+                return;
+            }
+
+            let pct = 0;
+            const stages = [
+                [12, 'Handshaking…'],
+                [34, 'Encoding cards…'],
+                [58, 'Packaging quick notes…'],
+                [78, 'Writing to the other device…'],
+                [94, 'Checking the checksum…']
+            ];
+            let stageIndex = 0;
+            const timer = setInterval(() => {
+                pct = Math.min(100, pct + 3 + Math.round(Math.random() * 5));
+                if (stageIndex < stages.length && pct >= stages[stageIndex][0]) {
+                    tfSetSendProgress(pct, stages[stageIndex][1]);
+                    stageIndex++;
+                } else {
+                    tfSetSendProgress(pct, 'Sending…');
+                }
+                if (pct >= 100) {
+                    clearInterval(timer);
+                    tfSendFinished(token, startedAt);
+                }
+            }, 120);
+            tfState.timers.push(timer);
+        }
+
+        function tfSetSendProgress(pct, stage) {
+            const bar = tfEl('tfProgressBar');
+            const fill = tfEl('tfProgressFill');
+            const label = tfEl('tfProgressPct');
+            const stageEl = tfEl('tfSendStage');
+            const value = Math.max(0, Math.min(100, Math.round(pct)));
+            if (bar) bar.setAttribute('aria-valuenow', String(value));
+            if (fill) fill.style.width = value + '%';
+            if (label) label.textContent = value + '%';
+            if (stage && stageEl) stageEl.textContent = stage;
+            tfSetRail(value, {});
+        }
+
+        async function tfSendFinished(token, startedAt) {
+            // Keep #tfStepSending on screen for the floor even if the work was
+            // instant; the interval timer keeps the bar moving meanwhile.
+            await tfWaitVisibleFloor(startedAt);
+            if (tfFlowStale(token, 'sending')) return;
+            tfSetBusy(false);
+            const env = tfState.envelope;
+            const sub = tfEl('tfSendDoneSub');
+            if (sub && env) {
+                sub.textContent = 'Sent to ' + (tfState.device ? tfState.device.name : 'the other device') + ' · ' + env.summary.label + ' · ' + formatBytes(env.summary.bytes) + '.';
+            }
+            const counts = tfEl('tfSendDoneCounts');
+            if (counts && env) counts.innerHTML = tfCountsReceipt(env.summary.counts, env.summary.label);
+            const verify = tfEl('tfVerifyStatus');
+            if (verify) { verify.textContent = ''; verify.classList.remove('is-error'); }
+            tfShowStep('send-done');
+            tfSetRail(100, { done: true });
+            tfAnnounce('Transfer complete.');
+        }
+
+        function tfVerifySent() {
+            const el = tfEl('tfVerifyStatus');
+            if (!el) return;
+            const env = tfState.envelope;
+            if (!env) { el.textContent = 'Nothing to verify.'; el.classList.add('is-error'); return; }
+            const check = validateTransferEnvelope(env);
+            if (!check.ok) {
+                el.textContent = check.error;
+                el.classList.add('is-error');
+                return;
+            }
+            const expected = transferChecksum(JSON.stringify([env.version, env.scope, env.data]));
+            if (expected !== env.checksum) {
+                el.textContent = 'Checksum mismatch — this transfer is not intact.';
+                el.classList.add('is-error');
+                return;
+            }
+            el.classList.remove('is-error');
+            el.textContent = 'Verified — checksum matches.';
+            tfAnnounce('Verified. Checksum matches.');
+        }
+
+        function tfSaveTransferFile() {
+            const env = tfState.envelope;
+            if (!env) { tfShowAlert('There is no transfer to save yet.'); return; }
+            try {
+                const entry = { name: 'transfer.json', bytes: utf8Encode(JSON.stringify(env, null, 2)) };
+                const blob = buildZipBlob([entry]);
+                const filename = 'flexflow-transfer-' + env.scope + '-' + backupStamp() + '.zip';
+                downloadBlobFile(blob, filename);
+                tfShowAlert('');
+                tfAnnounce('Transfer file saved: ' + filename + '.');
+                const verify = tfEl('tfVerifyStatus');
+                if (verify) {
+                    verify.classList.remove('is-error');
+                    verify.textContent = 'Transfer file saved · ' + formatBytes(blob.size);
+                }
+            } catch (e) {
+                tfShowAlert('The transfer file could not be saved. Try again.');
+            }
+        }
+
+        // ---------- Peer transfer: receiver rendering ----------
+        function tfRenderIncoming(session) {
+            const nameEl = tfEl('tfIncomingName');
+            const metaEl = tfEl('tfIncomingMeta');
+            const warnEl = tfEl('tfIncomingWarn');
+            if (nameEl) nameEl.textContent = session.source === 'demo' ? 'Demo transfer from ‘Sokha\'s iPhone’' : session.filename;
+            if (metaEl) {
+                const bits = [session.kindLabel, tfScopeCountsText({ counts: session.counts }), formatBytes(session.bytes), 'checksum ' + session.checksum];
+                metaEl.textContent = bits.filter(Boolean).join(' · ');
+            }
+            if (warnEl) {
+                const warnings = (session.warnings || []).slice();
+                if (session.counts && session.counts.videos && !warnings.some(w => /video/i.test(w))) {
+                    warnings.push(session.counts.videos + ' video note(s) stay on the sending device.');
+                }
+                if (session.staged && session.staged.warnings && session.staged.warnings.length) {
+                    // Already included above via session.warnings
+                }
+                warnEl.textContent = warnings.join(' ');
+                warnEl.hidden = !warnings.length;
+            }
+        }
+
+        function tfStartBackupStep() {
+            tfState.backupDone = false;
+            tfState.backupRecord = null;
+            const counts = tfLocalBackupCounts();
+            const receipt = tfEl('tfBackupCounts');
+            if (receipt) {
+                receipt.innerHTML = tfReceiptRows([
+                    ['This device', transferDeviceName()],
+                    ['Cards', String(counts.cards)],
+                    ['Quick notes', String(counts.notes)],
+                    ['Artists', String(counts.artists)],
+                    ['Backup type', tfLocalIsEmpty() ? 'Built-in sample (no local data)' : 'Full backup (.zip)']
+                ]);
+            }
+            const status = tfEl('tfBackupStatus');
+            if (status) { status.textContent = ''; status.classList.remove('is-error'); }
+            const cont = tfEl('tfBackupContinueBtn');
+            if (cont) {
+                cont.disabled = true;
+                cont.classList.remove('tf-btn-primary');
+                cont.classList.add('tf-btn-secondary');
+            }
+            const backupBtn = tfEl('tfBackupBtn');
+            if (backupBtn) {
+                backupBtn.textContent = 'Back up now';
+                backupBtn.classList.remove('tf-btn-secondary');
+                backupBtn.classList.add('tf-btn-primary');
+            }
+            tfShowStep('backup');
+        }
+
+        function tfRenderModeStep() {
+            const merge = tfEl('tfModeMerge');
+            const replace = tfEl('tfModeReplace');
+            const warn = tfEl('tfModeWarning');
+            const cont = tfEl('tfModeContinueBtn');
+            const mergeCard = tfEl('tfMergeCard');
+            const replaceCard = tfEl('tfReplaceCard');
+            const canReplace = tfCanReplaceIncoming();
+            tfState.applyMode = 'merge';
+            if (merge) merge.checked = true;
+            if (replace) { replace.checked = false; replace.disabled = !canReplace; }
+            if (mergeCard) mergeCard.classList.add('is-selected');
+            if (replaceCard) {
+                replaceCard.classList.toggle('is-selected', false);
+                replaceCard.classList.toggle('is-disabled', !canReplace);
+            }
+            if (warn) {
+                if (!canReplace) {
+                    const label = tfIncomingLabel();
+                    warn.textContent = 'This file contains ' + label + ' only, so it can be merged. Replace needs a full backup.';
+                    warn.hidden = false;
+                } else {
+                    warn.hidden = true;
+                    warn.textContent = '';
+                }
+            }
+            if (cont) cont.disabled = false;
+            tfShowStep('mode');
+            tfAnnounce(canReplace ? 'Choose merge or replace.' : 'Merge is the only option for this file.');
+        }
+
+        function tfSelectMode(mode) {
+            if (mode === 'replace' && !tfCanReplaceIncoming()) return;
+            tfState.applyMode = mode;
+            const mergeCard = tfEl('tfMergeCard');
+            const replaceCard = tfEl('tfReplaceCard');
+            const warn = tfEl('tfModeWarning');
+            const merge = tfEl('tfModeMerge');
+            const replace = tfEl('tfModeReplace');
+            if (merge) merge.checked = mode === 'merge';
+            if (replace) replace.checked = mode === 'replace';
+            if (mergeCard) mergeCard.classList.toggle('is-selected', mode === 'merge');
+            if (replaceCard) replaceCard.classList.toggle('is-selected', mode === 'replace');
+            if (warn) {
+                if (mode === 'replace') {
+                    warn.textContent = 'Replace deletes this device\'s cards, notes and artists, then writes only the incoming data. Your backup is the only undo.';
+                    warn.hidden = false;
+                } else if (!tfCanReplaceIncoming()) {
+                    warn.textContent = 'This file contains ' + tfIncomingLabel() + ' only, so it can be merged. Replace needs a full backup.';
+                    warn.hidden = false;
+                } else {
+                    warn.hidden = true;
+                    warn.textContent = '';
+                }
+            }
+        }
+
+        function tfRenderReceiveConfirm() {
+            const inc = tfState.incoming;
+            if (!inc) return;
+            const summary = tfEl('tfReceiveSummary');
+            const warning = tfEl('tfReceiveWarning');
+            const gate = tfEl('tfApplyGate');
+            const mode = tfState.applyMode;
+            const backup = tfState.backupRecord;
+            const rows = [
+                ['Source', inc.source === 'demo' ? 'Demo transfer' : inc.filename],
+                ['Kind', inc.kindLabel],
+                ['Cards', String(inc.counts.cards)],
+                ['Quick notes', String(inc.counts.notes)],
+                ['Artists', String(inc.counts.artists)],
+                ['Size', formatBytes(inc.bytes)],
+                ['Checksum', inc.checksum],
+                ['Mode', mode === 'replace' ? 'Replace everything' : 'Merge into current'],
+                ['Backup', backup ? 'Backed up just now (' + backup.source + ', ' + formatBytes(backup.bytes) + ')' : 'Not completed']
+            ];
+            if (summary) summary.innerHTML = tfReceiptRows(rows);
+            if (warning) {
+                if (mode === 'replace') {
+                    warning.textContent = 'Replace overwrites this device. The backup you just downloaded is the only undo.';
+                    warning.hidden = false;
+                } else {
+                    warning.hidden = true;
+                    warning.textContent = '';
+                }
+            }
+            const gateResult = canConfirmReceive({
+                envelopeOk: true,
+                backupDone: tfState.backupDone,
+                mode: mode,
+                kind: tfIncomingKindKey()
+            });
+            if (gate) gate.textContent = gateResult.ok
+                ? 'Backup complete and transfer validated. Ready to apply.'
+                : gateResult.reason;
+            const apply = tfEl('tfApplyBtn');
+            if (apply) apply.disabled = !gateResult.ok;
+            const verify = tfEl('tfReceiveVerifyStatus');
+            if (verify) { verify.textContent = ''; verify.classList.remove('is-error'); }
+            tfShowStep('receive-confirm');
+            tfAnnounce('Confirm ' + mode + ' for ' + inc.kindLabel + '.');
+        }
+
+        function tfSetApplyProgress(pct, stage) {
+            const bar = tfEl('tfApplyProgress');
+            const fill = tfEl('tfApplyFill');
+            const label = tfEl('tfApplyPct');
+            const stageEl = tfEl('tfApplyStage');
+            const value = Math.max(0, Math.min(100, Math.round(pct)));
+            if (bar) bar.setAttribute('aria-valuenow', String(value));
+            if (fill) fill.style.width = value + '%';
+            if (label) label.textContent = value + '%';
+            if (stage && stageEl) stageEl.textContent = stage;
+            tfSetRail(Math.min(100, 30 + value * 0.7), {});
+        }
+
+        function tfCollectIdsFromEnvelope(env) {
+            const ids = { tasks: [], notes: [], artists: [] };
+            if (!env || !env.data) return ids;
+            (Array.isArray(env.data.tasks) ? env.data.tasks : []).forEach(t => {
+                const safe = sanitizeImportedTask(t);
+                if (safe) ids.tasks.push(safe.id);
+            });
+            sanitizeImportedNotes(Array.isArray(env.data.quickNotes) ? env.data.quickNotes : []).forEach(n => ids.notes.push(n.id));
+            if (env.data.artists && Array.isArray(env.data.artists.artists)) {
+                transferSanitizeArtists(env.data.artists).artists.forEach(a => ids.artists.push(a.id));
+            }
+            return ids;
+        }
+
+        function tfCollectIdsFromStaged(staged) {
+            const ids = { tasks: [], notes: [], artists: [] };
+            if (!staged) return ids;
+            (Array.isArray(staged.tasks) ? staged.tasks : []).forEach(t => {
+                const safe = sanitizeImportedTask(t);
+                if (safe) ids.tasks.push(safe.id);
+            });
+            sanitizeImportedNotes(Array.isArray(staged.quickNotes) ? staged.quickNotes : [])
+                .filter(n => !n.videoRef)
+                .forEach(n => ids.notes.push(n.id));
+            if (staged.artists && Array.isArray(staged.artists.artists)) {
+                transferSanitizeArtists(staged.artists).artists.forEach(a => ids.artists.push(a.id));
+            }
+            return ids;
+        }
+
+        function tfMissingExpectedIds(ids) {
+            const expected = ids || { tasks: [], notes: [], artists: [] };
+            const taskIds = new Set(readStorageArray(TASKS_KEY).map(t => t && t.id));
+            const noteIds = new Set(readStorageArray(QUICK_NOTES_KEY).map(n => n && n.id));
+            const artistIds = new Set((transferArtistsPayload().artists || []).map(a => a && a.id));
+            let missing = 0;
+            expected.tasks.forEach(id => { if (!taskIds.has(id)) missing++; });
+            expected.notes.forEach(id => { if (!noteIds.has(id)) missing++; });
+            expected.artists.forEach(id => { if (!artistIds.has(id)) missing++; });
+            return missing;
+        }
+
+        async function tfApplyTransfer() {
+            const inc = tfState.incoming;
+            if (!inc) return;
+            const mode = tfState.applyMode;
+            const envelopeOk = inc.envelope
+                ? validateTransferEnvelope(inc.envelope).ok
+                : !!(inc.staged && inc.staged.ok);
+            const gate = canConfirmReceive({
+                envelopeOk: envelopeOk,
+                backupDone: tfState.backupDone,
+                mode: mode,
+                kind: tfIncomingKindKey()
+            });
+            if (!gate.ok) {
+                tfShowAlert(gate.reason);
+                tfAnnounce(gate.reason);
+                return;
+            }
+            tfState.expectedIds = inc.envelope ? tfCollectIdsFromEnvelope(inc.envelope) : tfCollectIdsFromStaged(inc.staged);
+            tfState.appliedCounts = inc.counts;
+            tfState.verifyNote = '';
+            const token = ++tfState.flowToken;
+            const startedAt = Date.now();
+            tfShowStep('applying');
+            tfArmGuard();
+            tfState.applyCommitted = false;
+            tfSetApplyProgress(0, 'Validating the transfer…');
+
+            // Give the browser a frame to paint the applying step before the
+            // synchronous write, so the step is genuinely perceived.
+            await tfDelay(0);
+            if (tfFlowStale(token, 'applying')) return;
+
+            let pct = 0;
+            const timer = setInterval(() => {
+                pct = Math.min(90, pct + 4 + Math.round(Math.random() * 6));
+                const stage = pct < 30 ? 'Validating the transfer…'
+                    : pct < 60 ? 'Writing cards and checklists…'
+                    : pct < 82 ? 'Writing quick notes…'
+                    : 'Updating artists…';
+                tfSetApplyProgress(pct, stage);
+            }, 130);
+            tfState.timers.push(timer);
+
+            const finish = async success => {
+                if (!success) {
+                    clearInterval(timer);
+                    tfSetBusy(false);
+                    return;
+                }
+                // Work has already run; hold the step on screen to the floor so
+                // the result never flashes by. The interval keeps animating.
+                await tfWaitVisibleFloor(startedAt);
+                clearInterval(timer);
+                if (tfFlowStale(token, 'applying')) return;
+                tfSetApplyProgress(100, 'Finalising…');
+                tfState.backupDone = false;
+                tfState.backupRecord = null;
+                const counts = tfEl('tfReceiveDoneCounts');
+                if (counts) counts.innerHTML = tfCountsReceipt(tfState.appliedCounts, inc.kindLabel);
+                const sub = tfEl('tfReceiveDoneSub');
+                if (sub) sub.textContent = (mode === 'replace' ? 'Replaced with ' : 'Merged in ') + inc.kindLabel + ' · ' + formatBytes(inc.bytes) + '.';
+                const verify = tfEl('tfReceiveVerifyStatus');
+                if (verify) { verify.textContent = ''; verify.classList.remove('is-error'); }
+                tfShowStep('receive-done');
+                tfSetRail(100, { done: true });
+                tfAnnounce('Transfer applied.');
+            };
+
+            try {
+                if (inc.envelope) {
+                    const plan = planTransferApply(inc.envelope, mode, transferLocalSnapshot());
+                    if (!plan.ok) {
+                        clearInterval(timer);
+                        tfSetBusy(false);
+                        tfShowStep('receive-confirm');
+                        tfShowAlert(plan.error);
+                        return;
+                    }
+                    const wrote = applyImport({ tasks: plan.tasks, quickNotes: plan.quickNotes }, mode === 'merge');
+                    if (!wrote) throw new Error('import-failed');
+                    if (inc.envelope.data.artists) {
+                        applyArtistsPayload(plan.artists, mode === 'merge');
+                    }
+                    if (tfMissingExpectedIds(tfState.expectedIds)) throw new Error('verify-missing');
+                    tfState.applyCommitted = true;
+                    await finish(true);
+                    return;
+                }
+                const staged = inc.staged;
+                if (!staged) throw new Error('no-staged');
+                if (mode === 'replace' && staged.kind !== 'full') throw new Error('replace-not-full');
+                settingsConfirmAction = null;
+                settingsPendingImport = staged;
+                if (mode === 'replace') {
+                    await applyReplaceImport();
+                } else {
+                    await applyMergeImport();
+                }
+                if (settingsPendingImport) throw new Error('import-failed');
+                if (staged.kind !== 'changes' && tfMissingExpectedIds(tfState.expectedIds)) throw new Error('verify-missing');
+                tfState.applyCommitted = true;
+                await finish(true);
+            } catch (e) {
+                clearInterval(timer);
+                tfSetBusy(false);
+                tfState.applyCommitted = false;
+                if (tfFlowStale(token, 'applying')) return;
+                const message = 'Apply failed. Nothing was changed; the backup gate stays open so you can retry.';
+                tfShowStep('receive-confirm');
+                tfShowAlert(message);
+            }
+        }
+
+        function tfVerifyReceived() {
+            const el = tfEl('tfReceiveVerifyStatus');
+            if (!el) return;
+            const inc = tfState.incoming;
+            if (!inc) { el.textContent = 'Nothing to verify.'; el.classList.add('is-error'); return; }
+            if (inc.staged && inc.staged.kind === 'changes') {
+                const n = Array.isArray(inc.staged.changes) ? inc.staged.changes.length : 0;
+                el.classList.remove('is-error');
+                el.textContent = 'Verified — ' + n + ' changes replayed.';
+                tfAnnounce('Verified. ' + n + ' changes replayed.');
+                return;
+            }
+            const ids = tfState.expectedIds || { tasks: [], notes: [], artists: [] };
+            const storedTasks = readStorageArray(TASKS_KEY);
+            const storedNotes = readStorageArray(QUICK_NOTES_KEY);
+            const storedArtists = transferArtistsPayload();
+            const taskIds = new Set(storedTasks.map(t => t && t.id));
+            const noteIds = new Set(storedNotes.map(n => n && n.id));
+            const artistIds = new Set((storedArtists.artists || []).map(a => a && a.id));
+            let total = 0;
+            let missing = 0;
+            ids.tasks.forEach(id => { total++; if (!taskIds.has(id)) missing++; });
+            ids.notes.forEach(id => { total++; if (!noteIds.has(id)) missing++; });
+            ids.artists.forEach(id => { total++; if (!artistIds.has(id)) missing++; });
+            if (missing) {
+                el.classList.add('is-error');
+                el.textContent = 'Verified — ' + (total - missing) + ' of ' + total + ' items match. ' + missing + ' missing.';
+                tfAnnounce('Verification found ' + missing + ' missing items.');
+                return;
+            }
+            el.classList.remove('is-error');
+            el.textContent = 'Verified — ' + total + ' items match.';
+            tfAnnounce('Verified. ' + total + ' items match.');
+        }
+
+        // Read-only hook for automated checks; the UI never depends on it.
+        try {
+            if (typeof window !== 'undefined') {
+                window.__flexflowTransfer = {
+                    TRANSFER_SCOPES: TRANSFER_SCOPES,
+                    PEER_BACKUP_KEY: PEER_BACKUP_KEY,
+                    transferChecksum: transferChecksum,
+                    transferByteChecksum: transferByteChecksum,
+                    transferScopeSummary: transferScopeSummary,
+                    buildTransferEnvelope: buildTransferEnvelope,
+                    validateTransferEnvelope: validateTransferEnvelope,
+                    classifyTransferEntries: classifyTransferEntries,
+                    planTransferApply: planTransferApply,
+                    canConfirmReceive: canConfirmReceive,
+                    isTransferScope: isTransferScope
+                };
+            }
+        } catch (e) {}
+
+        // ---------- Peer transfer: wiring ----------
+        function tfEntryTransfer() {
+            const select = tfEl('peerScopeSelect');
+            const scope = select ? String(select.value || '') : '';
+            if (!isTransferScope(scope)) {
+                tfEntryError('Choose what to share first, then press Transfer data.');
+                if (select && typeof select.focus === 'function') select.focus();
+                return;
+            }
+            tfEntryError('');
+            tfOpenSend();
+        }
+
+        function tfCancelSend() {
+            // A double-tap's second press can land here: ignore it while the
+            // activation guard is armed, and only abort a live send.
+            if (tfGuardActive()) return;
+            if (tfState.step !== 'sending') return;
+            if (tfState.transport) tfState.transport.cancelled = true;
+            tfState.flowToken++;
+            tfClearTimers();
+            tfSetBusy(false);
+            tfState.transport = null;
+            tfShowStep('devices');
+            tfSetRail(0, {});
+            tfAnnounce('Transfer cancelled.');
+        }
+
+        function tfCancelApply() {
+            // The write is synchronous and commits right after the first
+            // paint, so once committed this must never report a cancellation.
+            if (tfState.applyCommitted) {
+                tfAnnounce('Applying — this cannot be cancelled now.');
+                return;
+            }
+            if (tfGuardActive()) return;
+            if (tfState.step !== 'applying') return;
+            tfState.flowToken++;
+            tfClearTimers();
+            tfSetBusy(false);
+            tfState.applyCommitted = false;
+            tfSetApplyProgress(0, '');
+            tfShowStep('receive-confirm');
+            tfSetRail(30, {});
+            tfAnnounce('Transfer cancelled.');
+        }
+
+        function tfHandleAction(action, el) {
+            switch (action) {
+                case 'close': tfClose(); return;
+                case 'scan':
+                    if (tfState.step === 'scope') { tfShowStep('devices'); tfRenderDevices(); return; }
+                    tfRealScan(); return;
+                case 'demo':
+                    tfState.devices = TF_DEMO_DEVICES.slice();
+                    tfRenderDevices();
+                    tfAnnounce('Demo devices ready.');
+                    return;
+                case 'connect':
+                    tfChooseSendDevice(el.getAttribute('data-device-id'));
+                    return;
+                case 'handshake-confirm':
+                    tfShowSendConfirm();
+                    return;
+                case 'send':
+                    tfStartSend();
+                    return;
+                case 'cancel-send':
+                    tfCancelSend();
+                    return;
+                case 'cancel-apply':
+                    tfCancelApply();
+                    return;
+                case 'save-file':
+                    tfSaveTransferFile();
+                    return;
+                case 'verify':
+                    tfVerifySent();
+                    return;
+                case 'done':
+                    tfClose();
+                    return;
+                case 'back-devices':
+                    tfState.device = null;
+                    tfShowStep('devices');
+                    tfSetRail(0, {});
+                    return;
+                case 'back-handshake':
+                    tfShowStep('handshake');
+                    tfSetRail(18, { waiting: true });
+                    return;
+                case 'receive-demo':
+                    tfState.incoming = tfSessionFromDemo();
+                    tfRenderIncoming(tfState.incoming);
+                    tfShowStep('receive-incoming');
+                    tfSetRail(35, {});
+                    tfAnnounce('Demo transfer ready to review.');
+                    return;
+                case 'import-file': {
+                    const input = tfEl('tfFileInput');
+                    if (input) input.click();
+                    return;
+                }
+                case 'accept-incoming':
+                    tfStartBackupStep();
+                    return;
+                case 'backup':
+                    backupBeforeReceive();
+                    return;
+                case 'backup-continue':
+                    if (!tfState.backupDone) return;
+                    tfRenderModeStep();
+                    return;
+                case 'back-mode':
+                    tfShowStep('mode');
+                    return;
+                case 'back-backup':
+                    tfShowStep('backup');
+                    return;
+                case 'mode-continue':
+                    tfRenderReceiveConfirm();
+                    return;
+                case 'apply':
+                    tfApplyTransfer();
+                    return;
+                case 'receive-verify':
+                    tfVerifyReceived();
+                    return;
+                default: return;
+            }
+        }
+
+        function tfBindEvents() {
+            const transferBtn = tfEl('peerTransferBtn');
+            if (transferBtn) transferBtn.addEventListener('click', tfEntryTransfer);
+            const receiveBtn = tfEl('peerReceiveBtn');
+            if (receiveBtn) receiveBtn.addEventListener('click', tfOpenReceive);
+            const select = tfEl('peerScopeSelect');
+            if (select) {
+                select.addEventListener('change', () => {
+                    if (isTransferScope(String(select.value || ''))) tfEntryError('');
+                    renderPeerEntry();
+                });
+            }
+            const modal = tfEl('transferModal');
+            if (modal) {
+                modal.addEventListener('click', e => {
+                    const target = e.target && e.target.closest ? e.target.closest('[data-tf]') : null;
+                    if (!target || !modal.contains(target)) return;
+                    tfHandleAction(target.getAttribute('data-tf'), target);
+                });
+                modal.addEventListener('change', e => {
+                    const t = e.target;
+                    if (!t || !t.id) return;
+                    if (t.id === 'tfModeMerge') tfSelectMode('merge');
+                    else if (t.id === 'tfModeReplace') tfSelectMode('replace');
+                    else if (t.id === 'tfFileInput') {
+                        const file = t.files && t.files[0];
+                        t.value = '';
+                        if (file) tfParseTransferFile(file);
+                    }
+                });
+            }
+            document.addEventListener('keydown', e => {
+                const modalEl = tfEl('transferModal');
+                if (!modalEl || modalEl.hidden) return;
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    // Escape must never abort a live transfer; the step's own
+                    // Cancel control is the deliberate path.
+                    if (tfBusyStep() || tfGuardActive()) return;
+                    tfClose();
+                    return;
+                }
+                if (e.key !== 'Tab') return;
+                const sheet = modalEl.querySelector('.tf-sheet');
+                if (!sheet) return;
+                const focusables = Array.from(sheet.querySelectorAll(
+                    'button:not([disabled]), input:not([disabled]), select:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
+                )).filter(node => node.offsetParent !== null || node === document.activeElement);
+                if (!focusables.length) return;
+                const first = focusables[0];
+                const last = focusables[focusables.length - 1];
+                if (e.shiftKey && (document.activeElement === first || !sheet.contains(document.activeElement))) {
+                    e.preventDefault();
+                    last.focus();
+                } else if (!e.shiftKey && document.activeElement === last) {
+                    e.preventDefault();
+                    first.focus();
+                }
+            });
+        }
+
         // DOM Ready Load Procedure
         document.addEventListener('DOMContentLoaded', () => {
             loadTasks();
@@ -9534,6 +13186,13 @@
             bindArtistEvents();
             qnUpdateSecureUi();
             renderSettingsMeta();
+            tfBindEvents();
+            try {
+                window.matchMedia('(max-width: 520px)').addEventListener('change', () => {
+                    const panel = document.getElementById('settingsConfirmPanel');
+                    if (panel && !panel.hidden) layoutSettingsConfirm();
+                });
+            } catch (e) {}
             bindQuickNoteEvents();
             updateClock();
             setInterval(updateClock, 1000);
