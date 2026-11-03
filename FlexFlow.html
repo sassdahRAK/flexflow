@@ -6371,7 +6371,10 @@
                 const modal = document.getElementById('qnVideoModal');
                 if (modal) modal.hidden = true;
                 const note = addQuickNote({ type: 'video', mediaId: id, mime: mime, durationMs: durationMs, text: '' });
-                if (note && note.id) qnScrollNoteIntoView(note.id);
+                if (note && note.id) {
+                    qnScrollNoteIntoView(note.id);
+                    qnAutoplayNewVideoNote(note.id);
+                }
                 // The note could not be persisted (localStorage quota): drop
                 // the blob we just wrote so IndexedDB does not keep an orphan.
                 else mediaDelete(id).catch(() => {});
@@ -6484,6 +6487,22 @@
             qnObjectUrls = [];
         }
 
+        // After a fresh recording is saved, find its bubble's play button and
+        // start playback automatically instead of waiting for a manual tap.
+        function qnAutoplayNewVideoNote(noteId) {
+            try {
+                const buttons = document.querySelectorAll('.qn-video-play');
+                for (let i = buttons.length - 1; i >= 0; i--) {
+                    const btn = buttons[i];
+                    if (btn.hidden) continue;
+                    const wrap = btn.closest('.qn-video');
+                    if (!wrap || wrap.dataset.noteId !== String(noteId)) continue;
+                    qnPlayVideo(btn, noteId);
+                    return;
+                }
+            } catch (e) {}
+        }
+
         function qnPlayVideo(button, noteId) {
             const note = quickNotes.find(n => n.id === noteId);
             if (!note) return;
@@ -6498,7 +6517,10 @@
                 video.src = url;
                 video.hidden = false;
                 button.hidden = true;
-                try { video.play(); } catch (e) {}
+                const p = video.play();
+                if (p && typeof p.catch === 'function') {
+                    p.catch(() => { qnSetStatus('Video could not be played automatically. Tap the video to try again.', true); });
+                }
             }).catch(() => qnSetStatus('Video storage is unavailable.', true));
         }
 
