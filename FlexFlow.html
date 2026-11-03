@@ -4346,15 +4346,15 @@
 
                 <section class="tf-step" id="tfStepHandshake" data-tf-step="handshake" hidden>
                     <div class="tf-step-body">
-                        <div class="tf-step-title">Match the code</div>
-                        <p class="tf-text">Confirm this 6-digit code matches on the other device before sending.</p>
-                        <div class="tf-code" id="tfCode" aria-live="polite">000 000</div>
+                        <div class="tf-step-title" id="tfHandshakeTitle">Reading the verification code</div>
+                        <p class="tf-text" id="tfHandshakeText">Asking the device for its verification code…</p>
+                        <div class="tf-code" id="tfCode" aria-live="polite" hidden></div>
                         <div class="tf-code-label" id="tfHandshakeDevice">Selected device</div>
-                        <p class="tf-note">If the code does not match, cancel and scan again.</p>
+                        <p class="tf-note" id="tfHandshakeNote"></p>
                     </div>
                     <div class="tf-step-actions">
                         <button type="button" class="tf-btn tf-btn-secondary" data-tf="back-devices">Back</button>
-                        <button type="button" class="tf-btn tf-btn-primary" data-tf="handshake-confirm">Confirm the code</button>
+                        <button type="button" class="tf-btn tf-btn-primary" data-tf="handshake-confirm">Continue anyway</button>
                     </div>
                 </section>
 
@@ -4413,8 +4413,6 @@
                             <div class="tf-radar-sweep"></div>
                             <div class="tf-radar-core">Open</div>
                         </div>
-                        <div class="tf-code" id="tfReceiveCode">000 000</div>
-                        <div class="tf-code-label">Local code · <span id="tfLocalName">This device</span></div>
                         <p class="tf-text" id="tfBridgeNote">This browser cannot host a Bluetooth receive connection. Import a transfer file to review and apply it here.</p>
                         <button type="button" class="tf-btn tf-btn-primary" id="tfImportFileBtn" data-tf="import-file" style="width:100%; margin-top:12px;">Import backup file</button>
                         <input type="file" id="tfFileInput" accept=".zip,.json,application/zip,application/json" hidden>
@@ -12617,6 +12615,8 @@
         const TF_BT_CHARACTERISTIC = '0000ffe1-0000-1000-8000-00805f9b34fb';
         const TF_CHUNK_BYTES = 180;
         const TF_CONNECT_TIMEOUT_MS = 8000;
+        // The handshake must never hang waiting for a peer to report its code.
+        const TF_CODE_READ_TIMEOUT_MS = 3000;
 
         function tfBluetoothCapability() {
             const nav = (typeof navigator !== 'undefined' && navigator) ? navigator : {};
@@ -12747,10 +12747,25 @@
         async function tfRealSend(device, envelope) {
             const raw = device && device.raw;
             if (!raw) throw new Error('no-gatt');
-            const gatt = await tfConnectWithTimeout(raw);
-            const server = gatt || (raw.gatt && raw.gatt.connected ? raw.gatt : null);
+            // Reuse the server the handshake opened; only connect if none.
+            let server = tfState.gattServer;
+            if (!server) {
+                const gatt = await tfConnectWithTimeout(raw);
+                server = gatt || (raw.gatt && raw.gatt.connected ? raw.gatt : null);
+            }
             if (!server) throw new Error('gatt');
-            const service = await server.getPrimaryService(TF_BT_SERVICE);
+            let service;
+            try {
+                service = await server.getPrimaryService(TF_BT_SERVICE);
+            } catch (err) {
+                // The cached connection may have gone stale; reconnect once.
+                if (tfState.gattServer !== server) throw err;
+                tfState.gattServer = null;
+                const gatt = await tfConnectWithTimeout(raw);
+                server = gatt || (raw.gatt && raw.gatt.connected ? raw.gatt : null);
+                if (!server) throw err;
+                service = await server.getPrimaryService(TF_BT_SERVICE);
+            }
             const char = await service.getCharacteristic(TF_BT_CHARACTERISTIC);
             const bytes = utf8Encode(JSON.stringify(envelope));
             const write = async chunk => {
@@ -12993,7 +13008,7 @@
 
         const TF_STEP_META = {
             'devices': { eyebrow: 'Send data', title: 'Send data', subtitle: 'Choose a nearby device.' },
-            'handshake': { eyebrow: 'Send data', title: 'Confirm the connection', subtitle: 'Match the code on both devices.' },
+            'handshake': { eyebrow: 'Send data', title: 'Check the device', subtitle: 'The code is read from the device, not generated here.' },
             'send-confirm': { eyebrow: 'Send data', title: 'Review and send', subtitle: 'Check the destination and what will leave this device.' },
             'sending': { eyebrow: 'Send data', title: 'Sending', subtitle: 'Keep both devices nearby.' },
             'send-done': { eyebrow: 'Send data', title: 'Transfer complete', subtitle: 'The other device can now review the transfer.' },
@@ -13013,6 +13028,11 @@
             envelope: null,
             device: null,
             code: '',
+            // Connection opened to read the peer's code; reused for the send so
+            // verification costs one GATT connection, not two.
+            gattServer: null,
+            handshakeToken: 0,
+            handshakeState: '',
             devices: [],
             scanning: false,
             busy: false,
@@ -13177,8 +13197,53 @@
             return tfReceiptRows(rows);
         }
 
-        function tfRandomCode() {
-            return String(Math.floor(100000 + Math.random() * 900000));
+        // Read the peer's verification code. Web Bluetooth exposes the peer's
+        // own code on the characteristic when the firmware supports reads; when
+        // it does not, the honest answer is "no code", never a generated one.
+        function tfExtractCode(text) {
+            const match = String(text == null ? '' : text).match(/(\d{6})/);
+            return match ? match[1] : '';
+        }
+
+        async function tfReadPeerCodeOnce(device) {
+            const raw = device && device.raw;
+            if (!raw || !raw.gatt) return '';
+            const gatt = await tfConnectWithTimeout(raw);
+            const server = gatt || (raw.gatt && raw.gatt.connected ? raw.gatt : null);
+            if (!server) return '';
+            // Only cache for the device still selected; a slow read from a
+            // device the user backed away from must not become the send target.
+            if (device === tfState.device) tfState.gattServer = server;
+            const service = await server.getPrimaryService(TF_BT_SERVICE);
+            const char = await service.getCharacteristic(TF_BT_CHARACTERISTIC);
+            if (!char || typeof char.readValue !== 'function') return '';
+            const value = await char.readValue();
+            // Web Bluetooth readValue() can return a DataView or ArrayBuffer.
+            let bytes;
+            try {
+                if (value instanceof Uint8Array) bytes = value;
+                else if (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) bytes = new Uint8Array(value);
+                else if (typeof ArrayBuffer !== 'undefined' && ArrayBuffer.isView(value)) bytes = new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
+                else bytes = new Uint8Array(value || 0);
+            } catch (e) { return ''; }
+            return tfExtractCode(utf8Decode(bytes));
+        }
+
+        // Bound the whole attempt (connect included) so a silent peer cannot
+        // leave the handshake waiting forever.
+        function tfReadPeerCode(device) {
+            return new Promise(resolve => {
+                let settled = false;
+                const finish = value => {
+                    if (settled) return;
+                    settled = true;
+                    clearTimeout(timer);
+                    resolve(value || '');
+                };
+                const timer = setTimeout(() => finish(''), TF_CODE_READ_TIMEOUT_MS);
+                tfState.timers.push(timer);
+                tfReadPeerCodeOnce(device).then(finish).catch(() => finish(''));
+            });
         }
 
         function tfFormatCode(code) {
@@ -13303,12 +13368,10 @@
             tfState.appliedCounts = null;
             tfOpenModal();
             tfClearAlert();
-            const code = tfRandomCode();
-            tfState.code = code;
-            const codeEl = tfEl('tfReceiveCode');
-            if (codeEl) codeEl.textContent = tfFormatCode(code);
-            const nameEl = tfEl('tfLocalName');
-            if (nameEl) nameEl.textContent = transferDeviceName();
+            // No local pairing code: this browser cannot host a receive
+            // connection, so a number here could never be matched. The honest
+            // path is importing the sender's transfer file.
+            tfState.code = '';
             const bridgeEl = tfEl('tfBridgeNote');
             if (bridgeEl) {
                 const caps = tfBluetoothCapability();
@@ -13320,7 +13383,7 @@
             if (statusEl) { statusEl.textContent = ''; statusEl.classList.remove('is-error'); }
             tfShowStep('receive-wait');
             tfSetRail(0, { waiting: true });
-            tfAnnounce('Ready to receive. Local code ' + code + '.');
+            tfAnnounce('Ready to receive. Import the transfer file from the other device.');
         }
 
         function tfOpenModal() {
@@ -13372,6 +13435,8 @@
             tfState.incoming = null;
             tfState.envelope = null;
             tfState.device = null;
+            tfState.handshakeToken++;
+            tfState.gattServer = null;
             tfState.expectedIds = null;
             tfState.appliedCounts = null;
             tfState.verifyNote = '';
@@ -13406,18 +13471,91 @@
             return tfReceiptRows(rows);
         }
 
+        // Render the handshake in one of three honest states:
+        //   'reading'    - ask the device, show no number yet
+        //   'code'       - show the code the device reported
+        //   'unverified' - show no number; say the device cannot be verified
+        function tfSetHandshakeState(state, device) {
+            const name = (device && device.name) || 'this device';
+            const titleEl = tfEl('tfHandshakeTitle');
+            const textEl = tfEl('tfHandshakeText');
+            const codeEl = tfEl('tfCode');
+            const nameEl = tfEl('tfHandshakeDevice');
+            const noteEl = tfEl('tfHandshakeNote');
+            const subEl = tfEl('tfSubtitle');
+            const btn = document.querySelector('[data-tf="handshake-confirm"]');
+            tfState.handshakeState = state;
+
+            if (state === 'code') {
+                if (subEl) subEl.textContent = 'Reported by the device. It should match what that device shows.';
+                if (titleEl) titleEl.textContent = 'Device verification code';
+                if (textEl) textEl.textContent = 'This code is reported by ' + name + '. It should match the code shown on that device.';
+                if (codeEl) {
+                    codeEl.textContent = tfFormatCode(tfState.code);
+                    codeEl.hidden = false;
+                    codeEl.style.display = '';
+                }
+                if (nameEl) nameEl.textContent = 'Reported by ' + name;
+                if (noteEl) noteEl.textContent = 'If the code does not match, cancel and scan again.';
+                if (btn) btn.textContent = 'Confirm the code';
+                return;
+            }
+
+            // No generated fallback number may appear in either state below.
+            if (codeEl) {
+                codeEl.textContent = '';
+                codeEl.hidden = true;
+                codeEl.style.display = 'none';
+            }
+
+            if (state === 'reading') {
+                if (subEl) subEl.textContent = 'Asking the device for the code it reports.';
+                if (titleEl) titleEl.textContent = 'Reading the verification code';
+                if (textEl) textEl.textContent = 'Asking ' + name + ' for its verification code…';
+                if (nameEl) nameEl.textContent = 'Selected device: ' + name;
+                if (noteEl) noteEl.textContent = '';
+                if (btn) btn.textContent = 'Continue anyway';
+                return;
+            }
+
+            if (subEl) subEl.textContent = 'No code was reported, so this device cannot be verified.';
+            if (titleEl) titleEl.textContent = 'This device cannot be verified';
+            if (textEl) textEl.textContent = 'This device did not report a verification code, so FlexFlow cannot verify it. Only continue if you chose this device yourself.';
+            if (nameEl) nameEl.textContent = 'No code reported by ' + name;
+            if (noteEl) noteEl.textContent = 'Nothing is sent until you review the transfer and confirm.';
+            if (btn) btn.textContent = 'Continue anyway';
+        }
+
         function tfChooseSendDevice(deviceId) {
             const device = tfState.devices.find(d => d.id === deviceId);
             if (!device) return;
+            const token = ++tfState.handshakeToken;
             tfState.device = device;
-            tfState.code = tfRandomCode();
-            const codeEl = tfEl('tfCode');
-            if (codeEl) codeEl.textContent = tfFormatCode(tfState.code);
-            const nameEl = tfEl('tfHandshakeDevice');
-            if (nameEl) nameEl.textContent = device.name;
+            tfState.code = '';
+            tfState.gattServer = null;
             tfShowStep('handshake');
+            tfSetHandshakeState('reading', device);
             tfSetRail(18, { waiting: true });
-            tfAnnounce('Confirm the code ' + tfState.code + ' on ' + device.name + '.');
+            tfAnnounce('Reading the verification code from ' + device.name + '.');
+            if (device.kind !== 'bluetooth' || !device.raw) {
+                tfSetHandshakeState('unverified', device);
+                return;
+            }
+            tfReadPeerCode(device).then(code => {
+                if (token !== tfState.handshakeToken) return;
+                if (tfState.device !== device) return;
+                tfState.code = code ? String(code) : '';
+                tfState.handshakeState = code ? 'code' : 'unverified';
+                // If the user already moved on, keep the result for Back without
+                // touching the now-visible send-review copy.
+                if (tfState.step !== 'handshake') return;
+                tfSetHandshakeState(tfState.handshakeState, device);
+                if (code) {
+                    tfAnnounce('Code reported by ' + device.name + ': ' + code + '. Confirm it matches that device.');
+                } else {
+                    tfAnnounce('This device did not report a verification code. Continue only if you chose it yourself.');
+                }
+            });
         }
 
         function tfShowSendConfirm() {
@@ -14029,6 +14167,7 @@
                     return;
                 case 'back-handshake':
                     tfShowStep('handshake');
+                    tfSetHandshakeState(tfState.handshakeState || 'unverified', tfState.device);
                     tfSetRail(18, { waiting: true });
                     return;
                 case 'import-file': {
