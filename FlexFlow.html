@@ -4,10 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#F2F2F7">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-title" content="FlexFlow">
+    <meta name="application-name" content="FlexFlow">
     <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAIAAAD8GO2jAAAAAXNSR0IArs4c6QAAAHhlWElmTU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUAAAABAAAARgEoAAMAAAABAAIAAIdpAAQAAAABAAAATgAAAAAAAAEsAAAAAQAAASwAAAABAAOgAQADAAAAAQABAACgAgAEAAAAAQAAACCgAwAEAAAAAQAAACAAAAAA+eom7wAAAAlwSFlzAAAuIwAALiMBeKU/dgAAAxdJREFUSA3tVUtIMlEUTp3a5aOH5sLovSkjRdSNGyGCoBZpVJugxy+2cKO7IGhRq0BQCDcpGBHkJnrQItpEUBvDQopAKyyil0JgBFZUX92fQf65o7lo8UN3MXPm3HO/75x7HiN4e3sTCARFP7YE7+/vPwb+CSz8UfRfgu9cL/MdI9jc39/v7u5eX19DRtWhNBiGMRgMe3t7qEMoZTJZb2+vUMhJKkzzLr/fr1Kp/nFFLBZPTU2xyrGxMSpOEfipG6xyfn4eKHCturoaoAQRQYyMjLS3t5PP8vLy8/Nz9ki2UJT9wZVTqVRVVVVbW5vb7d7Z2Tk+Pq6srAQoyIxGI0EvLS1dWlriniUaBq8cnQzQdDo9Pj7u8/l6enqUSmV3d/ft7S0CymQyXV1ddXV1g4ODWq2WkHGfTA50WJ+dnbW2tm5ubsbjcVgWFxfPzc1xUXJohIiAuv309ETK4/n5+fT09OXlZXFxERyvr6+oKARxd3e3vr6OPGOLivBXSb07+FtfXz88POz1eqVSqUKhqKmpCYfDHo9Ho9FUVFQgq1gk5x0dHScnJ1ScT++pVQQs8JvN5tnZWQi1tbXb29t9fX1UT5H2ra2twghgPTMzc3FxgQgkEgnODwwMEPT+/v6FhYW1tbXV1dXJyUk4EYvF+NB5I1hZWVGr1cvLy6g/rNHRUYI+PT1NsBKJBJKE9fj4mAOdl8DlcgERzYkM40nQJyYmbm5u0BAOhwNNoNPpDg4OcqN/ElAtkOShoSHEHgwGCbrT6YxEIqh68kmeDQ0NoKQisEpKo2Hv8PDw4eHh6uqqrKwMWH++VmdnJ+ZBY2OjyWSKRqOoTvSEXC7PpqTILBUroGmJHfzd2NgIBAJHR0fNzc1Qol4RHCxBgFZgj+QQKP9kFEZJSUlLS8vl5SXmDC4dmv39fRDAZcw4ipv8Ks74/nITBCKRKBQKNTU12e12gm6z2ZAYfiieHW50yK1er0eXWiwWjE/0l9VqxS8BQ4JrnFdDuSJ4ggQmk0nMTh6vClDTCQoAyGdKyUG+I4Xt/xLkva///4o+ANUbjaB6HXtTAAAAAElFTkSuQmCC">
     <link rel="icon" type="image/png" sizes="128x128" href="data:image/png;base64,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">
-    <link rel="apple-touch-icon" sizes="128x128" href="data:image/png;base64,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">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>FlexFlow</title>
     <style>
@@ -3179,6 +3183,8 @@
             transition: opacity 120ms ease, background-color 120ms ease;
         }
 
+        .tf-btn[hidden] { display: none !important; }
+
         .tf-btn-primary { background: #000000; color: #FFFFFF; border-color: #000000; }
         .tf-btn-secondary { background: #FFFFFF; color: #1C1C1E; border-color: #D8D8DC; }
         .tf-btn-danger { background: #FFFFFF; color: #B91C1C; border-color: #B91C1C; }
@@ -3336,63 +3342,7 @@
 
         @keyframes tfSweep { to { transform: rotate(360deg); } }
 
-        /* Device list */
-        .tf-scan-row {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-top: 12px;
-        }
-
-        .tf-scan-row .tf-btn { flex: 1 1 0; }
-
-        @media (min-width: 520px) {
-            .tf-scan-row { flex-direction: row; }
-        }
-
-        .tf-device-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-top: 12px;
-        }
-
-        .tf-device {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            width: 100%;
-            min-height: 64px;
-            padding: 10px 12px;
-            border-radius: 16px;
-            border: 1px solid #E1E1E6;
-            background: #FFFFFF;
-            color: #1C1C1E;
-            text-align: left;
-        }
-
-        .tf-device:active { background: #F7F7FA; }
-
-        .tf-device-puck {
-            flex: 0 0 auto;
-            width: 40px;
-            height: 40px;
-            border-radius: 999px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #F2F2F7;
-        }
-
-        .tf-device-puck .icon { width: 20px; height: 20px; }
-
-        .tf-device-text {
-            flex: 1 1 auto;
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-        }
-
+        /* Incoming transfer name */
         .tf-device-name {
             font-size: 15px;
             font-weight: 600;
@@ -3400,71 +3350,6 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-        }
-
-        .tf-device-meta {
-            margin-top: 3px;
-            font-size: 11px;
-            font-weight: 600;
-            color: #6B6B70;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .tf-pill {
-            flex: 0 0 auto;
-            padding: 4px 8px;
-            border-radius: 999px;
-            background: #F2F2F7;
-            color: #6B6B70;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 0.06em;
-        }
-
-        .tf-pill.is-paired { background: #E8F8EC; color: #15803D; }
-
-        .tf-scanning {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            min-height: 64px;
-            padding: 10px 12px;
-            border-radius: 16px;
-            background: #F7F7FA;
-            color: #6B6B70;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .tf-spinner {
-            width: 18px;
-            height: 18px;
-            border-radius: 999px;
-            border: 2px solid #D8D8DC;
-            border-top-color: #000000;
-            animation: tfSpin 0.8s linear infinite;
-        }
-
-        @keyframes tfSpin { to { transform: rotate(360deg); } }
-
-        /* Handshake code */
-        .tf-code {
-            margin: 16px 0 4px;
-            text-align: center;
-            font-size: 34px;
-            font-weight: 800;
-            letter-spacing: 0.18em;
-            font-variant-numeric: tabular-nums;
-            color: #1C1C1E;
-        }
-
-        .tf-code-label {
-            text-align: center;
-            font-size: 11px;
-            font-weight: 600;
-            color: #6B6B70;
         }
 
         /* Receipt rows */
@@ -3676,7 +3561,6 @@
             .tf-step-actions { padding: 10px 14px calc(14px + env(safe-area-inset-bottom)); }
             .tf-alert { margin-left: 14px; margin-right: 14px; }
             .tf-link-rail { padding-left: 14px; padding-right: 14px; }
-            .tf-code { font-size: 30px; }
         }
 
         @media (min-width: 600px) {
@@ -3694,8 +3578,7 @@
             .tf-progress-fill,
             .tf-btn { transition-duration: 0.01ms !important; }
             .tf-puck.is-waiting::after,
-            .tf-radar-sweep,
-            .tf-spinner { animation: none !important; }
+            .tf-radar-sweep { animation: none !important; }
         }
 
         /* ---------- Floating pen quick-note composer ----------
@@ -4149,10 +4032,10 @@
             <div id="peerScopeDesc" class="set-sub">Choose what should leave this device. Nothing is sent until you review and confirm.</div>
             <div id="peerScopeError" class="set-status err" role="alert" hidden></div>
             <div class="peer-actions">
-                <button type="button" class="set-btn set-primary" id="peerTransferBtn">Transfer data</button>
-                <button type="button" class="set-btn" id="peerReceiveBtn">Open to receive</button>
+                <button type="button" class="set-btn set-primary" id="peerTransferBtn">Save transfer file</button>
+                <button type="button" class="set-btn" id="peerReceiveBtn">Import transfer file</button>
             </div>
-            <div id="peerCapability" class="set-sub" aria-live="polite">Checking Bluetooth…</div>
+            <div id="peerCapability" class="set-sub" aria-live="polite">Creates a transfer file you can send to the other device. Works in every browser.</div>
         </div>
 
         <div class="set-group-label" id="settingsBackupLabel">Backup</div>
@@ -4217,6 +4100,15 @@
                 <span class="set-sub" style="padding: 0; border: 0;">FlexFlow</span>
             </div>
             <a class="set-link" id="settingsRepoLink" href="https://github.com/sassdahRAK/flexflow.git" target="_blank" rel="noopener noreferrer">github.com/sassdahRAK/flexflow</a>
+        </div>
+
+        <div class="set-group-label" id="settingsInstallLabel">App</div>
+        <div class="set-panel" id="settingsInstallGroup">
+            <div class="set-row set-row-inline">
+                <span class="set-row-label" style="flex:1">Install FlexFlow</span>
+                <button type="button" class="set-btn set-primary" id="settingsInstallBtn" hidden>Install</button>
+            </div>
+            <div class="set-sub" id="settingsInstallStatus">Checking install support…</div>
         </div>
     </section>
 
@@ -4297,8 +4189,8 @@
             <div class="tf-head">
                 <div class="tf-head-text">
                     <div class="tf-eyebrow" id="tfEyebrow">Peer transfer</div>
-                    <h2 class="tf-title" id="tfTitle">Send data</h2>
-                    <div class="tf-subtitle" id="tfSubtitle">Choose a nearby device.</div>
+                    <h2 class="tf-title" id="tfTitle">Review the transfer</h2>
+                    <div class="tf-subtitle" id="tfSubtitle">Save a file you can send to the other device.</div>
                 </div>
                 <button type="button" class="tf-close" id="tfClose" data-tf="close" aria-label="Close transfer">
                     <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -4317,47 +4209,6 @@
                 <div class="tf-alert" id="tfAlert" role="alert" hidden></div>
                 <div class="tf-announce" id="tfAnnounce" role="status" aria-live="polite"></div>
 
-                <section class="tf-step" id="tfStepScope" data-tf-step="scope" hidden>
-                    <div class="tf-step-body">
-                        <div class="tf-step-title">What will be shared</div>
-                        <p class="tf-text" id="tfScopeStepText">Choose a scope in Settings to review what leaves this device.</p>
-                        <div class="tf-receipt" id="tfScopeStepReceipt"></div>
-                    </div>
-                    <div class="tf-step-actions">
-                        <button type="button" class="tf-btn tf-btn-secondary" data-tf="close">Cancel</button>
-                        <button type="button" class="tf-btn tf-btn-primary" data-tf="scan">Continue to devices</button>
-                    </div>
-                </section>
-
-                <section class="tf-step" id="tfStepDevices" data-tf-step="devices" hidden>
-                    <div class="tf-step-body">
-                        <div class="tf-step-title">Choose a device</div>
-                        <p class="tf-text">Scan for a nearby FlexFlow peer. Bluetooth scanning needs HTTPS or localhost, and the other device must advertise the FlexFlow bridge.</p>
-                        <div class="tf-scan-row">
-                            <button type="button" class="tf-btn tf-btn-secondary" id="tfScanBtn" data-tf="scan">Scan for devices</button>
-                        </div>
-                        <div class="tf-device-list" id="tfDeviceList" role="list" aria-label="Nearby devices"></div>
-                        <div class="tf-note" id="tfDeviceHint">Devices appear here only after your browser finds them. Nothing is sent until you match the code and confirm.</div>
-                    </div>
-                    <div class="tf-step-actions">
-                        <button type="button" class="tf-btn tf-btn-secondary" data-tf="close">Cancel</button>
-                    </div>
-                </section>
-
-                <section class="tf-step" id="tfStepHandshake" data-tf-step="handshake" hidden>
-                    <div class="tf-step-body">
-                        <div class="tf-step-title" id="tfHandshakeTitle">Reading the verification code</div>
-                        <p class="tf-text" id="tfHandshakeText">Asking the device for its verification code…</p>
-                        <div class="tf-code" id="tfCode" aria-live="polite" hidden></div>
-                        <div class="tf-code-label" id="tfHandshakeDevice">Selected device</div>
-                        <p class="tf-note" id="tfHandshakeNote"></p>
-                    </div>
-                    <div class="tf-step-actions">
-                        <button type="button" class="tf-btn tf-btn-secondary" data-tf="back-devices">Back</button>
-                        <button type="button" class="tf-btn tf-btn-primary" data-tf="handshake-confirm">Continue anyway</button>
-                    </div>
-                </section>
-
                 <section class="tf-step" id="tfStepSendConfirm" data-tf-step="send-confirm" hidden>
                     <div class="tf-step-body">
                         <div class="tf-step-title">Review the transfer</div>
@@ -4365,25 +4216,9 @@
                         <p class="tf-note">Video files stay on this device. The other device reviews everything before applying it.</p>
                     </div>
                     <div class="tf-step-actions">
-                        <button type="button" class="tf-btn tf-btn-secondary" data-tf="back-handshake">Back</button>
-                        <button type="button" class="tf-btn tf-btn-primary" id="tfSendBtn" data-tf="send">Send data</button>
-                    </div>
-                </section>
-
-                <section class="tf-step" id="tfStepSending" data-tf-step="sending" hidden>
-                    <div class="tf-step-body">
-                        <div class="tf-step-title">Sending</div>
-                        <p class="tf-text" id="tfSendStage">Starting the transfer…</p>
-                        <div class="tf-progress" id="tfProgressBar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Transfer progress">
-                            <div class="tf-progress-fill" id="tfProgressFill"></div>
-                        </div>
-                        <div class="tf-progress-meta">
-                            <span id="tfSendStageMeta">Keep both devices nearby.</span>
-                            <span class="tf-progress-pct" id="tfProgressPct">0%</span>
-                        </div>
-                    </div>
-                    <div class="tf-step-actions">
-                        <button type="button" class="tf-btn tf-btn-secondary" data-tf="cancel-send">Cancel transfer</button>
+                        <button type="button" class="tf-btn tf-btn-secondary" data-tf="close">Cancel</button>
+                        <button type="button" class="tf-btn tf-btn-primary" id="tfShareConfirmBtn" data-tf="share-file">Share transfer file</button>
+                        <button type="button" class="tf-btn tf-btn-secondary" id="tfSaveConfirmBtn" data-tf="save-file">Save transfer file (.zip)</button>
                     </div>
                 </section>
 
@@ -4393,17 +4228,18 @@
                             <div class="tf-success-puck">
                                 <svg class="icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
                             </div>
-                            <div class="tf-success-title">Transfer complete</div>
-                            <div class="tf-success-sub" id="tfSendDoneSub">The payload was written to the other device.</div>
+                            <div class="tf-success-title">Transfer file ready</div>
+                            <div class="tf-success-sub" id="tfSendDoneSub">Send this file to the other device, then import it there.</div>
                         </div>
                         <div class="tf-receipt" id="tfSendDoneCounts"></div>
-                        <p class="tf-note">Send this file to the other device, then choose Import backup file there.</p>
+                        <p class="tf-note">Share or save the transfer file, send it to the other device, then import it there. The other device reviews everything before applying it.</p>
                         <div class="tf-verify" id="tfVerifyStatus" role="status" aria-live="polite"></div>
                     </div>
                     <div class="tf-step-actions">
+                        <button type="button" class="tf-btn tf-btn-primary" id="tfShareFileBtn" data-tf="share-file">Share transfer file</button>
                         <button type="button" class="tf-btn tf-btn-secondary" id="tfSaveFileBtn" data-tf="save-file">Save transfer file (.zip)</button>
                         <button type="button" class="tf-btn tf-btn-secondary" id="tfVerifyBtn" data-tf="verify">Verify transfer</button>
-                        <button type="button" class="tf-btn tf-btn-primary" data-tf="done">Done</button>
+                        <button type="button" class="tf-btn tf-btn-secondary" data-tf="done">Done</button>
                     </div>
                 </section>
 
@@ -4413,8 +4249,8 @@
                             <div class="tf-radar-sweep"></div>
                             <div class="tf-radar-core">Open</div>
                         </div>
-                        <p class="tf-text" id="tfBridgeNote">This browser cannot host a Bluetooth receive connection. Import a transfer file to review and apply it here.</p>
-                        <button type="button" class="tf-btn tf-btn-primary" id="tfImportFileBtn" data-tf="import-file" style="width:100%; margin-top:12px;">Import backup file</button>
+                        <p class="tf-text" id="tfBridgeNote">Import the transfer file the other device saved. Nothing is applied until you review and confirm.</p>
+                        <button type="button" class="tf-btn tf-btn-primary" id="tfImportFileBtn" data-tf="import-file" style="width:100%; margin-top:12px;">Import transfer file</button>
                         <input type="file" id="tfFileInput" accept=".zip,.json,application/zip,application/json" hidden>
                         <p class="tf-note">Accepts a FlexFlow transfer file or a Settings → Backup archive. Nothing is applied until you confirm.</p>
                     </div>
@@ -12610,33 +12446,7 @@
             return { ok: true };
         }
 
-        // ---------- Peer transfer: transport ----------
-        const TF_BT_SERVICE = '0000ffe0-0000-1000-8000-00805f9b34fb';
-        const TF_BT_CHARACTERISTIC = '0000ffe1-0000-1000-8000-00805f9b34fb';
-        const TF_CHUNK_BYTES = 180;
-        const TF_CONNECT_TIMEOUT_MS = 8000;
-        // The handshake must never hang waiting for a peer to report its code.
-        const TF_CODE_READ_TIMEOUT_MS = 3000;
-
-        function tfBluetoothCapability() {
-            const nav = (typeof navigator !== 'undefined' && navigator) ? navigator : {};
-            const hasApi = !!(nav.bluetooth && typeof nav.bluetooth.requestDevice === 'function');
-            const secure = (typeof window !== 'undefined' && window.isSecureContext === true) &&
-                (typeof location === 'undefined' || location.protocol !== 'file:');
-            return { hasApi: hasApi, secure: secure, available: hasApi && secure };
-        }
-
-        function tfCapabilityCopy() {
-            const caps = tfBluetoothCapability();
-            if (caps.available) {
-                return 'Bluetooth ready. FlexFlow can request a paired device, but browsers cannot host a receive connection — send by Bluetooth or save a transfer file.';
-            }
-            if (caps.hasApi) {
-                return 'Bluetooth needs https:// or localhost. You can still save or import a transfer file.';
-            }
-            return 'This browser has no Web Bluetooth. Use a transfer file instead.';
-        }
-
+        // ---------- Peer transfer: visibility helpers ----------
         function tfDelay(ms) {
             return new Promise(resolve => {
                 const entry = { resolve: resolve, id: 0 };
@@ -12650,7 +12460,7 @@
             });
         }
 
-        // Applying/sending must stay on screen long enough to be perceived.
+        // Applying must stay on screen long enough to be perceived.
         // Reduced motion still needs feedback, just without the animation.
         function tfMinVisibleMs() {
             return motionReduced() ? 350 : 700;
@@ -12667,121 +12477,6 @@
             const modal = tfEl('transferModal');
             if (!modal || modal.hidden) return true;
             return tfState.step !== stepKey;
-        }
-
-        function tfDeviceFromBluetooth(device, pill) {
-            return {
-                id: 'bt-' + (device && device.id ? device.id : uniqueId('dev-')),
-                name: (device && device.name) || 'Bluetooth device',
-                meta: pill === 'PAIRED' ? 'Previously paired' : 'Bluetooth',
-                kind: 'bluetooth',
-                pill: pill || 'NEW',
-                raw: device
-            };
-        }
-
-        function tfConnectWithTimeout(device) {
-            if (!device || !device.gatt) return Promise.reject(new Error('no-gatt'));
-            const connect = device.gatt.connect();
-            return Promise.race([
-                connect,
-                new Promise((resolve, reject) => {
-                    const id = setTimeout(() => reject(new Error('timeout')), TF_CONNECT_TIMEOUT_MS);
-                    tfState.timers.push(id);
-                })
-            ]);
-        }
-
-        function tfFriendlyBleError(err) {
-            const name = err && err.name ? String(err.name) : '';
-            const msg = err && err.message ? String(err.message) : '';
-            if (name === 'NotFoundError') {
-                return 'No device was chosen. Press Scan again and pick the FlexFlow peer.';
-            }
-            if (name === 'NotAllowedError' || msg === 'timeout' || /permission|denied/i.test(msg)) {
-                return 'Bluetooth permission was denied or timed out. Allow access, keep the device nearby, then try again.';
-            }
-            if (name === 'NetworkError' || /gatt|connect/i.test(msg)) {
-                return 'Could not connect. Move closer to the device and try again.';
-            }
-            return 'Bluetooth transfer failed. Nothing was sent. You can save a transfer file instead.';
-        }
-
-        async function tfRealScan() {
-            const caps = tfBluetoothCapability();
-            if (!caps.available) {
-                tfShowAlert(caps.hasApi
-                    ? 'Bluetooth needs https:// or localhost. Serve FlexFlow over localhost to scan.'
-                    : 'This browser has no Web Bluetooth. Save a transfer file and import it on the other device.');
-                tfRenderDevices();
-                return;
-            }
-            tfClearAlert();
-            tfState.devices = tfState.devices.filter(d => d.kind !== 'bluetooth');
-            tfRenderDevices(true);
-            try {
-                if (navigator.bluetooth && typeof navigator.bluetooth.getDevices === 'function') {
-                    const known = await navigator.bluetooth.getDevices();
-                    (Array.isArray(known) ? known : []).forEach(d => {
-                        const row = tfDeviceFromBluetooth(d, 'PAIRED');
-                        if (!tfState.devices.some(x => x.id === row.id)) tfState.devices.push(row);
-                    });
-                    tfRenderDevices();
-                }
-                const chosen = await navigator.bluetooth.requestDevice({
-                    acceptAllDevices: true,
-                    optionalServices: [TF_BT_SERVICE]
-                });
-                if (chosen) {
-                    const row = tfDeviceFromBluetooth(chosen, 'NEW');
-                    if (!tfState.devices.some(x => x.id === row.id)) tfState.devices.push(row);
-                    tfRenderDevices();
-                    tfAnnounce('Device added: ' + row.name + '.');
-                }
-            } catch (err) {
-                tfRenderDevices();
-                tfShowAlert(tfFriendlyBleError(err));
-            }
-        }
-
-        async function tfRealSend(device, envelope) {
-            const raw = device && device.raw;
-            if (!raw) throw new Error('no-gatt');
-            // Reuse the server the handshake opened; only connect if none.
-            let server = tfState.gattServer;
-            if (!server) {
-                const gatt = await tfConnectWithTimeout(raw);
-                server = gatt || (raw.gatt && raw.gatt.connected ? raw.gatt : null);
-            }
-            if (!server) throw new Error('gatt');
-            let service;
-            try {
-                service = await server.getPrimaryService(TF_BT_SERVICE);
-            } catch (err) {
-                // The cached connection may have gone stale; reconnect once.
-                if (tfState.gattServer !== server) throw err;
-                tfState.gattServer = null;
-                const gatt = await tfConnectWithTimeout(raw);
-                server = gatt || (raw.gatt && raw.gatt.connected ? raw.gatt : null);
-                if (!server) throw err;
-                service = await server.getPrimaryService(TF_BT_SERVICE);
-            }
-            const char = await service.getCharacteristic(TF_BT_CHARACTERISTIC);
-            const bytes = utf8Encode(JSON.stringify(envelope));
-            const write = async chunk => {
-                if (tfState.transport && tfState.transport.cancelled) throw new Error('cancelled');
-                if (typeof char.writeValueWithoutResponse === 'function') {
-                    try { await char.writeValueWithoutResponse(chunk); return; } catch (e) {}
-                }
-                if (typeof char.writeValue === 'function') { await char.writeValue(chunk); return; }
-                throw new Error('no-write');
-            };
-            for (let i = 0; i < bytes.length; i += TF_CHUNK_BYTES) {
-                if (tfState.transport && tfState.transport.cancelled) throw new Error('cancelled');
-                await write(bytes.slice(i, Math.min(bytes.length, i + TF_CHUNK_BYTES)));
-                const pct = Math.round(Math.min(1, (i + TF_CHUNK_BYTES) / bytes.length) * 100);
-                tfSetSendProgress(pct, 'Writing ' + Math.min(bytes.length, i + TF_CHUNK_BYTES) + ' of ' + bytes.length + ' bytes');
-            }
         }
 
         // ---------- Peer transfer: incoming sessions ----------
@@ -12991,11 +12686,7 @@
 
         // ---------- Peer transfer: UI state ----------
         const TF_STEP_IDS = {
-            'scope': 'tfStepScope',
-            'devices': 'tfStepDevices',
-            'handshake': 'tfStepHandshake',
             'send-confirm': 'tfStepSendConfirm',
-            'sending': 'tfStepSending',
             'send-done': 'tfStepSendDone',
             'receive-wait': 'tfStepReceiveWait',
             'receive-incoming': 'tfStepReceiveIncoming',
@@ -13007,11 +12698,8 @@
         };
 
         const TF_STEP_META = {
-            'devices': { eyebrow: 'Send data', title: 'Send data', subtitle: 'Choose a nearby device.' },
-            'handshake': { eyebrow: 'Send data', title: 'Check the device', subtitle: 'The code is read from the device, not generated here.' },
-            'send-confirm': { eyebrow: 'Send data', title: 'Review and send', subtitle: 'Check the destination and what will leave this device.' },
-            'sending': { eyebrow: 'Send data', title: 'Sending', subtitle: 'Keep both devices nearby.' },
-            'send-done': { eyebrow: 'Send data', title: 'Transfer complete', subtitle: 'The other device can now review the transfer.' },
+            'send-confirm': { eyebrow: 'Share data', title: 'Review the transfer', subtitle: 'Share or save a file you can send to the other device.' },
+            'send-done': { eyebrow: 'Share data', title: 'Transfer file ready', subtitle: 'Send it to the other device, then import it there.' },
             'receive-wait': { eyebrow: 'Receive data', title: 'Ready to receive', subtitle: 'Import a transfer file to continue.' },
             'receive-incoming': { eyebrow: 'Receive data', title: 'Incoming transfer', subtitle: 'Review before anything changes.' },
             'backup': { eyebrow: 'Receive data', title: 'Back up this device', subtitle: 'Required before applying a transfer.' },
@@ -13023,18 +12711,9 @@
 
         const tfState = {
             mode: 'send',
-            step: 'devices',
+            step: 'send-confirm',
             scope: null,
             envelope: null,
-            device: null,
-            code: '',
-            // Connection opened to read the peer's code; reused for the send so
-            // verification costs one GATT connection, not two.
-            gattServer: null,
-            handshakeToken: 0,
-            handshakeState: '',
-            devices: [],
-            scanning: false,
             busy: false,
             backupDone: false,
             backupRecord: null,
@@ -13042,7 +12721,6 @@
             applyMode: 'merge',
             lastFocus: null,
             timers: [],
-            transport: null,
             expectedIds: null,
             appliedCounts: null,
             verifyNote: '',
@@ -13053,6 +12731,7 @@
             delayResolvers: [],
             applyCommitted: false
         };
+
 
         const TF_ACTIVATION_GUARD_MS = 600;
 
@@ -13065,7 +12744,7 @@
         }
 
         function tfBusyStep() {
-            return tfState.busy || tfState.step === 'sending' || tfState.step === 'applying';
+            return tfState.busy || tfState.step === 'applying';
         }
 
         function tfEl(id) { return document.getElementById(id); }
@@ -13119,7 +12798,7 @@
             const id = TF_STEP_IDS[stepKey];
             const sec = id ? tfEl(id) : null;
             if (!sec) return;
-            const target = sec.querySelector('[data-tf="scan"], .tf-btn-primary, .tf-btn-secondary, input');
+            const target = sec.querySelector('.tf-btn-primary, .tf-btn-secondary, input');
             if (target && typeof target.focus === 'function') {
                 try { target.focus({ preventScroll: true }); } catch (e) {}
             }
@@ -13140,7 +12819,7 @@
             if (eyebrow) eyebrow.textContent = meta.eyebrow || 'Peer transfer';
             if (title) title.textContent = meta.title || 'Peer transfer';
             if (sub) sub.textContent = meta.subtitle || '';
-            tfSetBusy(key === 'sending' || key === 'applying');
+            tfSetBusy(key === 'applying');
             // Once the write starts there is no safe pre-commit window, so the
             // control is inert while applying and re-enabled on every exit.
             const cancelApply = tfEl('tfCancelApplyBtn');
@@ -13197,60 +12876,6 @@
             return tfReceiptRows(rows);
         }
 
-        // Read the peer's verification code. Web Bluetooth exposes the peer's
-        // own code on the characteristic when the firmware supports reads; when
-        // it does not, the honest answer is "no code", never a generated one.
-        function tfExtractCode(text) {
-            const match = String(text == null ? '' : text).match(/(\d{6})/);
-            return match ? match[1] : '';
-        }
-
-        async function tfReadPeerCodeOnce(device) {
-            const raw = device && device.raw;
-            if (!raw || !raw.gatt) return '';
-            const gatt = await tfConnectWithTimeout(raw);
-            const server = gatt || (raw.gatt && raw.gatt.connected ? raw.gatt : null);
-            if (!server) return '';
-            // Only cache for the device still selected; a slow read from a
-            // device the user backed away from must not become the send target.
-            if (device === tfState.device) tfState.gattServer = server;
-            const service = await server.getPrimaryService(TF_BT_SERVICE);
-            const char = await service.getCharacteristic(TF_BT_CHARACTERISTIC);
-            if (!char || typeof char.readValue !== 'function') return '';
-            const value = await char.readValue();
-            // Web Bluetooth readValue() can return a DataView or ArrayBuffer.
-            let bytes;
-            try {
-                if (value instanceof Uint8Array) bytes = value;
-                else if (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) bytes = new Uint8Array(value);
-                else if (typeof ArrayBuffer !== 'undefined' && ArrayBuffer.isView(value)) bytes = new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
-                else bytes = new Uint8Array(value || 0);
-            } catch (e) { return ''; }
-            return tfExtractCode(utf8Decode(bytes));
-        }
-
-        // Bound the whole attempt (connect included) so a silent peer cannot
-        // leave the handshake waiting forever.
-        function tfReadPeerCode(device) {
-            return new Promise(resolve => {
-                let settled = false;
-                const finish = value => {
-                    if (settled) return;
-                    settled = true;
-                    clearTimeout(timer);
-                    resolve(value || '');
-                };
-                const timer = setTimeout(() => finish(''), TF_CODE_READ_TIMEOUT_MS);
-                tfState.timers.push(timer);
-                tfReadPeerCodeOnce(device).then(finish).catch(() => finish(''));
-            });
-        }
-
-        function tfFormatCode(code) {
-            const s = String(code || '');
-            return s.slice(0, 3) + ' ' + s.slice(3);
-        }
-
         function tfCanReplaceIncoming() {
             const inc = tfState.incoming;
             if (!inc) return false;
@@ -13274,7 +12899,6 @@
         // ---------- Peer transfer: settings entry ----------
         function renderPeerEntry() {
             const desc = tfEl('peerScopeDesc');
-            const cap = tfEl('peerCapability');
             const select = tfEl('peerScopeSelect');
             if (desc) {
                 const value = select ? String(select.value || '') : '';
@@ -13287,7 +12911,6 @@
                     desc.textContent = bits.join(' · ');
                 }
             }
-            if (cap) cap.textContent = tfCapabilityCopy();
         }
 
         function tfEntryError(message) {
@@ -13298,48 +12921,6 @@
             }
         }
 
-        // ---------- Peer transfer: sender rendering ----------
-        // Pick a glyph from the device itself: laptop for desktops, phone otherwise.
-        function tfDeviceIcon(device) {
-            const kind = String((device && device.kind) || '');
-            const glyph = String((device && device.glyph) || '');
-            const name = String((device && device.name) || '');
-            if (kind === 'bluetooth') {
-                return '<svg class="icon" viewBox="0 0 24 24"><polyline points="6 7 18 17 12 22 12 2 18 7 6 17"/></svg>';
-            }
-            if (glyph === 'laptop' || /macbook|desktop|mac|pc|computer|laptop/i.test(name)) {
-                return '<svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><line x1="2" y1="20" x2="22" y2="20"/></svg>';
-            }
-            return '<svg class="icon" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="10" y1="18" x2="14" y2="18"/></svg>';
-        }
-
-        function tfRenderDevices(scanning) {
-            const list = tfEl('tfDeviceList');
-            if (!list) return;
-            const devices = tfState.devices;
-            const html = [];
-            if (scanning) {
-                html.push('<div class="tf-scanning"><span class="tf-spinner" aria-hidden="true"></span><span>Scanning for nearby devices…</span></div>');
-            }
-            devices.forEach(device => {
-                const pillClass = device.pill === 'PAIRED' ? ' is-paired' : '';
-                html.push(
-                    '<button type="button" class="tf-device" role="listitem" data-tf="connect" data-device-id="' + escapeHtml(device.id) + '">' +
-                        '<span class="tf-device-puck" aria-hidden="true">' + tfDeviceIcon(device) + '</span>' +
-                        '<span class="tf-device-text">' +
-                            '<span class="tf-device-name">' + escapeHtml(device.name) + '</span>' +
-                            '<span class="tf-device-meta">' + escapeHtml(device.meta || '') + '</span>' +
-                        '</span>' +
-                        '<span class="tf-pill' + pillClass + '">' + escapeHtml(device.pill || '') + '</span>' +
-                    '</button>'
-                );
-            });
-            if (!scanning && !devices.length) {
-                html.push('<div class="tf-meta">No devices yet. Press Scan for devices.</div>');
-            }
-            list.innerHTML = html.join('');
-        }
-
         function tfOpenSend() {
             const select = tfEl('peerScopeSelect');
             const scope = select ? String(select.value || '') : '';
@@ -13347,16 +12928,11 @@
             tfState.mode = 'send';
             tfState.scope = scope;
             tfState.envelope = buildTransferEnvelope(scope);
-            tfState.device = null;
-            tfState.devices = [];
-            tfState.scanning = false;
             tfState.backupDone = false;
             tfState.incoming = null;
             tfOpenModal();
-            tfRenderDevices();
-            tfShowStep('devices');
-            tfSetRail(0, {});
-            tfAnnounce('Send data. Choose a device. ' + tfScopeCountsText(tfState.envelope.summary));
+            tfShowSendConfirm();
+            tfAnnounce('Review the transfer, then share or save the file. ' + tfScopeCountsText(tfState.envelope.summary));
         }
 
         function tfOpenReceive() {
@@ -13368,16 +12944,11 @@
             tfState.appliedCounts = null;
             tfOpenModal();
             tfClearAlert();
-            // No local pairing code: this browser cannot host a receive
-            // connection, so a number here could never be matched. The honest
-            // path is importing the sender's transfer file.
-            tfState.code = '';
             const bridgeEl = tfEl('tfBridgeNote');
             if (bridgeEl) {
-                const caps = tfBluetoothCapability();
-                bridgeEl.textContent = caps.available
-                    ? 'This browser can only act as a Bluetooth client, so it cannot host a receive connection. Import a transfer file to review and apply it here.'
-                    : 'Bluetooth receive needs a FlexFlow bridge. Import a transfer file to review and apply it here.';
+                // Static note: there is no live connection, so this step simply
+                // asks the user to import the file the other device saved.
+                bridgeEl.textContent = 'Import the transfer file the other device saved. Nothing is applied until you review and confirm.';
             }
             const statusEl = tfEl('tfBackupStatus');
             if (statusEl) { statusEl.textContent = ''; statusEl.classList.remove('is-error'); }
@@ -13424,19 +12995,11 @@
             }
             tfState.flowToken++;
             tfClearTimers();
-            if (tfState.transport && typeof tfState.transport.cancel === 'function') {
-                try { tfState.transport.cancel(); } catch (e) {}
-            }
-            tfState.transport = null;
             modal.hidden = true;
             document.body.classList.remove('tf-open');
             tfSetBusy(false);
-            tfState.scanning = false;
             tfState.incoming = null;
             tfState.envelope = null;
-            tfState.device = null;
-            tfState.handshakeToken++;
-            tfState.gattServer = null;
             tfState.expectedIds = null;
             tfState.appliedCounts = null;
             tfState.verifyNote = '';
@@ -13453,11 +13016,10 @@
 
         function tfSendConfirmHtml() {
             const env = tfState.envelope;
-            const device = tfState.device;
-            if (!env || !device) return '';
+            if (!env) return '';
             const c = env.summary.counts;
-            const rows = [
-                ['Destination', device.name],
+            const rows = [];
+            rows.push(
                 ['Share scope', env.summary.label],
                 ['Cards', String(c.cards)],
                 ['Checklist items', String(c.items)],
@@ -13465,200 +13027,54 @@
                 ['Artists', String(c.artists)],
                 ['Change log', String(c.changes)],
                 ['Estimated size', formatBytes(env.summary.bytes)]
-            ];
+            );
             if (c.videos) rows.push(['Videos skipped', String(c.videos)]);
             rows.push(['Checksum', env.checksum]);
             return tfReceiptRows(rows);
         }
 
-        // Render the handshake in one of three honest states:
-        //   'reading'    - ask the device, show no number yet
-        //   'code'       - show the code the device reported
-        //   'unverified' - show no number; say the device cannot be verified
-        function tfSetHandshakeState(state, device) {
-            const name = (device && device.name) || 'this device';
-            const titleEl = tfEl('tfHandshakeTitle');
-            const textEl = tfEl('tfHandshakeText');
-            const codeEl = tfEl('tfCode');
-            const nameEl = tfEl('tfHandshakeDevice');
-            const noteEl = tfEl('tfHandshakeNote');
-            const subEl = tfEl('tfSubtitle');
-            const btn = document.querySelector('[data-tf="handshake-confirm"]');
-            tfState.handshakeState = state;
-
-            if (state === 'code') {
-                if (subEl) subEl.textContent = 'Reported by the device. It should match what that device shows.';
-                if (titleEl) titleEl.textContent = 'Device verification code';
-                if (textEl) textEl.textContent = 'This code is reported by ' + name + '. It should match the code shown on that device.';
-                if (codeEl) {
-                    codeEl.textContent = tfFormatCode(tfState.code);
-                    codeEl.hidden = false;
-                    codeEl.style.display = '';
-                }
-                if (nameEl) nameEl.textContent = 'Reported by ' + name;
-                if (noteEl) noteEl.textContent = 'If the code does not match, cancel and scan again.';
-                if (btn) btn.textContent = 'Confirm the code';
-                return;
-            }
-
-            // No generated fallback number may appear in either state below.
-            if (codeEl) {
-                codeEl.textContent = '';
-                codeEl.hidden = true;
-                codeEl.style.display = 'none';
-            }
-
-            if (state === 'reading') {
-                if (subEl) subEl.textContent = 'Asking the device for the code it reports.';
-                if (titleEl) titleEl.textContent = 'Reading the verification code';
-                if (textEl) textEl.textContent = 'Asking ' + name + ' for its verification code…';
-                if (nameEl) nameEl.textContent = 'Selected device: ' + name;
-                if (noteEl) noteEl.textContent = '';
-                if (btn) btn.textContent = 'Continue anyway';
-                return;
-            }
-
-            if (subEl) subEl.textContent = 'No code was reported, so this device cannot be verified.';
-            if (titleEl) titleEl.textContent = 'This device cannot be verified';
-            if (textEl) textEl.textContent = 'This device did not report a verification code, so FlexFlow cannot verify it. Only continue if you chose this device yourself.';
-            if (nameEl) nameEl.textContent = 'No code reported by ' + name;
-            if (noteEl) noteEl.textContent = 'Nothing is sent until you review the transfer and confirm.';
-            if (btn) btn.textContent = 'Continue anyway';
-        }
-
-        function tfChooseSendDevice(deviceId) {
-            const device = tfState.devices.find(d => d.id === deviceId);
-            if (!device) return;
-            const token = ++tfState.handshakeToken;
-            tfState.device = device;
-            tfState.code = '';
-            tfState.gattServer = null;
-            tfShowStep('handshake');
-            tfSetHandshakeState('reading', device);
-            tfSetRail(18, { waiting: true });
-            tfAnnounce('Reading the verification code from ' + device.name + '.');
-            if (device.kind !== 'bluetooth' || !device.raw) {
-                tfSetHandshakeState('unverified', device);
-                return;
-            }
-            tfReadPeerCode(device).then(code => {
-                if (token !== tfState.handshakeToken) return;
-                if (tfState.device !== device) return;
-                tfState.code = code ? String(code) : '';
-                tfState.handshakeState = code ? 'code' : 'unverified';
-                // If the user already moved on, keep the result for Back without
-                // touching the now-visible send-review copy.
-                if (tfState.step !== 'handshake') return;
-                tfSetHandshakeState(tfState.handshakeState, device);
-                if (code) {
-                    tfAnnounce('Code reported by ' + device.name + ': ' + code + '. Confirm it matches that device.');
-                } else {
-                    tfAnnounce('This device did not report a verification code. Continue only if you chose it yourself.');
-                }
-            });
-        }
-
         function tfShowSendConfirm() {
             const summary = tfEl('tfSummary');
             if (summary) summary.innerHTML = tfSendConfirmHtml();
+            tfSyncShareAction();
             tfShowStep('send-confirm');
             tfSetRail(30, {});
         }
 
-        function tfStartSend() {
-            const env = tfState.envelope;
-            const device = tfState.device;
-            if (!env || !device) return;
-            const token = ++tfState.flowToken;
-            const startedAt = Date.now();
-            tfState.transport = { cancelled: false };
-            tfClearAlert();
-            tfSetBusy(true);
-            // Ignore stray activations for 600ms: a double-tap on Send lands
-            // where the Cancel control appears once the step reflows.
-            tfArmGuard();
-            tfState.step = 'sending';
-            Object.keys(TF_STEP_IDS).forEach(k => {
-                const sec = tfEl(TF_STEP_IDS[k]);
-                if (sec) sec.hidden = k !== 'sending';
+        // Show Share only where the browser can share files; otherwise keep
+        // Save as the single, visually primary action on both steps.
+        function tfSyncShareAction() {
+            let canShareFiles = false;
+            try { canShareFiles = qnShareCaps().canShareFiles === true; } catch (e) { canShareFiles = false; }
+            ['tfShareConfirmBtn', 'tfShareFileBtn'].forEach(id => {
+                const el = tfEl(id);
+                if (el) el.hidden = !canShareFiles;
             });
-            const meta = TF_STEP_META['sending'];
-            const eyebrow = tfEl('tfEyebrow');
-            const title = tfEl('tfTitle');
-            const sub = tfEl('tfSubtitle');
-            if (eyebrow) eyebrow.textContent = meta.eyebrow;
-            if (title) title.textContent = meta.title;
-            if (sub) sub.textContent = meta.subtitle;
-            tfSetSendProgress(0, 'Preparing the payload…');
-            tfAnnounce('Sending data to ' + device.name + '.');
-
-            if (device.kind === 'bluetooth') {
-                tfRealSend(device, env).then(() => tfSendFinished(token, startedAt)).catch(err => {
-                    if (tfState.transport && tfState.transport.cancelled) return;
-                    if (tfFlowStale(token, 'sending')) return;
-                    tfSetBusy(false);
-                    tfShowStep('devices');
-                    tfShowAlert(tfFriendlyBleError(err));
-                });
-                return;
+            const saveBtn = tfEl('tfSaveConfirmBtn');
+            if (saveBtn) {
+                saveBtn.classList.toggle('tf-btn-primary', !canShareFiles);
+                saveBtn.classList.toggle('tf-btn-secondary', canShareFiles);
             }
-
-            let pct = 0;
-            const stages = [
-                [12, 'Handshaking…'],
-                [34, 'Encoding cards…'],
-                [58, 'Packaging quick notes…'],
-                [78, 'Writing to the other device…'],
-                [94, 'Checking the checksum…']
-            ];
-            let stageIndex = 0;
-            const timer = setInterval(() => {
-                pct = Math.min(100, pct + 3 + Math.round(Math.random() * 5));
-                if (stageIndex < stages.length && pct >= stages[stageIndex][0]) {
-                    tfSetSendProgress(pct, stages[stageIndex][1]);
-                    stageIndex++;
-                } else {
-                    tfSetSendProgress(pct, 'Sending…');
-                }
-                if (pct >= 100) {
-                    clearInterval(timer);
-                    tfSendFinished(token, startedAt);
-                }
-            }, 120);
-            tfState.timers.push(timer);
+            return canShareFiles;
         }
 
-        function tfSetSendProgress(pct, stage) {
-            const bar = tfEl('tfProgressBar');
-            const fill = tfEl('tfProgressFill');
-            const label = tfEl('tfProgressPct');
-            const stageEl = tfEl('tfSendStage');
-            const value = Math.max(0, Math.min(100, Math.round(pct)));
-            if (bar) bar.setAttribute('aria-valuenow', String(value));
-            if (fill) fill.style.width = value + '%';
-            if (label) label.textContent = value + '%';
-            if (stage && stageEl) stageEl.textContent = stage;
-            tfSetRail(value, {});
-        }
-
-        async function tfSendFinished(token, startedAt) {
-            // Keep #tfStepSending on screen for the floor even if the work was
-            // instant; the interval timer keeps the bar moving meanwhile.
-            await tfWaitVisibleFloor(startedAt);
-            if (tfFlowStale(token, 'sending')) return;
-            tfSetBusy(false);
+        function tfShowSendDone(info) {
             const env = tfState.envelope;
             const sub = tfEl('tfSendDoneSub');
-            if (sub && env) {
-                sub.textContent = 'Sent to ' + (tfState.device ? tfState.device.name : 'the other device') + ' · ' + env.summary.label + ' · ' + formatBytes(env.summary.bytes) + '.';
+            if (sub && env && info) {
+                sub.textContent = (info.shared ? 'Shared ' : 'Saved ') + info.filename + ' · ' +
+                    env.summary.label + ' · ' + formatBytes(info.size) +
+                    '. Send it to the other device, then import it there.';
             }
             const counts = tfEl('tfSendDoneCounts');
             if (counts && env) counts.innerHTML = tfCountsReceipt(env.summary.counts, env.summary.label);
+            // Only offer Share when this browser can actually share files.
+            tfSyncShareAction();
             const verify = tfEl('tfVerifyStatus');
             if (verify) { verify.textContent = ''; verify.classList.remove('is-error'); }
             tfShowStep('send-done');
             tfSetRail(100, { done: true });
-            tfAnnounce('Transfer complete.');
+            tfAnnounce('Transfer file ready.');
         }
 
         function tfVerifySent() {
@@ -13683,24 +13099,69 @@
             tfAnnounce('Verified. Checksum matches.');
         }
 
+        // Both Save and Share build the exact same ZIP entry and filename.
+        function tfTransferFileBlob(env) {
+            const entry = { name: 'transfer.json', bytes: utf8Encode(JSON.stringify(env, null, 2)) };
+            const blob = buildZipBlob([entry]);
+            const filename = 'flexflow-transfer-' + env.scope + '-' + backupStamp() + '.zip';
+            return { blob: blob, filename: filename };
+        }
+
         function tfSaveTransferFile() {
             const env = tfState.envelope;
             if (!env) { tfShowAlert('There is no transfer to save yet.'); return; }
             try {
-                const entry = { name: 'transfer.json', bytes: utf8Encode(JSON.stringify(env, null, 2)) };
-                const blob = buildZipBlob([entry]);
-                const filename = 'flexflow-transfer-' + env.scope + '-' + backupStamp() + '.zip';
-                downloadBlobFile(blob, filename);
+                const built = tfTransferFileBlob(env);
+                downloadBlobFile(built.blob, built.filename);
                 tfShowAlert('');
-                tfAnnounce('Transfer file saved: ' + filename + '.');
+                tfAnnounce('Transfer file saved: ' + built.filename + '.');
                 const verify = tfEl('tfVerifyStatus');
                 if (verify) {
                     verify.classList.remove('is-error');
-                    verify.textContent = 'Transfer file saved · ' + formatBytes(blob.size);
+                    verify.textContent = 'Transfer file saved · ' + formatBytes(built.blob.size);
                 }
+                return { filename: built.filename, size: built.blob.size };
             } catch (e) {
                 tfShowAlert('The transfer file could not be saved. Try again.');
             }
+        }
+
+        async function tfShareTransferFile() {
+            const env = tfState.envelope;
+            if (!env) { tfShowAlert('There is no transfer to share yet.'); return; }
+            const unavailable = 'This browser cannot share files — save the file and send it yourself.';
+            let built;
+            let file;
+            try {
+                built = tfTransferFileBlob(env);
+                if (typeof File !== 'function') throw new Error('no-file');
+                file = new File([built.blob], built.filename, { type: 'application/zip' });
+            } catch (e) {
+                tfShowAlert(unavailable);
+                return;
+            }
+            let canShareFiles = false;
+            try { canShareFiles = qnShareCaps().canShareFiles === true; } catch (e) { canShareFiles = false; }
+            const canCallShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
+            if (canShareFiles && canCallShare && typeof navigator.canShare === 'function') {
+                try { canShareFiles = navigator.canShare({ files: [file] }) === true; } catch (e) { canShareFiles = false; }
+            } else {
+                canShareFiles = false;
+            }
+            if (!canShareFiles || !canCallShare) {
+                tfShowAlert(unavailable);
+                return;
+            }
+            try {
+                await navigator.share({ files: [file], title: 'FlexFlow transfer' });
+            } catch (err) {
+                // The user dismissed the sheet: not an error, no message.
+                if (err && (err.name === 'AbortError' || err.code === 20)) return;
+                tfShowAlert(unavailable);
+                return;
+            }
+            tfShowAlert('');
+            tfShowSendDone({ filename: built.filename, size: built.blob.size, shared: true });
         }
 
         // ---------- Peer transfer: receiver rendering ----------
@@ -14088,27 +13549,12 @@
             const select = tfEl('peerScopeSelect');
             const scope = select ? String(select.value || '') : '';
             if (!isTransferScope(scope)) {
-                tfEntryError('Choose what to share first, then press Transfer data.');
+                tfEntryError('Choose what to share first, then press Save transfer file.');
                 if (select && typeof select.focus === 'function') select.focus();
                 return;
             }
             tfEntryError('');
             tfOpenSend();
-        }
-
-        function tfCancelSend() {
-            // A double-tap's second press can land here: ignore it while the
-            // activation guard is armed, and only abort a live send.
-            if (tfGuardActive()) return;
-            if (tfState.step !== 'sending') return;
-            if (tfState.transport) tfState.transport.cancelled = true;
-            tfState.flowToken++;
-            tfClearTimers();
-            tfSetBusy(false);
-            tfState.transport = null;
-            tfShowStep('devices');
-            tfSetRail(0, {});
-            tfAnnounce('Transfer cancelled.');
         }
 
         function tfCancelApply() {
@@ -14133,42 +13579,33 @@
         function tfHandleAction(action, el) {
             switch (action) {
                 case 'close': tfClose(); return;
-                case 'scan':
-                    if (tfState.step === 'scope') { tfShowStep('devices'); tfRenderDevices(); return; }
-                    tfRealScan(); return;
-                case 'connect':
-                    tfChooseSendDevice(el.getAttribute('data-device-id'));
-                    return;
-                case 'handshake-confirm':
-                    tfShowSendConfirm();
-                    return;
-                case 'send':
-                    tfStartSend();
-                    return;
-                case 'cancel-send':
-                    tfCancelSend();
-                    return;
                 case 'cancel-apply':
                     tfCancelApply();
                     return;
-                case 'save-file':
-                    tfSaveTransferFile();
+                case 'save-file': {
+                    const info = tfSaveTransferFile();
+                    if (!info) return;
+                    if (tfState.step === 'send-done') {
+                        // Stay on this step and report what was just saved.
+                        const sub = tfEl('tfSendDoneSub');
+                        const env = tfState.envelope;
+                        if (sub && env) {
+                            sub.textContent = 'Saved ' + info.filename + ' · ' + env.summary.label + ' · ' +
+                                formatBytes(info.size) + '. Send it to the other device, then import it there.';
+                        }
+                    } else {
+                        tfShowSendDone(info);
+                    }
+                    return;
+                }
+                case 'share-file':
+                    tfShareTransferFile();
                     return;
                 case 'verify':
                     tfVerifySent();
                     return;
                 case 'done':
                     tfClose();
-                    return;
-                case 'back-devices':
-                    tfState.device = null;
-                    tfShowStep('devices');
-                    tfSetRail(0, {});
-                    return;
-                case 'back-handshake':
-                    tfShowStep('handshake');
-                    tfSetHandshakeState(tfState.handshakeState || 'unverified', tfState.device);
-                    tfSetRail(18, { waiting: true });
                     return;
                 case 'import-file': {
                     const input = tfEl('tfFileInput');
@@ -14265,6 +13702,116 @@
             });
         }
 
+        // PWA plumbing: service worker, persistent storage, and the
+        // install affordance in Settings → App.
+        let deferredInstallPrompt = null;
+
+        function pwaWorkerSupported() {
+            try {
+                return typeof navigator !== 'undefined' &&
+                    'serviceWorker' in navigator &&
+                    typeof location !== 'undefined' &&
+                    (location.protocol === 'http:' || location.protocol === 'https:');
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function initPwa() {
+            if (pwaWorkerSupported()) {
+                try {
+                    navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(() => {});
+                } catch (e) {}
+            }
+            try {
+                if (typeof navigator !== 'undefined' &&
+                    navigator.storage &&
+                    typeof navigator.storage.persist === 'function') {
+                    const persisted = navigator.storage.persist();
+                    if (persisted && typeof persisted.catch === 'function') persisted.catch(() => {});
+                }
+            } catch (e) {}
+        }
+
+        function pwaRunningStandalone() {
+            try {
+                if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+                    const media = window.matchMedia('(display-mode: standalone)');
+                    if (media && media.matches) return true;
+                }
+            } catch (e) {}
+            return typeof navigator !== 'undefined' && navigator.standalone === true;
+        }
+
+        function pwaLooksLikeIos() {
+            const ua = typeof navigator !== 'undefined' && navigator.userAgent
+                ? String(navigator.userAgent)
+                : '';
+            return /iPad|iPhone|iPod/.test(ua);
+        }
+
+        function setInstallStatusText(text) {
+            const status = document.getElementById('settingsInstallStatus');
+            if (status) status.textContent = text;
+        }
+
+        function setInstallButtonVisible(visible) {
+            const btn = document.getElementById('settingsInstallBtn');
+            if (btn) btn.hidden = !visible;
+        }
+
+        function initInstallUi() {
+            const btn = document.getElementById('settingsInstallBtn');
+            if (btn) {
+                btn.addEventListener('click', async () => {
+                    const prompt = deferredInstallPrompt;
+                    if (!prompt) return;
+                    deferredInstallPrompt = null;
+                    setInstallButtonVisible(false);
+                    try {
+                        await prompt.prompt();
+                        const choice = prompt.userChoice ? await prompt.userChoice : null;
+                        setInstallStatusText(choice && choice.outcome === 'accepted'
+                            ? 'Installing FlexFlow…'
+                            : 'Install was dismissed. You can try again from the browser menu.');
+                    } catch (e) {
+                        setInstallStatusText('Install could not be started from this browser.');
+                    }
+                });
+            }
+            if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+                window.addEventListener('beforeinstallprompt', e => {
+                    if (e && typeof e.preventDefault === 'function') e.preventDefault();
+                    deferredInstallPrompt = e;
+                    setInstallButtonVisible(true);
+                    setInstallStatusText('Ready to install.');
+                });
+                window.addEventListener('appinstalled', () => {
+                    deferredInstallPrompt = null;
+                    setInstallButtonVisible(false);
+                    setInstallStatusText('Installed on this device.');
+                });
+            }
+            if (pwaRunningStandalone()) {
+                setInstallButtonVisible(false);
+                setInstallStatusText('Running as an installed app.');
+                return;
+            }
+            if (pwaLooksLikeIos()) {
+                setInstallButtonVisible(false);
+                setInstallStatusText('On iPhone/iPad: tap Share → Add to Home Screen.');
+                return;
+            }
+            setInstallButtonVisible(false);
+            const secureInstall = typeof window !== 'undefined' &&
+                window.isSecureContext === true &&
+                typeof location !== 'undefined' &&
+                location.protocol !== 'file:';
+            setInstallStatusText(secureInstall
+                ? 'Use your browser’s Install or Add to Home Screen option to install FlexFlow.'
+                : 'Install needs https:// or localhost. Open this page over one of those to install.');
+        }
+
         // DOM Ready Load Procedure
         document.addEventListener('DOMContentLoaded', () => {
             loadTasks();
@@ -14345,6 +13892,8 @@
                 if (e.defaultPrevented) return;
                 if (document.body.classList.contains('pen-composer-open')) penComposerClose();
             });
+            initPwa();
+            initInstallUi();
             // Always open on the designed Home page, never on a blank tab.
             switchTab('home');
         });

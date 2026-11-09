@@ -266,7 +266,7 @@ check('mergeQuickNotes keeps local replies when a newer remote note wins', () =>
 
 const missedItem = {
     id: 'i-missed', text: 'late', status: 'missed', autoMissed: true,
-    start: '2026-11-03T07:00', duration: 15, end: '2026-11-03T07:15'
+    start: '2099-01-04T07:00', duration: 15, end: '2099-01-04T07:15'
 };
 
 function seedItem(item) {
@@ -275,7 +275,7 @@ function seedItem(item) {
 
 function itemAfter(hhmm, duration) {
     seedItem(missedItem);
-    run(`__reg.updateCheckTime('card-reg', 'i-missed', '2026-11-04T${hhmm}', ${duration});`);
+    run(`__reg.updateCheckTime('card-reg', 'i-missed', '2099-01-04T${hhmm}', ${duration});`);
     return JSON.parse(run('JSON.stringify(__reg.getTasks()[0].checklist[0])'));
 }
 
@@ -283,11 +283,11 @@ check('rescheduling clears autoMissed and an auto-set missed lock', () => {
     const item = JSON.parse(JSON.stringify(missedItem));
     item.statusLocked = true;
     seedItem(item);
-    run(`__reg.updateCheckTime('card-reg', 'i-missed', '2026-11-04T09:00', 30);`);
+    run(`__reg.updateCheckTime('card-reg', 'i-missed', '2099-01-04T09:00', 30);`);
     const after = JSON.parse(run('JSON.stringify(__reg.getTasks()[0].checklist[0])'));
     assert.equal(!!after.autoMissed, false, 'autoMissed must be cleared');
     assert.equal(!!after.statusLocked, false, 'an auto-set missed lock must be released');
-    assert.equal(after.start, '2026-11-04T09:00');
+    assert.equal(after.start, '2099-01-04T09:00');
     assert.equal(after.duration, 30);
 });
 
@@ -297,7 +297,7 @@ check('a manual lock is preserved when the row is rescheduled', () => {
     item.status = 'checked';
     item.statusLocked = true;
     seedItem(item);
-    run(`__reg.updateCheckTime('card-reg', 'i-missed', '2026-11-04T09:00', 30);`);
+    run(`__reg.updateCheckTime('card-reg', 'i-missed', '2099-01-04T09:00', 30);`);
     const after = JSON.parse(run('JSON.stringify(__reg.getTasks()[0].checklist[0])'));
     assert.equal(after.statusLocked, true, 'a user lock is not an auto-miss');
 });

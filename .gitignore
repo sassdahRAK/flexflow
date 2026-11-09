@@ -5,3 +5,10 @@ node_modules/
 .env
 .env.*
 !.env.example
+
+# Local data exports and artefacts that must never be committed
+backup.json
+changes.json
+data/
+build/
+*.zip

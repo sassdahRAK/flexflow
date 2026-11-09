@@ -4,15 +4,15 @@ A lightweight, offline-first workspace for running live performance flow — tas
 
 ## Why FlexFlow
 
-- **Lightweight** — one HTML file; no framework, no build step, no dependencies, no CDN.
+- **Lightweight** — the app itself is still one HTML file; no framework, no build step, no dependencies, no CDN. A small PWA support layer (`manifest.webmanifest`, `sw.js`, `icons/`) is now checked in alongside it, so the project is no longer literally a single file.
 - **Local** — all data stays in your browser (`localStorage` + IndexedDB for video). Nothing is uploaded.
 - **Secure / private** — no accounts, no tracking, no network calls except images you explicitly link. Includes URL validation against `javascript:` injection.
 - **Free for life** — no subscription, no licence fee.
-- **Works offline** — open the file from disk; no server required (except camera/mic/geolocation/share, which browsers require to be served over `https://` or `localhost`).
+- **Works offline** — install it once (over `https://` or `localhost`) and let the service worker serve the cached shell when the network is gone; the first load must be online. Opening the file from disk still runs the app, but `file://` never installs or registers a service worker. Camera, mic, geolocation and sharing also need `https://` or `localhost`.
 
 ## How to use it
 
-1. Open `FlexFlow.html` in a modern browser. To use the camera, microphone, geolocation and sharing, serve it over `https://` or `localhost`.
+1. Open `FlexFlow.html` in a modern browser. To install it as an app and to use the camera, microphone, geolocation and sharing, serve it over `https://` or `localhost` (see [Install and offline](#install-and-offline)).
 2. Use the five tabs:
    - **Home** — task cards and their timed checklists.
    - **Info** — the artists and stage directory.
@@ -25,6 +25,28 @@ A lightweight, offline-first workspace for running live performance flow — tas
 6. Use the calendar: tap a date to view it, Cambodian public holidays are marked, and a starred card rings its date.
 7. Add artists on the Info tab with their details, call times, rooms and contacts.
 8. Back up regularly: **Settings → Backup → Export**, choosing Changes, Media or Full ZIP. Import with either Merge or Replace.
+9. Move data to another device with **Settings → Save transfer file** on the sender, then choose **Share** or **Save (.zip)** in the review sheet, and **Settings → Import transfer file** on the receiver (see [Transfer between devices](#transfer-between-devices)).
+
+## Install and offline
+
+FlexFlow is installable on Android, iOS/iPadOS and desktop. Install and the service worker both need the page to be served over `https://` (or `http://localhost`); opening `FlexFlow.html` straight from disk still runs the whole app, but the PWA features stay off.
+
+- **Android / Chrome** — open the app over `https://`, then accept the browser's **Install app** prompt or use **Settings → App → Install** in FlexFlow. Chrome's menu also offers **Add to Home screen**.
+- **iPhone / iPad (Safari)** — Safari has no install prompt. Open the app, tap **Share**, then **Add to Home Screen**. (The Settings → App row shows this reminder instead of an install button.)
+- **Desktop (Chrome, Edge and similar)** — click the install icon in the address bar, or use the browser menu's **Install** entry; the app then opens in its own window.
+
+Once installed, `sw.js` precaches the app shell under the cache name `flexflow-shell-v1` and serves those cached responses when the network is gone. The first load has to be online so the shell can be cached; after that, the app and the assets it cached keep working offline. Your work never leaves the device: task data stays in `localStorage`, media stays in IndexedDB, and nothing depends on the network. `file://` does not install the app and never registers the service worker.
+
+**Caveat (iOS):** Safari may evict site data for a home-screen app or site you have not opened for a while. Installing the app and allowing persistent storage (FlexFlow requests it through `navigator.storage.persist()` where supported) lowers the risk, but it is not a guarantee — export a backup regularly, especially before a long break.
+
+## Transfer between devices
+
+Phone-to-phone transfer uses the operating system's share sheet or a file import — there is no pairing step:
+
+1. On the sender, open **Settings → Save transfer file**. In the review sheet choose **Share** to hand the `.zip` to the OS share sheet (Quick Share on Android, AirDrop on Apple devices, Messages, Files, email…). If the browser cannot share files, the Share button is hidden and **Save (.zip)** is the primary action. Either way you get a real `.zip` you can send yourself.
+2. On the receiver, open **Settings → Import transfer file** and pick the `.zip`. Accept it, download the required backup of the current device, choose **Merge** or **Replace**, then confirm. Nothing is written until that final confirm.
+
+Bluetooth was deliberately removed: a browser can never host a BLE advertisement or receive connection, and iOS has no Web Bluetooth, so phone-to-phone Bluetooth transfer is impossible for a web app. The share sheet and file import replace it, and the transfer is always a file you can see and keep.
 
 ## Features
 
@@ -53,7 +75,8 @@ Clearing site data deletes all of it, so export a backup first.
 
 ## Tech notes
 
-- Single file, vanilla JavaScript, no dependencies.
+- The app is `FlexFlow.html` plus new PWA support files: `manifest.webmanifest`, `sw.js` and `icons/` (192/512 any-purpose, 512 maskable, 180 apple-touch-icon). It is therefore no longer literally one file, but there is still no build step, no dependencies and no CDN.
+- `sw.js` caches the shell (`flexflow-shell-v1`), uses stale-while-revalidate for assets, and only handles same-origin `GET` requests.
 - Hand-rolled ZIP writer/reader (STORE only).
 - Cambodia (`Asia/Phnom_Penh`) timezone for all scheduling logic.
 

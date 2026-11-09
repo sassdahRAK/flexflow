@@ -2,4 +2,12 @@ tests/
 .dist/
 Logo/
 .git/
+node_modules/
+.vercel/
+.DS_Store
 *.md
+*.zip
+backup.json
+changes.json
+data/
+build/
