@@ -4185,7 +4185,7 @@
     <!-- Peer transfer modal -->
     <div id="transferModal" class="tf-modal" hidden>
         <div class="tf-backdrop" data-tf="close"></div>
-        <div class="tf-sheet" role="dialog" aria-modal="true" aria-labelledby="tfTitle">
+        <div class="tf-sheet" role="dialog" aria-modal="true" aria-labelledby="tfTitle" tabindex="-1">
             <div class="tf-head">
                 <div class="tf-head-text">
                     <div class="tf-eyebrow" id="tfEyebrow">Peer transfer</div>
@@ -4217,8 +4217,8 @@
                     </div>
                     <div class="tf-step-actions">
                         <button type="button" class="tf-btn tf-btn-secondary" data-tf="close">Cancel</button>
-                        <button type="button" class="tf-btn tf-btn-primary" id="tfShareConfirmBtn" data-tf="share-file">Share transfer file</button>
-                        <button type="button" class="tf-btn tf-btn-secondary" id="tfSaveConfirmBtn" data-tf="save-file">Save transfer file (.zip)</button>
+                        <button type="button" class="tf-btn tf-btn-primary" id="tfShareConfirmBtn" data-tf="share-file" aria-label="Share transfer file">Share</button>
+                        <button type="button" class="tf-btn tf-btn-secondary" id="tfSaveConfirmBtn" data-tf="save-file" aria-label="Save transfer file (.zip)">Save (.zip)</button>
                     </div>
                 </section>
 
@@ -4236,9 +4236,9 @@
                         <div class="tf-verify" id="tfVerifyStatus" role="status" aria-live="polite"></div>
                     </div>
                     <div class="tf-step-actions">
-                        <button type="button" class="tf-btn tf-btn-primary" id="tfShareFileBtn" data-tf="share-file">Share transfer file</button>
-                        <button type="button" class="tf-btn tf-btn-secondary" id="tfSaveFileBtn" data-tf="save-file">Save transfer file (.zip)</button>
-                        <button type="button" class="tf-btn tf-btn-secondary" id="tfVerifyBtn" data-tf="verify">Verify transfer</button>
+                        <button type="button" class="tf-btn tf-btn-primary" id="tfShareFileBtn" data-tf="share-file" aria-label="Share transfer file">Share</button>
+                        <button type="button" class="tf-btn tf-btn-secondary" id="tfSaveFileBtn" data-tf="save-file" aria-label="Save transfer file (.zip)">Save (.zip)</button>
+                        <button type="button" class="tf-btn tf-btn-secondary" id="tfVerifyBtn" data-tf="verify" aria-label="Verify transfer">Verify</button>
                         <button type="button" class="tf-btn tf-btn-secondary" data-tf="done">Done</button>
                     </div>
                 </section>
@@ -4774,7 +4774,9 @@
                 if (a.ts !== b.ts) return a.ts - b.ts;
                 return a.index - b.index;
             });
-            task.checklist = decorated.map(entry => entry.item);
+            const ordered = decorated.map(entry => entry.item);
+            // Avoid allocating/replacing an array whose order already matches.
+            if (ordered.some((item, i) => item !== task.checklist[i])) task.checklist = ordered;
             return task;
         }
 
@@ -4870,7 +4872,9 @@
                 if (a.ts !== b.ts) return a.ts - b.ts;
                 return a.index - b.index;
             });
-            tasks = decorated.map(entry => entry.task);
+            const ordered = decorated.map(entry => entry.task);
+            // Keep the existing array when the computed order is unchanged.
+            if (ordered.some((task, i) => task !== tasks[i])) tasks = ordered;
             return tasks;
         }
 
@@ -4898,11 +4902,15 @@
         function ensureSortOrder() {
             // Never reorder mid-drag gesture
             if (dragItemInfo || dragCardId) return;
-            if (currentSortSignature() === lastSortSignature) return;
+            // Compute the signature once per pass. The sort helpers below are
+            // no-ops when the order already matches, so the pre-sort signature
+            // is a safe cache key: a changed order costs one extra no-op pass
+            // that then caches the settled signature.
+            const signature = currentSortSignature();
+            if (signature === lastSortSignature) return;
             tasks.forEach(sortChecklistByStart);
             sortCardsByTime();
-            // Save the post-sort signature so the next unchanged render skips.
-            lastSortSignature = currentSortSignature();
+            lastSortSignature = signature;
         }
 
         // Never hand an invalid string to a datetime-local / number input
@@ -5103,18 +5111,24 @@
             return parseWallClock(getDefaultTimeRange().start) || new Date();
         }
 
-        function rechainCardsFrom(cascadeStartIndex, snapshotStarts, draggedOriginalStart) {
-            if (cascadeStartIndex < 0) return;
+        function rechainCardsFrom(startIndex, snapshotStarts, draggedOriginalStart, draggedId) {
+            if (startIndex < 0) return;
             // Dragging a card that has no parseable times must not touch the
             // queue at all: otherwise the timed cards below would be re-timed
             // as a side effect. Only the no-time group's own order changes.
-            const dragged = tasks[cascadeStartIndex];
+            // Test the card that was actually dragged: when dragging down the
+            // cascade starts at min(fromIndex, dropIndex), so
+            // tasks[startIndex] is the card shifted up, not the dragged
+            // one. The 3-argument form is kept for callers that have no id.
+            const dragged = draggedId != null
+                ? tasks.find(t => t && t.id === draggedId)
+                : tasks[startIndex];
             if (!dragged || !hasTimedItem(dragged)) {
                 sortCardsByTime();
                 return;
             }
-            let cursor = resolveQueueStart(snapshotStarts, cascadeStartIndex, draggedOriginalStart);
-            for (let i = cascadeStartIndex; i < tasks.length; i++) {
+            let cursor = resolveQueueStart(snapshotStarts, startIndex, draggedOriginalStart);
+            for (let i = startIndex; i < tasks.length; i++) {
                 const task = tasks[i];
                 // No-time cards stay outside the cursor chain entirely: no
                 // invented start/duration and no cursor consumption.
@@ -7481,7 +7495,8 @@
                 // displaces the card above the new index, so starting at the
                 // drop index would leave it overlapping the dragged card.
                 const cascadeStart = fromIndex >= 0 ? Math.min(fromIndex, dropIndex) : dropIndex;
-                rechainCardsFrom(cascadeStart, snapshot.starts, snapshot.draggedStart);
+                // Pass the dragged card so the no-time guard tests the card the user moved, not the neighbour shifted up by the drop.
+                rechainCardsFrom(cascadeStart, snapshot.starts, snapshot.draggedStart, draggedId);
             }
             persistData();
             settleDragElement(card, function () {
@@ -12378,6 +12393,47 @@
             };
         }
 
+        // Copy only known, own change-log fields; never trust the raw shape.
+        function transferSanitizeChangeLog(entries) {
+            return (Array.isArray(entries) ? entries : [])
+                .filter(entry => entry && typeof entry === 'object' && typeof entry.op === 'string')
+                .slice(0, 20000)
+                .map(entry => {
+                    const rec = { at: String(entry.at || ''), op: entry.op };
+                    if (typeof entry.cardId === 'string') rec.cardId = entry.cardId;
+                    if (typeof entry.itemId === 'string') rec.itemId = entry.itemId;
+                    rec.data = entry.data && typeof entry.data === 'object' && !Array.isArray(entry.data) ? entry.data : {};
+                    return rec;
+                });
+        }
+
+        // Merge dedupe identity: the same operation at the same time on the
+        // same card/item is the same entry, regardless of its old seq.
+        function transferChangeLogKey(rec) {
+            return [rec && rec.at || '', rec && rec.op || '', rec && rec.cardId || '', rec && rec.itemId || ''].join('|');
+        }
+
+        function applyTransferChangeLog(entries, mode) {
+            const incoming = Array.isArray(entries) ? entries : [];
+            if (mode === 'replace') {
+                changeLog = incoming.slice();
+            } else {
+                const seen = new Set(changeLog.map(transferChangeLogKey));
+                incoming.forEach(rec => {
+                    const key = transferChangeLogKey(rec);
+                    if (seen.has(key)) return;
+                    seen.add(key);
+                    changeLog.push(rec);
+                });
+            }
+            if (changeLog.length > CHANGE_LOG_CAP) changeLog = changeLog.slice(-CHANGE_LOG_CAP);
+            changeLog.forEach((rec, index) => {
+                if (rec && typeof rec === 'object') rec.seq = index + 1;
+            });
+            changeSeq = changeLog.length + 1;
+            persistChangeLog();
+        }
+
         function planTransferApply(envelope, mode, local) {
             const checked = validateTransferEnvelope(envelope);
             if (!checked.ok) return { ok: false, error: checked.error };
@@ -12391,6 +12447,7 @@
             const incomingNotes = sanitizeImportedNotes(Array.isArray(data.quickNotes) ? data.quickNotes : []);
             const hasArtists = !!(data.artists && Array.isArray(data.artists.artists));
             const incomingArtists = hasArtists ? transferSanitizeArtists(data.artists) : transferBlankArtists();
+            const incomingChangeLog = transferSanitizeChangeLog(data.changeLog);
             const videosSkipped = Number(env.summary && env.summary.counts && env.summary.counts.videos) || 0;
             const incomingCounts = {
                 tasks: incomingTasks.length,
@@ -12407,6 +12464,7 @@
                     tasks: incomingTasks,
                     quickNotes: incomingNotes,
                     artists: incomingArtists,
+                    changeLog: incomingChangeLog,
                     counts: incomingCounts,
                     videosSkipped: videosSkipped
                 };
@@ -12424,6 +12482,7 @@
                 tasks: mergedTasks,
                 quickNotes: mergedNotes,
                 artists: mergedArtists,
+                changeLog: incomingChangeLog,
                 counts: incomingCounts,
                 videosSkipped: videosSkipped
             };
@@ -12798,9 +12857,19 @@
             const id = TF_STEP_IDS[stepKey];
             const sec = id ? tfEl(id) : null;
             if (!sec) return;
-            const target = sec.querySelector('.tf-btn-primary, .tf-btn-secondary, input');
+            const target = Array.from(sec.querySelectorAll('.tf-btn-primary, .tf-btn-secondary, input'))
+                .find(node => !node.disabled);
             if (target && typeof target.focus === 'function') {
                 try { target.focus({ preventScroll: true }); } catch (e) {}
+                return;
+            }
+            // No enabled control in this step (e.g. applying): focus the sheet
+            // so the aria-modal dialog still owns focus instead of letting Tab
+            // reach the page behind it.
+            const modal = tfEl('transferModal');
+            const sheet = modal ? modal.querySelector('.tf-sheet') : null;
+            if (sheet && typeof sheet.focus === 'function') {
+                try { sheet.focus({ preventScroll: true }); } catch (e) {}
             }
         }
 
@@ -13050,11 +13119,13 @@
                 const el = tfEl(id);
                 if (el) el.hidden = !canShareFiles;
             });
-            const saveBtn = tfEl('tfSaveConfirmBtn');
-            if (saveBtn) {
-                saveBtn.classList.toggle('tf-btn-primary', !canShareFiles);
-                saveBtn.classList.toggle('tf-btn-secondary', canShareFiles);
-            }
+            ['tfSaveConfirmBtn', 'tfSaveFileBtn'].forEach(id => {
+                const saveBtn = tfEl(id);
+                if (saveBtn) {
+                    saveBtn.classList.toggle('tf-btn-primary', !canShareFiles);
+                    saveBtn.classList.toggle('tf-btn-secondary', canShareFiles);
+                }
+            });
             return canShareFiles;
         }
 
@@ -13364,6 +13435,17 @@
             return ids;
         }
 
+        // Verify the ids that were actually written: the sanitized plan payload.
+        // Re-sanitizing the raw envelope here would mint a fresh id for every
+        // record that arrived without one and report a false mismatch.
+        function tfExpectedIdsFromPlan(plan) {
+            return {
+                tasks: (plan && Array.isArray(plan.tasks) ? plan.tasks : []).map(t => t && t.id),
+                notes: (plan && Array.isArray(plan.quickNotes) ? plan.quickNotes : []).map(n => n && n.id),
+                artists: []
+            };
+        }
+
         function tfMissingExpectedIds(ids) {
             const expected = ids || { tasks: [], notes: [], artists: [] };
             const taskIds = new Set(readStorageArray(TASKS_KEY).map(t => t && t.id));
@@ -13394,7 +13476,12 @@
                 tfAnnounce(gate.reason);
                 return;
             }
-            tfState.expectedIds = inc.envelope ? tfCollectIdsFromEnvelope(inc.envelope) : tfCollectIdsFromStaged(inc.staged);
+            // Envelope ids must come from the sanitized plan immediately before
+            // the write; collecting them from the raw envelope sanitizes twice
+            // and generates a different id for any record that lacks one.
+            tfState.expectedIds = inc.envelope
+                ? { tasks: [], notes: [], artists: [] }
+                : tfCollectIdsFromStaged(inc.staged);
             tfState.appliedCounts = inc.counts;
             tfState.verifyNote = '';
             const token = ++tfState.flowToken;
@@ -13445,6 +13532,9 @@
                 tfAnnounce('Transfer applied.');
             };
 
+            // True once the data write has landed, so a later verification
+            // failure never claims "nothing was changed".
+            let wrote = false;
             try {
                 if (inc.envelope) {
                     const plan = planTransferApply(inc.envelope, mode, transferLocalSnapshot());
@@ -13455,11 +13545,14 @@
                         tfShowAlert(plan.error);
                         return;
                     }
-                    const wrote = applyImport({ tasks: plan.tasks, quickNotes: plan.quickNotes }, mode === 'merge');
-                    if (!wrote) throw new Error('import-failed');
-                    if (inc.envelope.data.artists) {
-                        applyArtistsPayload(plan.artists, mode === 'merge');
-                    }
+                    tfState.expectedIds = tfExpectedIdsFromPlan(plan);
+                    const imported = applyImport({ tasks: plan.tasks, quickNotes: plan.quickNotes }, mode === 'merge');
+                    if (!imported) throw new Error('import-failed');
+                    // Replace must also clear artists when the envelope has none:
+                    // the plan already returns transferBlankArtists() for that case.
+                    applyArtistsPayload(plan.artists, mode === 'merge');
+                    wrote = true;
+                    applyTransferChangeLog(plan.changeLog, mode);
                     if (tfMissingExpectedIds(tfState.expectedIds)) throw new Error('verify-missing');
                     tfState.applyCommitted = true;
                     await finish(true);
@@ -13468,25 +13561,42 @@
                 const staged = inc.staged;
                 if (!staged) throw new Error('no-staged');
                 if (mode === 'replace' && staged.kind !== 'full') throw new Error('replace-not-full');
+                // The apply helpers read these globals. Snapshot the Settings
+                // state so a staged Restore survives and transfer data never
+                // stays armed for the Settings Confirm button.
+                const prevConfirmAction = settingsConfirmAction;
+                const prevPendingImport = settingsPendingImport;
+                let stagedConsumed = false;
                 settingsConfirmAction = null;
                 settingsPendingImport = staged;
-                if (mode === 'replace') {
-                    await applyReplaceImport();
-                } else {
-                    await applyMergeImport();
+                try {
+                    if (mode === 'replace') {
+                        await applyReplaceImport();
+                    } else {
+                        await applyMergeImport();
+                    }
+                    stagedConsumed = !settingsPendingImport;
+                } finally {
+                    settingsConfirmAction = prevConfirmAction;
+                    settingsPendingImport = prevPendingImport;
                 }
-                if (settingsPendingImport) throw new Error('import-failed');
+                if (!stagedConsumed) throw new Error('import-failed');
+                wrote = true;
                 if (staged.kind !== 'changes' && tfMissingExpectedIds(tfState.expectedIds)) throw new Error('verify-missing');
                 tfState.applyCommitted = true;
                 await finish(true);
             } catch (e) {
                 clearInterval(timer);
                 tfSetBusy(false);
-                tfState.applyCommitted = false;
                 if (tfFlowStale(token, 'applying')) return;
-                const message = 'Apply failed. Nothing was changed; the backup gate stays open so you can retry.';
                 tfShowStep('receive-confirm');
-                tfShowAlert(message);
+                if (wrote) {
+                    tfState.applyCommitted = true;
+                    tfShowAlert('The transfer was written, but verification did not match. Check the data, then reopen the backup before another import.');
+                } else {
+                    tfState.applyCommitted = false;
+                    tfShowAlert('Apply failed. Nothing was changed; the backup gate stays open so you can retry.');
+                }
             }
         }
 
@@ -13689,10 +13799,22 @@
                 const focusables = Array.from(sheet.querySelectorAll(
                     'button:not([disabled]), input:not([disabled]), select:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
                 )).filter(node => node.offsetParent !== null || node === document.activeElement);
-                if (!focusables.length) return;
+                if (!focusables.length) {
+                    // Nothing focusable inside the dialog: keep focus on the
+                    // sheet so Tab cannot escape to the page behind it.
+                    e.preventDefault();
+                    try { sheet.focus({ preventScroll: true }); } catch (err) {}
+                    return;
+                }
                 const first = focusables[0];
                 const last = focusables[focusables.length - 1];
-                if (e.shiftKey && (document.activeElement === first || !sheet.contains(document.activeElement))) {
+                const outside = !document.activeElement || !sheet.contains(document.activeElement);
+                if (outside) {
+                    e.preventDefault();
+                    (e.shiftKey ? last : first).focus();
+                    return;
+                }
+                if (e.shiftKey && document.activeElement === first) {
                     e.preventDefault();
                     last.focus();
                 } else if (!e.shiftKey && document.activeElement === last) {

@@ -449,6 +449,6 @@ featureTest('drag reorder still cascades from Math.min(from, to) for cards and i
         /Math\.min\(\s*itemFrom\s*,\s*itemTo\s*\)/,
         'checklist reorder must cascade from the earlier of itemFrom/itemTo'
     );
-    assert.match(html, /rechainCardsFrom\(\s*cascadeStart\s*,\s*snapshot\.starts\s*,\s*snapshot\.draggedStart\s*\)/);
+    assert.match(html, /rechainCardsFrom\(\s*cascadeStart\s*,\s*snapshot\.starts\s*,\s*snapshot\.draggedStart\s*,\s*draggedId\s*\)/);
     assert.match(html, /rechainChecklistFrom\(\s*task\s*,\s*cascadeStart\s*,\s*info\.starts\s*,\s*info\.draggedStart\s*\)/);
 });
